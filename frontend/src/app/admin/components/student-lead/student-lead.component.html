@@ -9,7 +9,7 @@
         <label for="search" class="block text-sm font-medium text-gray-600 mb-1">Search Students</label>
         <div class="relative">
           <input id="search" type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
-            placeholder="Search by name or email"
+            placeholder="Search by name or contact"
             class="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-md focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
           <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -130,16 +130,13 @@
           <th class="px-4 py-2 whitespace-nowrap">Name</th>
           <!-- <th class="px-4 py-2 whitespace-nowrap">Roll Number</th> -->
           <!-- <th class="px-4 py-2 whitespace-nowrap">Batch Name</th> -->
-          <th class="px-4 py-2 whitespace-nowrap">Email</th>
           <th class="px-4 py-2 whitespace-nowrap">Contact</th>
-          <!-- <th class="px-4 py-2 whitespace-nowrap">Remark</th>
-          <th class="px-4 py-2 whitespace-nowrap">Status</th> -->
-          <th class="px-4 py-2 whitespace-nowrap">Registered</th>
+          <th class="px-4 py-2 whitespace-nowrap">Follow-up Date</th>
+          <th class="px-4 py-2 whitespace-nowrap">Enquiry Status</th>
+          <th class="px-4 py-2 whitespace-nowrap">Status</th>
           <th class="px-4 py-2 whitespace-nowrap">Branch</th>
-          <!-- <th class="px-4 py-2 whitespace-nowrap">To Staff</th> -->
-          <th class="px-4 py-2 whitespace-nowrap">Enrolled</th>
+          <th class="px-4 py-2 whitespace-nowrap">Remark</th>
           <th class="px-4 py-2 whitespace-nowrap">Follow-up</th>
-          <!-- <th class="px-4 py-2 whitespace-nowrap">Follow-up Date</th> -->
 
         </tr>
       </thead>
@@ -156,18 +153,15 @@
           <td class="px-4 py-2 whitespace-nowrap">{{ item.First_Name }}</td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Roll_No'] || '-' }}</td> -->
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Batch_Name'] || '-' }}</td> -->
-          <td class="px-4 py-2 whitespace-nowrap">{{ item.Email || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item.Country_Code }} {{ item.Phone_Number }}</td>
-          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Remark'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || '-' }}</td> -->
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Is_Registered'] ? 'Yes' : 'No' }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">
+            {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : (item['Next_Follow_Up_Date'] ? (item['Next_Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-') }}
+          </td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ item['Enquiry_Source_Name'] || item['Enquiry_Source'] || item['Enquiry_Source_Id'] || '-' }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td>
-          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['To_User_Name'] || '-' }}</td> -->
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['is_enrolled'] ? 'Yes' : 'No' }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">{{ item['Remark'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Followup_Status'] == 1 ? 'Yes' : 'No' }}</td>
-          <!-- <td class="px-4 py-2 whitespace-nowrap">
-            {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-' }}
-          </td> -->
 
         </tr>
       </tbody>

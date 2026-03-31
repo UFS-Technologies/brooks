@@ -163,6 +163,7 @@ export class StudentLeadComponent implements OnInit {
   departmentData: any[] = [];
   staffData: any[] = [];
   followUpStatusData: any[] = [];
+  enquirySources: any[] = [];
   studentFollowUpHistory: any[] = [];
 
   Total_Entries: number = 0;
@@ -1062,6 +1063,7 @@ onCancelEdit(): void {
     this.Department_Dropdown();
     this.User_Dropdown();
     this.Followup_status_Dropdown();
+    this.Get_All_Enquiry();
     this.Search_student_lead();
     ;
     //this.loadFollowupData();
@@ -1189,6 +1191,22 @@ onCancelEdit(): void {
     this.Search_status = this.followUpStatusData.find(
       (status: any) => status.Status_Name?.toLowerCase() === 'pending'
     ) || defaultOption;
+  }
+  Get_All_Enquiry() {
+    this.student_Service_.Get_All_Enquiry().subscribe({
+      next: (rows: any) => {
+        if (Array.isArray(rows?.[0])) {
+          this.enquirySources = rows[0];
+        } else if (Array.isArray(rows)) {
+          this.enquirySources = rows;
+        } else {
+          this.enquirySources = [];
+        }
+      },
+      error: () => {
+        this.enquirySources = [];
+      },
+    });
   }
   Department_Dropdown() {
     ;
@@ -1659,16 +1677,64 @@ onCancelEdit(): void {
       .subscribe(
         (response: any) => {
           console.log('response: ', response);
-          this.student_Data = response[1];
+          const rows = response[1] || [];
           this.Total_Entries = response[0][0].total_count;
-          // if (this.student_Data.length == 0) {
-          //   this.isLoading = false;
-          //   const dialogRef = this.dialogBox.open(DialogBox_Component, {
-          //     panelClass: 'Dialogbox-Class',
-          //     data: { Message: 'No Details Found', Type: "3" }
-          //   });
-          // }
-          this.isLoading = false;
+          if (!rows.length) {
+            this.student_Data = [];
+            this.isLoading = false;
+            return;
+          }
+
+          forkJoin(
+            rows.map((row: any) =>
+              forkJoin({
+                followupResponse: this.student_Service_.Get_student_current_followup(
+                  row.Student_ID
+                ).pipe(catchError(() => of(null))),
+                studentResponse: this.student_Service_.Get_student(
+                  row.Student_ID
+                ).pipe(catchError(() => of(null))),
+              }).pipe(
+                map(({ followupResponse, studentResponse }: any) => {
+                  const studentDetails =
+                    this.normalizeStudentDetails(studentResponse);
+                  return {
+                    ...row,
+                    ...studentDetails,
+                    ...this.normalizeCurrentFollowup(followupResponse),
+                    Enquiry_Source_Name:
+                      row.Enquiry_Source_Name ||
+                      studentDetails.Enquiry_Source_Name ||
+                      this.getEnquirySourceName(
+                        row.Enquiry_Source_Id ||
+                          row.Enquiry_Source ||
+                          studentDetails.Enquiry_Source_Id ||
+                          studentDetails.Enquiry_Source
+                      ),
+                  };
+                }),
+                catchError(() =>
+                  of({
+                    ...row,
+                    Enquiry_Source_Name:
+                      row.Enquiry_Source_Name ||
+                      this.getEnquirySourceName(
+                        row.Enquiry_Source_Id || row.Enquiry_Source
+                      ),
+                  })
+                )
+              )
+            )
+          ).subscribe({
+            next: (enrichedRows: any[]) => {
+              this.student_Data = enrichedRows;
+              this.isLoading = false;
+            },
+            error: () => {
+              this.student_Data = rows;
+              this.isLoading = false;
+            },
+          });
         },
         (error) => {
           this.isLoading = false;
@@ -1678,6 +1744,75 @@ onCancelEdit(): void {
           });
         }
       );
+  }
+
+  private normalizeCurrentFollowup(response: any): any {
+    let followUpData: any = null;
+
+    if (Array.isArray(response) && response.length > 0) {
+      if (Array.isArray(response[0]) && response[0].length > 0) {
+        followUpData = response[0][0];
+      } else if (response[0] && typeof response[0] === 'object') {
+        followUpData = response[0];
+      }
+    } else if (response && typeof response === 'object' && !Array.isArray(response)) {
+      followUpData = response;
+    }
+
+    if (!followUpData) {
+      return {};
+    }
+
+    return {
+      Follow_Up_Date:
+        followUpData.Next_Follow_Up_Date ||
+        followUpData.Follow_Up_Date ||
+        followUpData.Created_Date ||
+        null,
+      Status_Name:
+        followUpData.Follow_Up_Status_Name ||
+        followUpData.Status_Name ||
+        null,
+      Remark: followUpData.Remark || null,
+    };
+  }
+
+  private normalizeStudentDetails(response: any): any {
+    let studentData: any = null;
+
+    if (Array.isArray(response) && response.length > 0) {
+      if (Array.isArray(response[0]) && response[0].length > 0) {
+        studentData = response[0][0];
+      } else if (response[0] && typeof response[0] === 'object') {
+        studentData = response[0];
+      }
+    } else if (response && typeof response === 'object' && !Array.isArray(response)) {
+      studentData = response;
+    }
+
+    if (!studentData) {
+      return {};
+    }
+
+    return {
+      Enquiry_Source_Id:
+        studentData.Enquiry_Source_Id ??
+        studentData.Enquiry_Source_ID ??
+        studentData.Enquiry_Source ??
+        null,
+      Enquiry_Source_Name:
+        studentData.Enquiry_Source_Name ??
+        null,
+    };
+  }
+
+  private getEnquirySourceName(sourceId: any): string {
+    if (!sourceId) return '-';
+    const match = this.enquirySources.find(
+      (source: any) =>
+        String(source.Enquiry_Source_Id).toLowerCase() === String(sourceId).toLowerCase()
+    );
+    return match?.Enquiry_Source_Name || String(sourceId);
   }
   // Update the getFollowUpData method to use existing data when editing
   getFollowUpData() {

@@ -882,21 +882,20 @@ doc.text(
   // }
 
   Get_All_Enquiry() {
-    this.enquirySources = [
-      { Enquiry_Source_Id: 'Google', Enquiry_Source_Name: 'Google' },
-      { Enquiry_Source_Id: 'Whatsup enq', Enquiry_Source_Name: 'Whatsup enq' },
-      { Enquiry_Source_Id: 'Facebook', Enquiry_Source_Name: 'Facebook' },
-      { Enquiry_Source_Id: 'Instagram', Enquiry_Source_Name: 'Instagram' },
-      { Enquiry_Source_Id: 'School Data', Enquiry_Source_Name: 'School Data' },
-      { Enquiry_Source_Id: 'website', Enquiry_Source_Name: 'website' },
-      { Enquiry_Source_Id: 'school Seminar', Enquiry_Source_Name: 'school Seminar' },
-      { Enquiry_Source_Id: 'Student reference', Enquiry_Source_Name: 'Student reference' },
-      { Enquiry_Source_Id: 'other reference', Enquiry_Source_Name: 'other reference' },
-      { Enquiry_Source_Id: 'Education Expo', Enquiry_Source_Name: 'Education Expo' },
-      { Enquiry_Source_Id: 'Kiosk', Enquiry_Source_Name: 'Kiosk' },
-      { Enquiry_Source_Id: 'say data', Enquiry_Source_Name: 'say data' },
-      { Enquiry_Source_Id: 'Direct walkin', Enquiry_Source_Name: 'Direct walkin' },
-    ];
+    this.student_Service_.Get_All_Enquiry().subscribe({
+      next: (rows: any) => {
+        if (Array.isArray(rows?.[0])) {
+          this.enquirySources = rows[0];
+        } else if (Array.isArray(rows)) {
+          this.enquirySources = rows;
+        } else {
+          this.enquirySources = [];
+        }
+      },
+      error: () => {
+        this.enquirySources = [];
+      },
+    });
   }
   getRoundedInstallments(
     total: number,

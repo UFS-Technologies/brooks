@@ -303,39 +303,56 @@
                 </div>
                 -->
 
-                <!-- START: Conditional View Logic -->
-                @if (!isRegistering) {
-                    <!-- Simplified Lead Form (Standard View) -->
-                    <div class="mb-2">
-                        <label for="categoryName" class="block text-sm font-medium text-gray-700">Full Name<span
-                                class="text-red-700">*</span></label>
-                        <input type="text" formControlName="First_Name" maxlength="50" required
-                            class="mt-1 px-2 py-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                        <div *ngIf="student_Form.get('First_Name')?.touched && student_Form.get('First_Name')?.invalid"
-                            class="text-red-500 text-xs">
-                            Full Name is Required.
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Lead Form -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="mb-1">
-                            <label for="passMark" class="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email" formControlName="Email"
+                            <label for="lead-full-name" class="block text-sm font-medium text-gray-700">Full Name<span
+                                    class="text-red-700">*</span></label>
+                            <input id="lead-full-name" type="text" formControlName="First_Name" maxlength="50" required
+                                class="mt-1 px-3 py-2 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            <div *ngIf="student_Form.get('First_Name')?.touched && student_Form.get('First_Name')?.invalid"
+                                class="text-red-500 text-xs">
+                                Full Name is Required.
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <label for="lead-email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input id="lead-email" type="email" formControlName="Email"
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
                         </div>
-                        <div class="mb-1 space-y-4 md:space-y-0 md:flex md:space-x-4">
-                            <div class="w-full md:w-2/4">
-                                <label for="country" class="block text-sm font-medium text-gray-700">Country Code</label>
-                                <lib-country-list id="country" [preferredCountryCodes]="preferredCountryCodes"
-                                    (onCountryChange)="onCountryChange($event)"
-                                    [selectedCountryConfig]="selectedCountryConfig" [countryListConfig]="countryListConfig"
-                                    [selectedCountryCode]="student_Form.get('Country_Code_Name')?.value"
-                                    class="block w-full border border-gray-300 mt-1 rounded-lg  focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out"></lib-country-list>
-                            </div>
-                            <div class="w-full md:w-2/4">
-                                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                <input id="phone" type="number" formControlName="Phone_Number"
-                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                            </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="mb-1">
+                            <label for="lead-age" class="block text-sm font-medium text-gray-700">Age</label>
+                            <input id="lead-age" type="number" formControlName="Age" min="0"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                        <div class="mb-1">
+                            <label for="country" class="block text-sm font-medium text-gray-700">Country Code</label>
+                            <lib-country-list id="country" [preferredCountryCodes]="preferredCountryCodes"
+                                (onCountryChange)="onCountryChange($event)"
+                                [selectedCountryConfig]="selectedCountryConfig" [countryListConfig]="countryListConfig"
+                                [selectedCountryCode]="student_Form.get('Country_Code_Name')?.value"
+                                class="block w-full border border-gray-300 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out"></lib-country-list>
+                        </div>
+                        <div class="mb-1">
+                            <label for="lead-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <input id="lead-phone" type="number" formControlName="Phone_Number"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                        <div class="mb-1">
+                            <label for="lead-alt-phone" class="block text-sm font-medium text-gray-700">Alternative Number</label>
+                            <input id="lead-alt-phone" type="number" formControlName="Alt_Phone_Number"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="mb-1">
+                            <label for="lead-qualification" class="block text-sm font-medium text-gray-700">Qualifications</label>
+                            <input id="lead-qualification" type="text" formControlName="Qualification"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
                         </div>
                         <div class="mb-1">
                             <label class="block text-sm font-medium text-gray-700">Enquiry Source</label>
@@ -347,11 +364,42 @@
                                 </option>
                             </select>
                         </div>
+                        <div class="mb-1">
+                            <label for="lead-place" class="block text-sm font-medium text-gray-700">Place</label>
+                            <input id="lead-place" type="text" formControlName="District"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
                     </div>
-                } @else {
-                    <!-- Full Registration Form (24 Fields) -->
-                    <div class="registration-form-container space-y-6">
-                        <h3 class="text-lg font-bold text-indigo-700 border-b pb-2 mb-4">Student Registration Details</h3>
+            </div>
+        </form>
+
+        <div class="mb-4" style="padding: 5px;">
+            <label class="inline-flex items-center">
+                <input type="checkbox" [(ngModel)]="isRegistering"
+                    (click)="studentRegistration(followUps, isRegistering)" name="isRegistering"
+                    class="form-checkbox h-5 w-5 text-indigo-600">
+                <span class="ml-2 text-sm text-gray-700">Registration</span>
+            </label>
+        </div>
+
+        @if (isRegistering) {
+        <section class="border border-gray-300 shadow p-6 rounded-lg bg-white mt-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Student Registration Details</h2>
+                    <p class="text-sm text-gray-600">Complete registration without leaving the Add New Lead section</p>
+                </div>
+                <button type="button" (click)="isRegistering = false" class="text-gray-500 hover:text-gray-700"
+                    title="Close registration section">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+        <form [formGroup]="student_Form" class="space-y-6">
+            <div class="registration-form-container space-y-6">
                         
                         <!-- Row 1: Academic Year, Course, Batch (Sycned with student_Course) -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -520,10 +568,8 @@
                             </div>
                         </div>
                     </div>
-                }
-            </div>
         </form>
-        <form *ngIf="isRegistering" [formGroup]="student_Course" class="space-y-6">
+        <form [formGroup]="student_Course" class="space-y-6 mt-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Course Selection -->
                 <div class="space-y-2">
@@ -746,15 +792,8 @@
                 }
             </div>
         </form>
-
-        <div class="mb-4" style="padding: 5px;">
-            <label class="inline-flex items-center">
-                <input type="checkbox" [(ngModel)]="isRegistering"
-                    (click)="studentRegistration(followUps, isRegistering)" name="isRegistering"
-                    class="form-checkbox h-5 w-5 text-indigo-600">
-                <span class="ml-2 text-sm text-gray-700">Registration</span>
-            </label>
-        </div>
+        </section>
+        }
 
         <!-- Add Follow-up Button (when section is collapsed) -->
         @if(!showFollowUpSection && !student_Form.get('Student_ID')?.value) {
