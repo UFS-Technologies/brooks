@@ -1193,20 +1193,25 @@ onCancelEdit(): void {
     ) || defaultOption;
   }
   Get_All_Enquiry() {
-    this.student_Service_.Get_All_Enquiry().subscribe({
-      next: (rows: any) => {
-        if (Array.isArray(rows?.[0])) {
-          this.enquirySources = rows[0];
-        } else if (Array.isArray(rows)) {
-          this.enquirySources = rows;
-        } else {
-          this.enquirySources = [];
-        }
-      },
-      error: () => {
-        this.enquirySources = [];
-      },
-    });
+    const sources = [
+      'Google',
+      'Whatsup enq',
+      'Facebook',
+      'Instagram',
+      'School Data',
+      'website',
+      'school Seminar',
+      'Student reference',
+      'other reference',
+      'Education Expo',
+      'Kiosk',
+      'say data',
+      'Direct walkin',
+    ];
+    this.enquirySources = sources.map((name, index) => ({
+      Enquiry_Source_Id: index + 1,
+      Enquiry_Source_Name: name,
+    }));
   }
   Department_Dropdown() {
     ;
@@ -1702,25 +1707,20 @@ onCancelEdit(): void {
                     ...row,
                     ...studentDetails,
                     ...this.normalizeCurrentFollowup(followupResponse),
-                    Enquiry_Source_Name:
-                      row.Enquiry_Source_Name ||
-                      studentDetails.Enquiry_Source_Name ||
-                      this.getEnquirySourceName(
-                        row.Enquiry_Source_Id ||
-                          row.Enquiry_Source ||
-                          studentDetails.Enquiry_Source_Id ||
-                          studentDetails.Enquiry_Source
-                      ),
+                    Enquiry_Source_Name: this.getEnquirySourceName(
+                      row.Enquiry_Source_Id ||
+                        row.Enquiry_Source ||
+                        studentDetails.Enquiry_Source_Id ||
+                        studentDetails.Enquiry_Source
+                    ),
                   };
                 }),
                 catchError(() =>
                   of({
                     ...row,
-                    Enquiry_Source_Name:
-                      row.Enquiry_Source_Name ||
-                      this.getEnquirySourceName(
-                        row.Enquiry_Source_Id || row.Enquiry_Source
-                      ),
+                    Enquiry_Source_Name: this.getEnquirySourceName(
+                      row.Enquiry_Source_Id || row.Enquiry_Source
+                    ),
                   })
                 )
               )
