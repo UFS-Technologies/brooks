@@ -1,0 +1,148 @@
+<div style="overflow: hidden;" >
+
+
+    <div class="flex justify-end gap-3">
+        <button  mat-raised-button
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <mat-icon class="mr-2">search</mat-icon>
+            Search
+        </button>
+
+        <button  mat-raised-button
+            class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
+            <mat-icon class="mr-2">clear</mat-icon>
+            Clear
+        </button>
+        <button  style="background-color: gray;" class=" text-white px-4 py-2 rounded ">
+  Export to Excel
+</button>
+
+         <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+  Download PDF
+</button>
+    </div>
+    <!-- Filters Section -->
+    <section class="container-section mt-5">
+        <div class="flex flex-wrap gap-4 items-start">
+
+            <!-- Course Filter -->
+            <mat-form-field appearance="fill" class="min-w-[10px] flex-1">
+                <mat-label>Course</mat-label>
+                <input #Course type="text" placeholder="Pick one" matInput 
+                    [matAutocomplete]="auto" >
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option >
+                        
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- Student Filter -->
+            <mat-form-field appearance="fill" class="min-w-[200px] flex-1">
+                <mat-label>Student</mat-label>
+                <input #Student type="text" placeholder="Pick one" matInput 
+                    [matAutocomplete]="auto2">
+                <mat-autocomplete #auto2="matAutocomplete" >
+                   
+                    <mat-option ></mat-option>
+                    
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- Batch Filter -->
+            <mat-form-field appearance="fill" class="min-w-[200px] flex-1">
+                <mat-label>Batch</mat-label>
+                <input  type="text" placeholder="Pick one" matInput 
+                    [matAutocomplete]="auto3">
+                <mat-autocomplete  #auto3="matAutocomplete">
+                    <mat-option >
+                        
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- From Date -->
+            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="picker">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- To Date -->
+            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
+                <mat-label>To Date</mat-label>
+                <input matInput  [matDatepicker]="picker2">
+                <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+    </section>
+
+
+  
+    <!-- Table Section -->
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th  class="px-6 py-3 font-semibold tracking-wider">
+                       
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr  class="bg-white border-b hover:bg-gray-50 transition duration-150"
+                    >
+                    <td  class="px-6 py-4 whitespace-nowrap">
+                       
+                    </td>
+                </tr>
+                <tr >
+                    <td  class="px-6 py-4 text-center text-gray-500">
+                        No data available
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    
+    <!-- Pagination -->
+    <div class="flex items-center justify-between p-4 bg-white border-t">
+        <div class="flex items-center space-x-2">
+            <label>per page</label>
+            <select  
+                style="width: 60px;" class="border rounded px-2 py-1 text-sm">
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+                <option [value]="75">75</option>
+                <option [value]="100">100</option>
+            </select>
+            <span class="text-sm font-medium text-gray-700">
+                <!-- Total Duration: {{totalRecords}} -->
+            </span>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <button 
+               
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+            </button>
+            <span class="text-sm text-gray-700">
+             
+            </span>
+            <button 
+                
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+        </div>
+    </div>
+    </div>
+    
+    

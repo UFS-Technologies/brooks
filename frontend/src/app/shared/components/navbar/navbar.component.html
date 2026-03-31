@@ -1,0 +1,103 @@
+<div class="flex h-screen overflow-hidden">
+
+  <!-- ✅ Sidebar -->
+  <aside id="logo-sidebar" [ngClass]="{
+      'translate-x-0': isSidebarVisible || isSidebarPinned,
+      '-translate-x-full': !isSidebarVisible && !isSidebarPinned
+    }"
+    class="fixed top-0 left-0 z-40 w-64 h-screen pt-16 transition-transform duration-300 ease-in-out bg-white border-r border-gray-200"
+    aria-label="Sidebar">
+    <div class="h-full flex flex-col bg-white px-3 pb-4">
+      <!-- Sticky Logo -->
+      <div class="sticky top-0 flex justify-center mb-4 bg-white z-10">
+        <img src="assets/images/logo3.svg" width="170px" alt="Logo" />
+      </div>
+     
+    <div class="flex-1 overflow-y-auto">
+      <ul class="space-y-2 pt-1 font-medium">
+        @for (item of menuItems; track item) {       
+        @if (!item.subItems) {
+        <li (click)="performAction(item.Menu_Name)">
+          <a [routerLink]="[item.Route]" [queryParams]="{  item: item | json}" routerLinkActive="router-link-active" 
+            class="flex items-center p-2 rounded-lg hover:bg-[#7FC7D91A] hover:text-dark-blue hover:font-bold group">
+            <span class="flex gap-2 ms-5 h-5 whitespace-nowrap text-blue">
+              <img [src]="getImageSource(item.Menu_Name, isActive(item.Route))" style="height: 100%" alt="" />
+              <span class="flex items-center pt-1">{{ item.Menu_Name }}</span>
+            </span>
+          </a>
+        </li>
+        }
+        @if (item.subItems) {
+        
+<li>
+          <button type="button"
+            class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100">
+            <span class="ms-3 text-left whitespace-nowrap">E-{{ item.Menu_Name }}</span>
+          </button>
+          <ul class="py-2 space-y-2">
+            @for (subItem of item.subItems; track subItem) {
+            <li (click)="performAction(item.action)">
+              <a [routerLink]="subItem.link" routerLinkActive="router-link-active"
+                class="flex items-center w-full p-2 pl-11 text-blue rounded-lg hover:bg-gray-100">
+                {{ subItem.Menu_Name }}
+              </a>
+            </li>
+            }
+          </ul>
+        </li>
+        }
+        }
+      </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ✅ Main Content Area -->
+  <div [class.ml-64]="isSidebarVisible || isSidebarPinned"
+    class="flex-1 flex flex-col transition-all duration-300 bg-[#F7F9FB] h-screen overflow-hidden">
+
+    <!-- ✅ Navbar -->
+    <nav class="fixed top-0 z-40  w-full">
+      <div class="px-4 py-3 lg:px-4 lg:pl-0 bg-[#F7F9FB]">
+        <div class="flex items-center justify-between">
+
+
+
+          <!-- 👤 User Info -->
+          <div class="flex-auto px-8 pb-2">
+
+            <div class="bg-white shadow rounded-lg py-4 px-5 border flex  items-center justify-around w-full"
+              [ngStyle]="{ width: (isSidebarVisible || isSidebarPinned) ? '84%' : 'auto' }">
+              <div class="flex items-center justify-self-start w-full">
+              <!-- 🔘 Sidebar Toggle -->
+              <div class="flex items-center gap-2">
+                <button class="p-2 text-gray-600 hover:text-blue-500 focus:outline-none" (click)="togglePinSidebar()">
+                  <span class="material-symbols-outlined">
+                    {{ isSidebarPinned ? 'menu_open' : 'menu' }}
+                  </span>
+                </button>
+              </div> 
+              <div class="hidden sm:block font-semibold text-base">
+                {{ title }}
+              </div></div>
+              <div class="flex items-center gap-3">
+                <img class="w-10 h-10" src="assets/images/icons/User.svg" alt="user photo" />
+                <div class="text-sm">{{ First_Name }}</div>
+                <a (click)="logout()" class="px-4 py-2 cursor-pointer hover:bg-gray-100 border-l-2">
+                  <span class="material-symbols-outlined text-red-600">power_settings_new</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- ✅ Scrollable Page Content -->
+    <main class="flex-1 overflow-y-auto pt-24 px-6">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

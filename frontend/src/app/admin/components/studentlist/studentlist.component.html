@@ -1,0 +1,1022 @@
+<div class="bg-white shadow rounded overflow-x-auto p-4 md:p-6">
+    <div class="flex justify-between items-center mb-4">
+        @if (mode === 'add') {
+        <h1 class="text-xl font-bold text-gray-800">Add New Lead </h1>
+        }@else {
+        <h1 class="text-xl font-bold text-gray-800">Student : {{followUps.First_Name}} </h1>
+        }
+        <button (click)="goBack()" class="text-red-500 font-medium hover:text-red-700 transition">
+            Close
+        </button>
+    </div>
+
+    @if (mode === 'list') {
+    <div class="flex flex-wrap gap-2 justify-start py-2 mb-4">
+        <button (click)="openStudentDocuments(followUps)" title="View Documents"
+            class="flex items-center h-10 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-md hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">folder</span>
+            <span class="font-medium">Documents</span>
+        </button>
+
+        <!-- 🧾 Add Expense -->
+        <button (click)="openAddExpense(followUps)" title="Expense"
+            class="flex items-center h-10 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">receipt_long</span>
+            <span class="font-medium">Expense </span>
+        </button>
+
+        <!-- 📝 Register / Remove -->
+        <!-- <button *ngIf="!followUps['Is_Registered']" (click)="studentRemoveRegistration(followUps, !!followUps['Roll_No'])"
+            class="flex items-center h-10 px-4 py-2 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">how_to_reg</span>
+            <span class="font-medium">
+                {{ followUps['Is_Registered'] ? 'Remove Registration' : 'Registration' }}
+            </span>
+        </button> -->
+
+        <button *ngIf="followUps['Is_Registered']"
+        (click)="studentRemoveRegistration(followUps, !!followUps['Roll_No'])"
+        class="flex items-center h-10 px-4 py-2 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105">
+    <span class="material-symbols-outlined mr-2">how_to_reg</span>
+    <span class="font-medium">
+        Remove Registration
+    </span>
+</button>
+
+
+        <!-- 💰 Fees -->
+        <button (click)="Student_Fees(followUps)" title="Student Fees"
+            class="flex items-center h-10 px-4 py-2 bg-orange-50 text-orange-700 rounded-md hover:bg-orange-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">payments</span>
+            <span class="font-medium">Fees</span>
+        </button>
+
+        <!-- 📚 View Courses -->
+        <!-- <button (click)="setStudentDetails(followUps)" title="View Courses"
+            class="flex items-center px-4 py-2 h-12 text-[#1d4ed8] bg-[#eff6ff] rounded-md hover:bg-[#dbeafe] transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">view_list</span>
+            <span class="font-medium">Courses</span>
+        </button> -->
+
+        <!-- ✏️ Edit -->
+        <button *ngIf="isEdit" (click)="Edit_student(followUps)" title="Edit Student"
+            class="flex items-center h-10 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-md hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">edit</span>
+            <span class="font-medium">Edit</span>
+        </button>
+
+        <!-- 🔁 Follow-Up -->
+        <button (click)="openFollowUp(followUps)" title="Student Follow-up"
+            class="flex items-center h-10 px-4 py-2 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">follow_the_signs</span>
+            <span class="font-medium">Follow-up</span>
+        </button>
+
+        <!-- ❌ Delete -->
+        <button *ngIf="isDelete" (click)="Delete_student(followUps)" title="Delete Student"
+            class="flex items-center h-10 px-4 py-2 bg-red-50 text-red-700 rounded-md hover:bg-red-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">delete</span>
+            <span class="font-medium">Delete</span>
+        </button>
+
+        <!-- <button (click)="downloadPDF()" title="Download Student" 
+          class="flex items-center h-10 px-4 py-2 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105">
+            <span class="material-symbols-outlined mr-2">download</span>
+            <span class="font-medium">Download PDF</span>
+        </button> -->
+    </div>
+    }
+    @if (view == 'Student_Documents'){
+    <app-student-documents [student]="selectedStudentForDocuments" (cancel)="handleDocumentsCancel($event)">
+    </app-student-documents>
+    }
+    @else if(view == 'Student_Expense'){
+    <app-add-expense-dialog [student]="studentExpense" (cancel)="handleExpenseCancel($event)"
+        (save)="handleExpenseSave($event)">
+    </app-add-expense-dialog>
+    }@else if (view == 'Student_Fees') {
+    <div style="justify-content: space-between;display: flex;">
+        <div
+            style="display: flex; gap: 40px; background: #f9f9f9; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <label style="font-weight: 600; color: #333;">Total fees: {{totals.totalAmount.toFixed(2)}}</label>
+            <label style="font-weight: 600; color: green;">Total paid: {{totals.paidAmount.toFixed(2)}}</label>
+            <label style="font-weight: 600; color: red;">Balance: {{totals.remainingAmount.toFixed(2)}}</label>
+        </div>
+
+        <div>
+            <button
+                class="border border-blue hover:bg-gray-500 hover:text-white text-black font-bold py-2 px-4 mt-4 rounded"
+                style="align-items:end;" (click)="closeClick()">
+                Close
+            </button>
+        </div>
+
+    </div>
+
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="fee-tabs">
+
+        <!-- Tab 1: Fee List -->
+        <mat-tab label="Fee List">
+
+            <div *ngIf="feesList.length > 0" class="fees-list">
+                <h2>Installments</h2>
+                <table mat-table [dataSource]="feesList" class="mat-elevation-z8">
+
+                    <!-- <ng-container matColumnDef="Installment_Index">
+          <th mat-header-cell *matHeaderCellDef> Installment  </th>
+          <td mat-cell *matCellDef="let fee; let i = index">
+            {{ i + 1 }}
+          </td>
+        </ng-container> -->
+
+                    <ng-container matColumnDef="Due_Date">
+                        <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                        <td mat-cell *matCellDef="let fee"> {{ fee.Due_Date | date:'dd-MM-yyyy' }} </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="Total_Amount">
+                        <th mat-header-cell *matHeaderCellDef> Amount </th>
+                        <td mat-cell *matCellDef="let fee"> ₹{{ fee.Total_Amount }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Paid_Amount">
+                        <th mat-header-cell *matHeaderCellDef> Paid </th>
+                        <td mat-cell *matCellDef="let fee"> ₹{{ fee.Paid_Amount }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Remaining_Amount">
+                        <th mat-header-cell *matHeaderCellDef> Remaining </th>
+                        <td mat-cell *matCellDef="let fee"> ₹{{ fee.Remaining_Amount }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Fee_Status">
+                        <th mat-header-cell *matHeaderCellDef> Status </th>
+                        <td mat-cell *matCellDef="let fee">
+                            <button *ngIf="fee.Fee_Status === 'Pending';" mat-raised-button color="primary"
+                                class="pay-button" (click)="payFee(fee)">
+                                Pay
+                            </button>
+                            <button *ngIf="fee.Fee_Status === 'Paid';" mat-raised-button
+                                style="background-color: gray;">
+                                {{ fee.Fee_Status }}
+                            </button>
+                        </td>
+
+                    </ng-container>
+
+
+
+                    <tr mat-header-row
+                        *matHeaderRowDef="['Due_Date', 'Total_Amount', 'Paid_Amount', 'Remaining_Amount', 'Fee_Status']">
+                    </tr>
+                    <tr mat-row
+                        *matRowDef="let row; columns: ['Due_Date', 'Total_Amount', 'Paid_Amount', 'Remaining_Amount', 'Fee_Status'];">
+                    </tr>
+                </table>
+            </div>
+            <div *ngIf="feesList.length === 0" class="empty-list">
+                <p>No Installmnt details found for this student/course.</p>
+            </div>
+        </mat-tab>
+
+        <!-- Tab 2: Receipts -->
+        <mat-tab label="Receipts">
+            <div *ngIf="receipList.length > 0" class="fees-list">
+                <h2>Receipts</h2>
+                <table mat-table [dataSource]="receipList" class="mat-elevation-z8">
+                    <ng-container matColumnDef="Payment_Date">
+                        <th mat-header-cell *matHeaderCellDef>Payment Date </th>
+                        <td mat-cell *matCellDef="let fee"> {{ fee.Payment_Date | date:'dd-MM-yyyy' }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Amount">
+                        <th mat-header-cell *matHeaderCellDef> Amount </th>
+                        <td mat-cell *matCellDef="let fee"> ₹{{ fee.Amount }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Payment_mode">
+                        <th mat-header-cell *matHeaderCellDef> Mode </th>
+                        <td mat-cell *matCellDef="let fee"> {{ fee.Payment_mode }} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Account_Name">
+                        <th mat-header-cell *matHeaderCellDef> Account Name </th>
+                        <td mat-cell *matCellDef="let fee"> {{ fee.Account_Name }} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Voucher_Number">
+                        <th mat-header-cell *matHeaderCellDef> Voucher Number </th>
+                        <td mat-cell *matCellDef="let fee"> {{ fee.Voucher_Number }} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="Tax_Type_Name">
+                        <th mat-header-cell *matHeaderCellDef> Tax Type </th>
+                        <td mat-cell *matCellDef="let fee"> {{ fee.Tax_Type_Name }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Edit">
+                        <th mat-header-cell *matHeaderCellDef> Action </th>
+                        <td mat-cell *matCellDef="let fee">
+                            <div style="display: flex;gap: 4px;">
+                                <div>
+                                    <button (click)="Edit_FeesByReceipt_ID(fee)" title="Edit "
+                                        class="flex items-center px-4 py-2 h-12 bg-yellow-50 text-yellow-700 rounded-md hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105">
+                                        <span class="material-symbols-outlined mr-2">edit</span>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button (click)="Delete_Receipt(fee)" title="Delete Student"
+                                        class="flex items-center px-4 py-2 h-12 bg-red-50 text-red-700 rounded-md hover:bg-red-100 transition-all duration-300 transform hover:scale-105">
+                                        <span class="material-symbols-outlined mr-2">delete</span>
+                                    </button>
+                                </div>
+                                <button (click)="printReceipt(fee)" title="Print Receipt"
+                                    class="flex items-center px-4 py-2 h-12 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105">
+                                    <span class="material-symbols-outlined mr-2">print</span>
+                                </button>
+                            </div>
+                        </td>
+
+                    </ng-container>
+
+                    <ng-container matColumnDef="Delete">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let fee">
+                        </td>
+
+                    </ng-container>
+
+
+                    <tr mat-header-row
+                        *matHeaderRowDef="['Payment_Date', 'Amount', 'Payment_mode','Account_Name','Voucher_Number','Tax_Type_Name','Edit', 'Delete']">
+                    </tr>
+                    <tr mat-row
+                        *matRowDef="let row; columns: ['Payment_Date', 'Amount', 'Payment_mode','Account_Name','Voucher_Number','Tax_Type_Name','Edit', 'Delete'];">
+                    </tr>
+                </table>
+            </div>
+            <div *ngIf="receipList.length === 0" class="empty-list">
+                <p>No receipts found for this student/course.</p>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+    }@else if(view == 'Add_Fees') {
+    <app-student-fees [feesDetails]="feesForm" [isEditMode]="isEditingFees"
+        (cancel)="handleCancel($event)"></app-student-fees>
+    }@else if(view == 'edit') {
+         
+
+    <section class="border border-gray-300 shadow p-6 rounded-lg bg-white">
+
+      
+
+        <form [formGroup]="student_Form">
+            <div class="col-span-full">
+                <!-- 
+                ================================================================================
+                EXISTING CODE COMMENTED OUT AS REQUESTED
+                ================================================================================
+                -->
+                <!--
+                <div class="col-span-full">
+                    <div class="image-preview-container">
+                        @if (previewUrl) {
+                        <img class="h-40 w-40 text-gray-300" style="border-radius: 50%;" [src]="previewUrl"
+                            alt="Image Preview">
+                        } @else if (shouldShowExistingImage()) {
+                        <img class="h-40 w-40 text-gray-300" style="border-radius: 50%;"
+                            [src]="getImage(student_Form.value.Profile_Photo_Path)" alt="Image Preview">
+                        } @else {
+                        <svg class="h-40 w-40 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                            data-slot="icon">
+                            <path fill-rule="evenodd"
+                                d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        }
+                    </div>
+                    <button (click)="fileInput5.click()" type="button"
+                        class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Change</button>
+                    <div *ngIf="student_Form.get('Profile_Photo_Path')?.touched && student_Form.get('Profile_Photo_Path')?.invalid"
+                        class="text-red-500 text-xs">
+                        Photo is required.
+                    </div>
+                </div>
+                -->
+
+                <!-- START: Conditional View Logic -->
+                @if (!isRegistering) {
+                    <!-- Simplified Lead Form (Standard View) -->
+                    <div class="mb-2">
+                        <label for="categoryName" class="block text-sm font-medium text-gray-700">Full Name<span
+                                class="text-red-700">*</span></label>
+                        <input type="text" formControlName="First_Name" maxlength="50" required
+                            class="mt-1 px-2 py-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <div *ngIf="student_Form.get('First_Name')?.touched && student_Form.get('First_Name')?.invalid"
+                            class="text-red-500 text-xs">
+                            Full Name is Required.
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="mb-1">
+                            <label for="passMark" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" formControlName="Email"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                        <div class="mb-1 space-y-4 md:space-y-0 md:flex md:space-x-4">
+                            <div class="w-full md:w-2/4">
+                                <label for="country" class="block text-sm font-medium text-gray-700">Country Code</label>
+                                <lib-country-list id="country" [preferredCountryCodes]="preferredCountryCodes"
+                                    (onCountryChange)="onCountryChange($event)"
+                                    [selectedCountryConfig]="selectedCountryConfig" [countryListConfig]="countryListConfig"
+                                    [selectedCountryCode]="student_Form.get('Country_Code_Name')?.value"
+                                    class="block w-full border border-gray-300 mt-1 rounded-lg  focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 ease-in-out"></lib-country-list>
+                            </div>
+                            <div class="w-full md:w-2/4">
+                                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <input id="phone" type="number" formControlName="Phone_Number"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <label class="block text-sm font-medium text-gray-700">Enquiry Source</label>
+                            <select formControlName="Enquiry_Source_Id"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <option value="">-- Select Enquiry Source --</option>
+                                <option *ngFor="let source of enquirySources" [value]="source.Enquiry_Source_Id">
+                                    {{ source.Enquiry_Source_Name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                } @else {
+                    <!-- Full Registration Form (24 Fields) -->
+                    <div class="registration-form-container space-y-6">
+                        <h3 class="text-lg font-bold text-indigo-700 border-b pb-2 mb-4">Student Registration Details</h3>
+                        
+                        <!-- Row 1: Academic Year, Course, Batch (Sycned with student_Course) -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Academic Year</label>
+                                <input type="text" formControlName="Academic_Year" placeholder="e.g. 2024-2025"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Course</label>
+                                <!-- Synced with student_Course.Course_ID -->
+                                <select [ngModel]="student_Course.get('Course_ID')?.value" (ngModelChange)="student_Course.get('Course_ID')?.setValue($event)"
+                                    [ngModelOptions]="{standalone: true}"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    <option *ngFor="let course of allCourse" [value]="course.Course_ID">{{ course.Course_Name }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Batch</label>
+                                <!-- Synced with student_Course.Batch_ID -->
+                                <select [ngModel]="student_Course.get('Batch_ID')?.value" (ngModelChange)="onBatchChange($event); student_Course.get('Batch_ID')?.setValue($event)"
+                                    [ngModelOptions]="{standalone: true}"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    <option [value]="null" disabled>Select Batch</option>
+                                    <option *ngFor="let batch of batch_Data" [value]="batch.Batch_ID">{{ batch.Batch_Name }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Admission Number, Date of Admission, First Name -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Admission Number</label>
+                                <input type="text" formControlName="Roll_No"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date of Admission</label>
+                                <input type="date" formControlName="Admission_Date"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">First Name <span class="text-red-700">*</span></label>
+                                <input type="text" formControlName="First_Name"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Middle Name, Last Name, Date of Birth -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                                <input type="text" formControlName="Middle_Name"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                <input type="text" formControlName="Last_Name"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Date of Birth (DOB)</label>
+                                <input type="date" formControlName="DOB"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Qualification, Percentage, Gender -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Qualification</label>
+                                <input type="text" formControlName="Qualification" placeholder="e.g. Graduate"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Percentage</label>
+                                <input type="text" formControlName="Percentage"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Gender</label>
+                                <select formControlName="Gender"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 5: Nationality, Mother Tongue, Religion -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nationality</label>
+                                <input type="text" formControlName="Nationality"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Mother Tongue</label>
+                                <input type="text" formControlName="Mother_Tongue"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Religion</label>
+                                <input type="text" formControlName="Religion"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Row 6: Email ID, Aadhaar Card Number, Student Contact Number -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email ID</label>
+                                <input type="email" formControlName="Email"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Aadhaar Card Number</label>
+                                <input type="text" formControlName="Aadhaar_Card_Number"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Student Contact Number</label>
+                                <input type="text" formControlName="Phone_Number"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Row 7: Alternative Contact Number, Blood Group, Address -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Alternative Contact Number</label>
+                                <input type="text" formControlName="Alt_Phone_Number"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Blood Group</label>
+                                <input type="text" formControlName="Blood_Group" placeholder="e.g. O+"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-sm font-medium text-gray-700">Address</label>
+                                <textarea formControlName="Address" rows="1"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+                            </div>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-indigo-700 border-b pb-2 mt-6 mb-4">Guardian Details</h3>
+                        <!-- Row 8: Guardian Name, Guardian Contact Number, Guardian Alternative Number -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Guardian Name</label>
+                                <input type="text" formControlName="Guardian_Name"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Guardian Contact Number</label>
+                                <input type="text" formControlName="Guardian_Phone"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Guardian Alternative Number</label>
+                                <input type="text" formControlName="Guardian_Alt_Phone"
+                                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </form>
+        <form *ngIf="isRegistering" [formGroup]="student_Course" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Course Selection -->
+                <div class="space-y-2">
+                    <label for="course-id" class="block text-sm font-medium text-gray-700">
+                        Course
+                        <!-- <span class="text-red-700">*</span> -->
+                    </label>
+
+                    <select id="course-id" formControlName="Course_ID"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option *ngFor="let course of allCourse" [value]="course.Course_ID"
+                            [ngValue]="course.Course_ID">
+                            {{ course.Course_Name }}
+                        </option>
+                    </select>
+                </div>
+
+                @if(student_Course.get('Course_ID')?.value){
+
+                <!-- Batch Selection -->
+                <div class="space-y-2">
+                    <label for="batch-id" class="block text-sm font-medium text-gray-700">
+                        Batch <span class="text-red-700">*</span>
+                    </label>
+                    <select id="batch-id" formControlName="Batch_ID" (change)="onBatchChange($event)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option [value]="null" disabled>select Batch </option>
+                        <ng-container *ngFor="let batch of batch_Data">
+
+                            <option *ngIf="batch.is_expired==0" [value]="batch.Batch_ID">
+                                {{ batch.Batch_Name }}
+                            </option>
+                        </ng-container>
+                    </select>
+                    <div *ngIf="student_Course.get('Batch_ID')?.touched && student_Course.get('Batch_ID')?.invalid"
+                        class="text-red-500 text-xs">
+                        Batch is required.
+                    </div>
+                </div>
+                <div class="space-y-2"></div>
+                <!-- .......... Fees.............. -->
+                <!-- FORM WRAPPER -->
+                <form [formGroup]="feesForm" class="space-y-4">
+
+                    <!-- FORM GRID ALIGNMENT -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="width: 310%;">
+
+                        <!-- Installment Dropdown -->
+                        <div>
+                            <label for="installment-id" class="block text-sm font-medium text-gray-700">
+                                Installment Type <span class="text-red-700">*</span>
+                            </label>
+                            <select id="installment-id" [ngModel]="feesForm.get('Installment_information_ID')?.value"
+                                (ngModelChange)="onInstallmentChange($event)"
+                                formControlName="Installment_information_ID"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                <option [value]="null" disabled>Select Installment</option>
+                                <ng-container *ngFor="let installment of feeTypes">
+                                    @if (installment_label == installment) {
+                                    <option [ngValue]="installment_label">{{ installment_label }}</option>
+                                    }@else {
+                                    <option [ngValue]="installment">{{ installment }}</option>
+                                    }
+
+                                </ng-container>
+                            </select>
+                        </div>
+
+                        <!-- Total Amount -->
+                        <div style="margin-top: -4px;">
+                            <label for="Total_FeeAmount" class="block text-sm font-medium text-gray-700">
+                                Total Amount <span class="text-red-700">*</span>
+                            </label>
+                            <input type="number" id="Total_FeeAmount" formControlName="Total_FeeAmount" readonly 
+                                class="mt-1 block w-full rounded-md border border-gray-300  bg-gray-100 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-not-allowed" />
+                        </div>
+                        <!-- <div style="margin-top: -4px;">
+                            <label for="total-amount" class="block text-sm font-medium text-gray-700">
+                                Discount
+                            </label>
+                            <input type="number" id="Discount" formControlName="Discount"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                        </div>
+                        <div style="margin-top: -4px;">
+                            <label for="total-amount" class="block text-sm font-medium text-gray-700">
+                                Total Fees
+                            </label>
+                            <label for="total-amount" class="block text-sm font-medium text-gray-700">
+                                Total Amount
+                            </label>
+                        </div> -->
+
+                        <!-- Fee Status Dropdown -->
+                        <!-- <div>
+                            <label for="fee-status" class="block text-sm font-medium text-gray-700">
+                                Fee Status <span class="text-red-700">*</span>
+                            </label>
+                            <select id="fee-status" formControlName="Fee_Status"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                                <option [value]="null" disabled>Select Fee Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Paid">Paid</option>
+                            </select>
+                        </div> -->
+
+                        <!-- Discount -->
+                        <div>
+                            <label>Discount</label>
+                            <input type="number" formControlName="Discount"
+                                class="mt-1 block w-full  border-gray-300 rounded-md border px-3 py-2 shadow-sm" />
+                        </div>
+
+                        <!-- Fee Amount -->
+                        <div>
+                            <label>Fee Amount</label>
+                            <input type="number" formControlName="Fee_Amount" readonly
+                                class="mt-1 block w-full rounded-md border border-gray-300  bg-gray-100 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-not-allowed" />
+
+                        </div>
+                    </div>
+
+
+
+                    <!-- INSTALLMENT DETAILS LIST -->
+                    @if (installments.length > 0) {
+                    <div class="mt-6">
+                        <h3 class="text-md font-semibold text-gray-800 mb-2">Installment Breakdown:</h3>
+                        <div class="overflow-x-auto" style="width: 310%;">
+                            <table class="min-w-full bg-white border border-gray-200 rounded shadow text-sm">
+                                <thead class="bg-gray-100 text-left text-gray-700">
+                                    <tr>
+                                        <th class="px-4 py-2 border-b">Installment ID</th>
+                                        <th class="px-4 py-2 border-b">Amount</th>
+                                        <th class="px-4 py-2 border-b">Duration (Months)</th>
+                                        <th class="px-4 py-2 border-b">Due Date</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let inst of installments; let i = index; trackBy: trackByIndex"
+                                        class="hover:bg-gray-50">
+                                        <td class="px-4 py-2 border-b">{{ i+1 }}</td>
+                                        <!-- <td class="px-4 py-2 border-b">{{ inst.Amount }}</td> -->
+                                        <!-- Editable Amount -->
+                                        <td class="px-4 py-2 border-b">
+                                            <input type="number" class="border px-2 py-1 rounded w-full"
+                                                [(ngModel)]="installments[i].Amount"
+                                                (ngModelChange)="onAmountChange(i, $event)"
+                                                [ngModelOptions]="{ standalone: true }" />
+                                        </td>
+                                        <td class="px-4 py-2 border-b">{{ inst.DurationInMonths}}</td>
+                                        <td class="px-4 py-2 border-b">
+                                            <input type="date" class="border px-2 py-1 rounded w-full"
+                                                [(ngModel)]="installments[i].DueDate" [min]="todayString"
+                                                [ngModelOptions]="{ standalone: true }" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    }
+                </form>
+
+                <!-- Selected Details Cards -->
+                <div class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Batch Details Card -->
+                    @if(student_Course.get('Batch_ID')?.value){
+                    <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Batch Details</h3>
+                        @if(batchDetails){
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Batch Name:</span>
+                                <span class="font-medium">{{batchDetails.Batch_Name}}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Duration:</span>
+                                <span class="font-medium">{{batchDetails.Start_Date | date}} - {{batchDetails.End_Date |
+                                    date}}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Students Count:</span>
+                                <span class="font-medium">{{batchDetails.student_count}}</span>
+                            </div>
+                            @if(batchDetails.time_slots && batchDetails.time_slots.length > 0){
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Group Class Time:</span>
+                                <span class="font-medium">
+                                    {{batchDetails.time_slots[0].start_time}} - {{batchDetails.time_slots[0].end_time}}
+                                </span>
+                            </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    <!-- Selected Slot Details Card -->
+                    @if(student_Course.get('Slot_Id')?.value && student_Course.get('Slot_Id')?.value != '0'){
+                    <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">One-on-One Slot Details</h3>
+                        @if(slotDetails){
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Time:</span>
+                                <span class="font-medium">
+                                    {{slotDetails.start_time}} - {{slotDetails.end_time}}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Faculty:</span>
+                                <span class="font-medium">{{slotDetails.Teacher_Name}}</span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </form>
+
+        <div class="mb-4" style="padding: 5px;">
+            <label class="inline-flex items-center">
+                <input type="checkbox" [(ngModel)]="isRegistering"
+                    (click)="studentRegistration(followUps, isRegistering)" name="isRegistering"
+                    class="form-checkbox h-5 w-5 text-indigo-600">
+                <span class="ml-2 text-sm text-gray-700">Registration</span>
+            </label>
+        </div>
+
+        <!-- Add Follow-up Button (when section is collapsed) -->
+        @if(!showFollowUpSection && !student_Form.get('Student_ID')?.value) {
+        <!-- <div class="mt-4">
+            <button type="button" (click)="toggleFollowUpSection()"
+                class="flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span class="font-medium">Add Follow-up</span>
+            </button>
+        </div> -->
+        }
+
+        <!-- Editable Follow-up Section -->
+        <section class="border border-gray-300 shadow p-6 rounded-lg bg-white mt-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Student Follow-up</h2>
+                    <p class="text-sm text-gray-600">Adding follow-up for new student</p>
+                </div>
+                <button type="button" (click)="toggleFollowUpSection()" class="text-gray-500 hover:text-gray-700"
+                    title="Close follow-up section">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>         
+                </button>
+            </div>
+
+            <!-- Follow-up form content (only for new students) -->
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    <!-- Branch Selection -->
+                    <div class="space-y-2">
+                        <label for="Branch" class="block text-sm font-medium text-gray-700">
+                            Branch
+                        </label>
+                        <select [(ngModel)]="Search_Branch" name="Search_Branch"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                            <option *ngFor="let branch of Search_Branch_Data" [ngValue]="branch">
+                                {{ branch.Branch_Name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Department Selection -->
+                    <div class="space-y-2">
+                        <label for="department-select" class="block text-sm font-medium text-gray-700">
+                            Department
+                        </label>
+                        <select [(ngModel)]="Search_Department" name="Search_Department"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                            <option *ngFor="let department of Search_Department_Data" [ngValue]="department">
+                                {{ department.Department_Name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Staff/User Assignment -->
+                    <div class="space-y-2">
+                        <label for="staff-select" class="block text-sm font-medium text-gray-700">
+                            Assign To Staff
+                        </label>
+                        <select [(ngModel)]="Search_staff" name="Search_staff"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div *ngIf="staffData.length >0">
+                            <option *ngFor="let staff of staffData" [ngValue]="staff">
+                                {{ staff.First_Name }}
+                            </option>
+                            </div>
+                        </select>
+                    </div>
+
+                    <!-- Follow-up Status -->
+                    <div class="space-y-2">
+                        <label for="status-select" class="block text-sm font-medium text-gray-700">
+                            Follow-up Status
+                        </label>
+                        <select [(ngModel)]="Search_status" name="Search_status"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                            <option *ngFor="let status of followUpStatusData" [ngValue]="status">
+                                {{ status.Status_Name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Next Follow-up Date -->
+                    <div class="space-y-2">
+                        <label for="next-followup-date" class="block text-sm font-medium text-gray-700">
+                            Next Follow-up Date
+                        </label>
+                        <input type="date" id="next-followup-date" [(ngModel)]="nextFollowUpDate"
+                            name="nextFollowUpDate"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            [min]="getCurrentDate()">
+                    </div>
+                </div>
+
+                <!-- Remark Text Area -->
+                <div class="space-y-2">
+                    <label for="remark" class="block text-sm font-medium text-gray-700">
+                        Remark
+                    </label>
+                    <textarea id="remark" [(ngModel)]="remark" name="remark" rows="4"
+                        placeholder="Enter follow-up remarks, notes, or action items (optional)..."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        maxlength="1000"></textarea>
+                    <div class="flex justify-between">
+                        <div class="text-xs text-gray-500">
+                            Follow-up details are optional. Leave blank if no follow-up needed.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Follow-up History Button and List (only for existing students) -->
+        @if(student_Form.get('Student_ID')?.value) {
+        <div class="mt-4">
+            <!-- History Button -->
+            <button type="button" (click)="toggleFollowupHistory()"
+                class="flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>{{ showFollowupHistory ? 'Hide' : 'Show' }} Follow-up History</span>
+                @if(followupHistoryList && followupHistoryList.length > 0) {
+                <span class="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                    {{ followupHistoryList.length }}
+                </span>
+                }
+            </button>
+
+            <!-- History List -->
+            @if(showFollowupHistory) {
+            <div class="mt-3 bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    <h4 class="text-lg font-medium text-gray-900">Follow-up History Records</h4>
+                </div>
+
+                <!-- Loading State -->
+                @if(loadingFollowupHistory) {
+                <div class="p-6 text-center">
+                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                    <p class="mt-2 text-gray-600">Loading follow-up history...</p>
+                </div>
+                }
+
+                <!-- History List -->
+                @else if(followupHistoryList && followupHistoryList.length > 0) {
+                <div class="divide-y divide-gray-200">
+                    @for(followup of followupHistoryList; track followup.Follow_Up_ID) {
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <!-- Follow-up Header -->
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm font-medium text-gray-900">
+                                        Follow-up on {{ followup.Follow_Up_Status_Name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Follow-up Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600">
+                            @if(followup.Assigned_Staff_Name) {
+                            <div>
+                                <span class="font-medium">Staff:</span> {{ followup.Assigned_Staff_Name }}
+                            </div>
+                            }
+                            @if(followup.Branch_Name) {
+                            <div>
+                                <span class="font-medium">Branch:</span> {{ followup.Branch_Name }}
+                            </div>
+                            }
+                            @if(followup.Department_Name) {
+                            <div>
+                                <span class="font-medium">Department:</span> {{ followup.Department_Name }}
+                            </div>
+                            }
+                            @if(followup.Follow_Up_Status_Name) {
+                            <div>
+                                <span class="font-medium">Status:</span> {{ followup.Follow_Up_Status_Name }}
+                            </div>
+                            }
+                            @if(followup.Next_Follow_Up_Date) {
+                            <div>
+                                <span class="font-medium">Next Follow-up:</span> {{
+                                formatFollowupDate(followup.Next_Follow_Up_Date) }}
+                            </div>
+                            }
+                            @if(followup.Created_Date || followup.created_date || followup.Follow_Up_Date) {
+                            <div>
+                                <span class="font-medium">Entry Date:</span> {{ formatFollowupDate(followup.Created_Date || followup.created_date || followup.Follow_Up_Date) }}
+                            </div>
+                            }
+                        </div>
+
+                        <!-- Remark -->
+                        @if(followup.Remark && followup.Remark.trim()) {
+                        <div class="mt-3">
+                            <span class="text-sm font-medium text-gray-700">Remark:</span>
+                            <p class="mt-1 text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                                {{ followup.Remark }}
+                            </p>
+                        </div>
+                        }
+
+                        <!-- Additional Info Row -->
+                        <div class="mt-2 flex justify-between items-center text-xs text-gray-500">
+                            <span>Branch ID: {{ followup.Branch_Id }} | Department ID: {{ followup.Department_Id
+                                }}</span>
+                            @if(followup.Assigned_Staff_ID) {
+                            <span>Staff ID: {{ followup.Assigned_Staff_ID }}</span>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+
+                <!-- No History Found -->
+                @else {
+                <div class="p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No Follow-up History</h3>
+                    <p class="mt-1 text-sm text-gray-500">No follow-up records found for this student.</p>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Save buttons for edit view -->
+        <div class="w-full flex justify-end gap-4 mt-4">
+            <button class="border border-blue hover:bg-gray-500 hover:text-white text-black font-bold py-2 px-4 rounded"
+                (click)="closeClick()">
+                Cancel
+            </button>
+            <!--  [style.opacity]="student_Course.invalid ? 0.5 : 1" -->
+            <button type="submit" [disabled]="isLoading || !isFormValid()" (click)="Save_student()"
+                class="bg-sky-500 hover:bg-blue-hover text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-zinc-500 focus:ring-opacity-50">
+                <span *ngIf="isLoading"
+                    class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Save Student{{ showFollowUpSection ? ' with Follow-up' : '' }}
+            </button>
+        </div>
+    </section>
+    }
+    <app-loading [isLoading]="isLoading"></app-loading>
+</div>

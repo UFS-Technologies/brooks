@@ -1,0 +1,534 @@
+var fs = require("fs");
+const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
+var student = {
+  Registration_Using_Student_Branch: async function (student) {
+    console.log("student: ", student);
+    return executeTransaction("Registration_Using_Student_Branch", [
+      student.Student_ID,
+      student.Is_Registered,
+      student.User_ID,
+    ]);
+  },
+Remove_Student_Registration: async function (student) {
+    console.log("student: ", student);
+    return executeTransaction("Remove_Student_Registration", [
+      student.Student_ID,
+      // student.Is_Registered,
+      0,
+      student.User_ID,
+    ]);
+  },
+  Save_student: async function (student) {
+   
+    student.Student_Fees_IDs = JSON.stringify(student.Student_Fees_IDs);
+    if (student.Installments && student.Installments.length > 0) {
+      student.Installments = JSON.stringify(student.Installments);
+    } else {
+      student.Installments = null;
+    }
+    // console.log("student: ", student.Installments);
+    // Convert JS Date -> YYYY-MM-DD format
+    if (student.Admission_Date) {
+      student.Admission_Date = new Date(student.Admission_Date)
+        .toISOString()
+        .slice(0, 10);
+    }
+
+    // Convert Registered_On from ISO string to MySQL DATETIME format
+if (student.Registered_On) {
+    student.Registered_On = new Date(student.Registered_On)
+        .toISOString()
+        .slice(0, 19)       // "2026-02-12T08:39:17"
+        .replace('T', ' '); // "2026-02-12 08:39:17"
+}
+
+ const toInt = (val) => {
+    if (val === '' || val == null) return null;
+    const parsed = parseInt(val);
+    return isNaN(parsed) ? null : parsed;
+};
+    const toStr = (val) => (val !== '' && val != null ? String(val) : '');
+
+    const Branch_Id_=student.Branch_Id !== '' && student.Branch_Id != null
+  ? parseInt(student.Branch_Id)
+  : null
+
+
+    return executeTransaction("Save_student", [
+    student.Student_ID,
+    student.First_Name,
+    student.Last_Name,
+    student.Email,
+    student.Phone_Number,
+    student.Social_Provider,
+    student.Social_ID,
+    student.Delete_Status,
+    student.Profile_Photo_Path,
+    student.Profile_Photo_Name,
+    student.Avatar,
+    student.Country_Code,
+    student.Country_Code_Name,
+    student.Roll_No,
+    student.Branch_Name,
+    Branch_Id_,
+    student.Follow_Up_Date || null,
+    student.Admission_Date || null,
+    toInt(student.Follow_Up_Status_ID),       // ✅
+    student.Follow_Up_Status_Name || "",
+    toInt(student.Assigned_Staff_ID),         // ✅
+    student.Assigned_Staff_Name || "",
+    toInt(student.Created_By),                // ✅
+    student.Remark || "",
+    student.Followup_Status || false,
+    toInt(student.Department_Id),             // ✅
+    student.Department_Name || "",
+    toInt(student.Age),                       // ✅ your current fix
+    student.Qualification || "",
+    student.Qualification_Description || "",
+    student.Alt_Phone_Number || "",
+    student.Address || "",
+    student.Guardian_Type || "",
+    student.Guardian_Name || "",
+    student.Guardian_Phone || "",
+    student.Guardian_Alt_Phone || "",
+    toInt(student.Height_cm),                 // ✅
+    toInt(student.Weight_kg),                 // ✅
+    student.Active_Status,
+    toInt(student.Enquiry_Source_Id) ?? 0,    // ✅
+    student.Registered_By,
+    student.Installments || null,
+    student.Student_Fees_IDs || null,
+    student.isRegistering ? 1 : 0,
+    student.Registered_By || null,
+    student.Registered_On || null,
+]);
+  },
+  Save_User_Permission: async function (payload) {
+    
+      const jsonPayload = JSON.stringify(payload);
+      // console.log("payload",jsonPayload);
+    return executeTransaction("Save_User_Permission", [jsonPayload
+    ]);
+  
+  },
+  Save_student_followup: async function (followup) {
+    return executeTransaction("Save_student_followup", [
+      followup.Follow_Up_ID,
+      followup.Student_ID,
+      followup.Branch_ID,
+      followup.Branch_Name,
+      followup.Department_ID,
+      followup.Department_Name,
+      followup.Assigned_Staff_ID,
+      followup.Assigned_Staff_Name,
+      followup.Follow_Up_Status_ID,
+      followup.Follow_Up_Status_Name,
+      followup.Next_Follow_Up_Date,
+      followup.Remark,
+      followup.Created_Date,
+      followup.Created_By,
+      followup.Delete_Status,
+    ]);
+  },
+  Get_student: async function (student_Id_, is_Student) {
+    return getmultipleSP("Get_student", [
+      student_Id_,
+      is_Student ? is_Student : 0,
+    ]);
+  },
+  // In your model file (e.g., student.js)
+
+  Search_student: async function (
+    student_Name_,
+    page,
+    pageSize,
+    course_Id,
+    Batch_ID,
+    enrollment_status = "all",
+    activeStatus
+  ) {
+    const toIntOrNull = (val) => {
+      if (val === undefined || val === "undefined" || val === null || val === "")
+        return null;
+      return parseInt(val);
+    };
+
+    activeStatus =
+      !activeStatus || activeStatus === "undefined" ? "all" : activeStatus;
+
+    if (student_Name_ === undefined || student_Name_ === "undefined")
+      student_Name_ = "";
+
+    return getmultipleSP("Search_student", [
+      student_Name_,
+      toIntOrNull(page) || 1,
+      toIntOrNull(pageSize) || 10,
+      toIntOrNull(course_Id),
+      toIntOrNull(Batch_ID),
+      enrollment_status || "all",
+      activeStatus,
+    ]);
+  },
+  // Search_student_lead
+  Search_student_lead: async function (
+    student_Name_,
+    page,
+    pageSize,
+    course_Id,
+    Batch_ID,
+    enrollment_status = "all",
+    activeStatus
+  ) {
+    const toIntOrNull = (val) => {
+      if (val === undefined || val === "undefined" || val === null || val === "")
+        return null;
+      return parseInt(val);
+    };
+
+    activeStatus =
+      !activeStatus || activeStatus === "undefined" ? "all" : activeStatus;
+    console.log("activeStatus: ", activeStatus);
+    if (student_Name_ === undefined || student_Name_ === "undefined")
+      student_Name_ = "";
+
+    return getmultipleSP("Search_student_lead", [
+      student_Name_,
+      toIntOrNull(page) || 1,
+      toIntOrNull(pageSize) || 10,
+      toIntOrNull(course_Id),
+      toIntOrNull(Batch_ID),
+      enrollment_status || "all",
+      activeStatus,
+    ]);
+  },
+  Get_All_Students: async function (student_Name_) {
+    if (student_Name_ === undefined || student_Name_ === "undefined")
+      student_Name_ = "";
+    return executeTransaction("Get_All_Students", [student_Name_]);
+  },
+  Get_All_Enquiry: async function () {
+    return executeTransaction("Get_All_Enquiry", []);
+  },
+  Get_student_followup_history: async function (student_Id_) {
+    console.log("student_Id_: ", student_Id_);
+    return getmultipleSP("Get_student_followup_history", [student_Id_]);
+  },
+  Get_student_current_followup: async function (student_Id_) {
+    console.log("student_Id_: ", student_Id_);
+    return getmultipleSP("Get_student_current_followup", [student_Id_]);
+  },
+  Get_Courses_By_StudentId: async function (
+    student_Id_,
+    course_Name_,
+    priceFrom,
+    priceTo
+  ) {
+    console.log("course_Name_: ", course_Name_);
+
+    !course_Name_ ? (course_Name_ = "") : course_Name_;
+    !priceTo ? (priceTo = 0) : priceTo;
+    !priceFrom ? (priceFrom = 0) : priceFrom;
+    console.log("priceTo: ", priceTo);
+    console.log("priceFrom: ", priceFrom);
+    return executeTransaction("Get_Courses_By_StudentId", [
+      student_Id_,
+      course_Name_,
+      priceFrom,
+      priceTo,
+    ]);
+  },
+  GetAllCourses: async function (
+    course_Type_,
+    student_ID_,
+    priceFrom,
+    priceTo
+  ) {
+    !priceTo ? (priceTo = 0) : priceTo;
+    !priceFrom ? (priceFrom = 0) : priceFrom;
+    return executeTransaction("Search_course", [
+      "",
+      course_Type_,
+      student_ID_,
+      priceFrom,
+      priceTo,
+    ]);
+  },
+  Search_Occupations: async function () {
+    return executeTransaction("Search_Occupations", []);
+  },
+  Branch_Dropdown: async function () {
+    return executeTransaction("Branch_Dropdown", []);
+  },
+  User_Dropdown: async function () {
+    return executeTransaction("User_Dropdown", []);
+  },
+  Followup_status_Dropdown: async function () {
+    return executeTransaction("Followup_status_Dropdown", []);
+  },
+  Department_Dropdown: async function () {
+    return executeTransaction("Department_Dropdown", []);
+  },
+  Course_Dropdown: async function () {
+    return executeTransaction("Course_Dropdown", []);
+  },
+  course_batch_Dropdown: async function () {
+    return executeTransaction("course_batch_Dropdown", []);
+  },
+  Delete_Student_Account: async function (userId) {
+    return executeTransaction("Delete_Student_Account", [userId]);
+  },
+  Get_Courses_By_Category: async function (category_Id_) {
+    return executeTransaction("Get_Courses_By_Category", [category_Id_]);
+  },
+  Get_StudentDocuments: async function (studentId) {
+    return executeTransaction("Get_StudentDocuments", [studentId]);
+  },
+  GetEnrolledCourses: async function (student_Id_) {
+    return executeTransaction("GetCoursesByStudentId", [student_Id_]);
+  },
+  CheckStudentEnrollment: async function (student_Id_, course_Id_) {
+    return executeTransaction("CheckStudentEnrollment", [
+      student_Id_,
+      course_Id_,
+    ]);
+  },
+  enroleCourse: async function (course) {
+    return executeTransaction("enroleCourse", [
+      course.Student_ID,
+      course.Course_ID,
+      course.Enrollment_Date,
+      course.Price,
+      course.Payment_Date,
+      course.Payment_Status,
+      course.LastAccessed_Content_ID,
+      course.Transaction_Id,
+      course.Delete_Status,
+      course.Payment_Method,
+      course.Slot_Id,
+      course.Batch_ID,
+      course.StudentCourse_ID,
+    ]);
+  },
+enroleCourseFromAdmin: async function (course) {
+    console.log(course);
+
+    // Helper to convert empty string to null for numeric fields
+    const toInt = (val) => (val !== '' && val != null ? parseInt(val) : null);
+    const toDecimal = (val) => (val !== '' && val != null ? parseFloat(val) : null);
+    const toStr = (val) => (val !== '' && val != null ? val : null);
+
+    // Format Payment_Date: "2026-02-12T08:30" → "2026-02-12 08:30:00"
+    const formatDatetime = (val) => {
+        if (!val || val === '') return null;
+        return new Date(val).toISOString().slice(0, 19).replace('T', ' ');
+    };
+
+    return executeTransaction("enroleCourseFromAdmin", [
+        toInt(course.Student_ID),
+        toInt(course.Course_ID),               // Was '' → now null
+        toStr(course.Enrollment_Date) || null,
+        toDecimal(course.Price),               // Was '' → now null
+        formatDatetime(course.Payment_Date),   // Was ISO string → now MySQL datetime
+        toStr(course.Payment_Status),
+        toStr(course.LastAccessed_Content_ID),
+        toStr(course.Transaction_Id),
+        toInt(course.Delete_Status) ?? 0,
+        toStr(course.Payment_Method),
+        toInt(course.Slot_Id),
+        toInt(course.Batch_ID),
+        toInt(course.StudentCourse_ID) ?? 0,
+        toStr(course.Installment_information_ID),
+        toDecimal(course.Total_FeeAmount) ?? 0,
+        toStr(course.Fee_Status),
+        toDecimal(course.Discount) ?? 0,
+        toDecimal(course.Fee_Amount) ?? 0,
+    ]);
+},
+  Buy_Course: async function (course) {
+    return executeTransaction("Buy_Course", [course.requestId]);
+  },
+  Save_chat_message: async function (chat) {
+    return executeTransaction("Save_chat_message", [
+      chat.Student_ID,
+      chat.Chat_Message,
+      chat.IsReply,
+      chat.Chat_DateTime,
+      chat.Delete_Status,
+    ]);
+  },
+  Save_Occupation: async function (data) {
+    return executeTransaction("Save_Occupation", [
+      data.Student_ID,
+      data.Occupation_Id,
+      JSON.stringify(data["Prefferd_Course"]),
+    ]);
+  },
+  Bulk_Student_Import: async function (data) {
+    return executeTransaction("Bulk_Student_Import", [data]);
+  },
+  BulkImportInstallmentsBatch: async function (data) {
+    function toMySQLDate(dateStr) {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      return d.toISOString().split("T")[0]; // YYYY-MM-DD
+    }
+
+    const cleanedData = data.map((student) => ({
+      ...student,
+      Due_Date: toMySQLDate(student.Due_Date),
+      Admission_Date: toMySQLDate(student.Admission_Date),
+      Installments: student.Installments.map((inst) => ({
+        ...inst,
+        DueDate: toMySQLDate(inst.DueDate),
+      })),
+    }));
+
+    const jsonPayload = JSON.stringify(cleanedData);
+    console.log("jsonPayload", jsonPayload);
+
+    return executeTransaction("Bulk_Student_Import", [jsonPayload]);
+  },
+  saveAllEnrollments: async function (data) {
+    console.log("data: ", data);
+
+    return executeTransaction("saveAllEnrollments", [data]);
+  },
+  save_DocumentMetadata: async function (data) {
+    console.log("data: ", data);
+
+    // Deconstruct values in order expected by SP
+    const {
+      Document_ID = 0,
+      Student_ID,
+      Document_Type_Id,
+      Document_Name,
+      Document_URL,
+      S3_Key,
+      fileName,
+    } = data;
+
+    const params = [
+      Document_ID,
+      Student_ID,
+      Document_Type_Id,
+      Document_Name,
+      S3_Key,
+      Document_URL,
+      fileName,
+    ];
+
+    return executeTransaction("Save_Document", params);
+  },
+  Insert_Student_Exam_Result: async function (exam) {
+    console.log("exam: ", exam);
+    return executeTransaction("Insert_Student_Exam_Result", [
+      exam.StudentExam_ID,
+      exam.Exam_ID,
+      exam.Batch_Id,
+      exam.Course_Id,
+      exam.Student_ID,
+      exam.Listening,
+      exam.Reading,
+      exam.Writing,
+      exam.Speaking,
+      exam.Overall_Score,
+      exam.CEFR_level,
+      exam.Result_Date,
+      exam.Exam_Name,
+    ]);
+  },
+
+  Update_Student_LastOnline: async function (userId, Last_Online) {
+    return executeTransaction("Update_Student_LastOnline", [
+      userId,
+      Last_Online,
+    ]);
+  },
+  Get_Chat_With_Bot: async function (student_Id_) {
+    return executeTransaction("Get_Chat_With_Bot", [student_Id_]);
+  },
+  get_student_fees_details: async function (student_Id_) {
+    return executeTransaction("get_student_fees_details", [student_Id_]);
+  },
+  delete_Student_Exam_result: async function (StudentExam_ID) {
+    return executeTransaction("delete_Student_Exam_result", [StudentExam_ID]);
+  },
+  Delete_StudentDocument: async function (documentId) {
+    return executeTransaction("Delete_StudentDocument", [documentId]);
+  },
+  Get_Live_Classes_By_CourseId: async function (course_Id_, userId, Batch_Id_) {
+    return executeTransaction("Get_Live_Classes_By_CourseId", [
+      course_Id_,
+      userId,
+      Batch_Id_,
+    ]);
+  },
+  Get_Recorded_LiveClasses: async function (userId, course_Id) {
+    return executeTransaction("Get_Recorded_LiveClasses", [userId, course_Id]);
+  },
+
+  Get_Student_Exam_Results: async function (studentId, course_Id) {
+    return executeTransaction("Get_Student_Exam_Results", [
+      studentId,
+      course_Id,
+    ]);
+  },
+  Get_DocumentTypes: async function () {
+    return executeTransaction("Get_DocumentTypes", []);
+  },
+
+  Get_Dashboard_Data_By_StudentId: async function (student_Id_) {
+    return getmultipleSP("Get_Dashboard_Data_By_StudentId", [student_Id_]);
+  },
+  Get_Available_Mentors: async function (student_Id_) {
+    console.log("student_Id_: ", student_Id_);
+    return getmultipleSP("Get_Available_Mentors", [student_Id_]);
+  },
+  Get_Available_Hod: async function (student_Id_) {
+    console.log("student_Id_: ", student_Id_);
+    return getmultipleSP("Get_Available_Hod", [student_Id_]);
+  },
+  Generate_certificate: async function (StudentCourse_ID, value) {
+    console.log("StudentCourse_ID: ", StudentCourse_ID);
+    return getmultipleSP("Generate_certificate", [StudentCourse_ID, value]);
+  },
+  // Get_ExamDetails_By_StudentId: async function (student_Id_,exam_Id_) {
+  //     return executeTransaction('Get_ExamDetails_By_StudentId', [student_Id_,exam_Id_]);
+  // }
+
+  Save_AppInfo: async function (appInfo) {
+    return executeTransaction("Save_AppInfo", [
+      appInfo.user_id,
+      appInfo.deviceId,
+      appInfo.appVersion,
+      appInfo.modelName,
+      appInfo.osVersion,
+      appInfo.sdkInt,
+      appInfo.manufacturer,
+      appInfo.isBatteryOptimized,
+      appInfo.isStudent,
+      appInfo.devicePushTokenVoip,
+    ]);
+  },
+  Get_AppInfo_List: async function (filters) {
+    console.log(filters);
+    return getmultipleSP("Get_AppInfo_List", [
+      filters.isStudent,
+      filters.appVersion || "",
+      filters.fromDate || null,
+      filters.toDate || null,
+      filters.nameSearch || "",
+      filters.isBatteryOptimized === undefined
+        ? -1
+        : filters.isBatteryOptimized, // Default to -1 if undefined
+      filters.page,
+      filters.pageSize,
+    ]);
+  },
+  Get_AppInfo: async function (is_Student, id) {
+    console.log(is_Student, id);
+    return getmultipleSP("Get_AppInfo", [is_Student, id]);
+  },
+};
+module.exports = student;

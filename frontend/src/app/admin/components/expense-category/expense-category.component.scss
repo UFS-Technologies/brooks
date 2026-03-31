@@ -1,0 +1,68 @@
+/* Add in styles.css or component-specific scss if not using Tailwind */
+.scrollable-table {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+table {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f4f4f4;
+    font-weight: 600;
+    color: #444;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  tbody tr:hover {
+    background-color: #f0f8ff;
+  }
+}
+
+.action-button {
+  text-align: center;
+
+  button {
+    padding: 0.7rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+
+    &:hover {
+      background-color: #218838;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+table {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin: 0rem auto !important;
+  border-collapse: collapse !important;
+  font-size: 0.95rem !important;
+}
+

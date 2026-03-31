@@ -1,0 +1,128 @@
+<!-- dashboard.component.html
+<div class=" h-100 flex justify-center gap-5" style="width: 100%; height: 100%;">
+
+<div class="row">
+<div class="chart-container">
+    <h2>Popular Course</h2>
+    <canvas baseChart
+    [data]="barChartData"
+    [options]="barChartOptions"
+    [type]="barChartType"
+    [legend]="barChartLegend">
+</canvas> 
+  </div>
+   
+  <div class="chart-container">
+    <h2>Month Wise Student Enrollment </h2>
+    <canvas baseChart
+                [data]="barChartData2"
+                [options]="barChartOptions"
+                [type]="barChartType"
+                [legend]="barChartLegend">
+        </canvas>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="chart-container">
+    <h2>User wise students </h2>
+    <canvas baseChart
+                [data]="barChartData3"
+                [options]="barChartOptions"
+                [type]="barChartType"
+                [legend]="barChartLegend">
+        </canvas>
+
+</div>
+ 
+    <div class="chart-container">
+    <h2>Status wise students </h2>
+    <canvas baseChart
+                [data]="barChartData4"
+                [options]="barChartOptions"
+                [type]="barChartType"
+                [legend]="barChartLegend">
+        </canvas>
+
+  </div>
+  
+  </div>
+</div> -->
+
+<!-- dashboard.component.html -->
+<div class="dashboard-container h-[85vh] overflow-y-scroll">
+
+ <table>
+   <tbody class="text-gray-600 text-sm font-light">
+          <tr *ngFor="let expense of Accounts; let i = index"
+            class="border-b border-gray-200 hover:bg-gray-100">
+             
+              <td class="py-3 px-6 text-center">{{ expense.account_name }}</td>
+            <td class="py-3 px-6 text-center">{{ expense.total_value_b }}</td>
+            
+          </tr>
+        </tbody>
+      </table>
+
+  <!-- Row 1 -->
+  <!-- <div class="chart-row">
+    <div class="chart-container">
+      <h2>Popular Course</h2>
+      <canvas baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+    </div>
+ 
+    <div class="chart-container">
+      <h2>Month-wise Student Enrollment</h2>
+      <canvas baseChart
+        [data]="barChartData2"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+    </div>
+  </div> -->
+
+  <!-- Row 2 -->
+  <!-- <div class="chart-row">
+    <div class="chart-container">
+      <h2>User-wise Students</h2>
+      <canvas baseChart
+        [data]="barChartData3"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Status-wise Students</h2>
+      <canvas baseChart
+        [data]="barChartData4"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+    </div>
+  </div> -->
+  <!-- receipt -->
+   
+  <!-- <div class="chart-row">
+    <div class="chart-container">
+      <h2>Receipts</h2>
+      <canvas baseChart
+        [data]="barChartData5"
+        [options]="barChartOptions"
+        [type]="barChartType"
+        [legend]="barChartLegend">
+      </canvas>
+    </div>
+
+    
+  </div> -->
+</div>

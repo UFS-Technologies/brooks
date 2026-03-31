@@ -1,0 +1,176 @@
+<div class="p-6 space-y-6 bg-white shadow rounded-md">
+  
+  <!-- 🔎 Search Button -->
+  <div class="flex justify-end mt-4" style="gap: 1rem;">
+    <button (click)="filterReceiptExpenseData()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+      Search
+    </button>
+    <!-- 📤 Export to Excel -->
+    
+      <button (click)="exportToExcel()" class="bg-blue-600  text-white px-4 py-2 rounded hover:bg-blue-700"
+        style="background-color: gray;">
+        Export to Excel
+      </button>
+
+     <button (click)="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" style="display:none;">
+  Download PDF
+</button>
+
+    
+  </div>
+
+  <!-- 🔍 Filters -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+
+    <!-- User Filter -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">User</label>
+      <select [(ngModel)]="selectedUser" (ngModelChange)="onUserChange($event)"
+        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <option [ngValue]="null">All Users</option>
+        <option *ngFor="let user of userList" [ngValue]="user">
+          {{ user.First_Name }}
+        </option>
+      </select>
+    </div>
+
+
+    <!-- From Date -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">From Date</label>
+      <input type="date" [(ngModel)]="fromDate" (change)="onFromDateChange()"
+        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+    </div>
+
+    <!-- To Date -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">To Date</label>
+      <input type="date" [(ngModel)]="toDate" [min]="fromDate"
+        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+    </div>
+
+
+    <!-- Account -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Account</label>
+      <select [(ngModel)]="selectedAccount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <option [ngValue]="null">All Account</option>
+        <option *ngFor="let account of accountList" [ngValue]="account">{{ account.Account_Name }}</option>
+      </select>
+    </div>
+
+    <!-- Type -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Type</label>
+      <select [(ngModel)]="selectedType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <option value="">All Types</option>
+        <option value="Receipt">Receipt</option>
+        <option value="Expense">Expense</option>
+        <option value="Income">Income</option>
+      </select>
+    </div>
+
+    <!-- Branch (filtered by user) -->
+    <!-- <div class="col-span-1">
+      <label class="block text-sm font-medium text-gray-700">Branch</label>
+      <select [(ngModel)]="selectedBranch" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <option value="">All Branches</option>
+        <option *ngFor="let branch of filteredBranches" [ngValue]="branch">{{ branch.Branch_Name }}</option>
+      </select>
+    </div> -->
+  </div>
+
+
+  <!-- <div id="hiddenReportPDF" class="pdf-hidden" style="position: absolute; top: -9999px;"> -->
+  <!-- 📋 Table -->
+  <div class="overflow-x-auto border rounded">
+    <table class="min-w-full text-sm text-left table-auto">
+      <thead class="bg-gray-100 text-xs font-medium text-gray-700 uppercase tracking-wider">
+        <tr>
+          <th class="px-4 py-2">Date</th>
+          <th class="px-4 py-2">Type</th>
+          <th class="px-4 py-2">Account</th>
+          <th class="px-4 py-2">Amount</th>
+          <th class="px-4 py-2">Fine</th>
+          <th class="px-4 py-2">Details</th>
+          <th class="px-4 py-2">Description</th>
+          <th class="px-4 py-2">User</th>
+          <th class="px-4 py-2">Branch</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- <tr *ngFor="let item of filteredData" class="border-t"> -->
+        <tr *ngFor="let item of pagedData()" class="border-t">
+
+          <td class="px-4 py-2">{{ formatDate(item.Date) }}</td>
+          <td class="px-4 py-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              [ngStyle]="{
+                'background-color': item.Type === 'Receipt' ? '#dcfce7' : item.Type === 'Income' ? '#fee2e2' : '#dbeafe',
+                'color': item.Type === 'Receipt' ? '#15803d' : item.Type === 'Income' ? '#dc2626' : '#1d4ed8'
+              }">
+              {{ item.Type }}
+            </span>
+          </td>
+          <td class="px-4 py-2">{{ item.Account_Name }}</td>
+          <td class="px-4 py-2">Rs. {{ item.Amount }}</td>
+          <td class="px-4 py-2">Rs. {{ item.Fine_Amount || 0 }}</td>
+          <td class="px-4 py-2">{{ item.Type === 'Expense' ? item.Expense_Type : '-' }}</td>
+          <td class="px-4 py-2">{{ item.Description }}</td>
+          <td class="px-4 py-2">{{ item.User_Name }}</td>
+          <td class="px-4 py-2">{{ item.Branch_Name }}</td>
+        </tr>
+        <tr *ngIf="filteredData.length === 0">
+          <td colspan="8" class="px-4 py-2 text-center text-gray-500">No records found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<!-- </div> -->
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container">
+    <div class="left-controls">
+      <label for="pageSizeSelect">Rows per page:</label>
+      <select id="pageSizeSelect" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+
+
+    </div>
+    <div class="mt-4 p-4 bg-gray-100 rounded-md shadow-sm border border-gray-300">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-700 font-medium">
+
+        <div class="flex items-center space-x-1">
+          <span class="text-gray-500">Total Received Amount:</span>
+          <span class="font-semibold text-green-600">{{ Total_Recieved_Amount   }}</span>
+        </div>
+
+        <div class="flex items-center space-x-1">
+          <span class="text-gray-500">Total Expense Amount:</span>
+          <span class="font-semibold text-red-600">{{ Expense_Amount}}</span>
+        </div>
+
+        <div class="flex items-center space-x-1">
+          <span class="text-gray-500">Total Fine Amount:</span>
+          <span class="font-semibold text-orange-600">{{ Total_Fine_Amount }}</span>
+        </div>
+
+        <div class="flex items-center space-x-1">
+          <span class="text-gray-500">Closing Amount:</span>
+          <span class="font-semibold text-blue-600">{{ Closing_Amount }}</span>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="pagination-buttons">
+      <span class="total-count">Total Count: {{ Total_Count }}</span>
+      <button [disabled]="currentPage === 1" (click)="prevPage()">Prev</button>
+      <span>{{ currentPage }} / {{ totalPages }}</span>
+      <button [disabled]="currentPage === totalPages" (click)="nextPage()">Next</button>
+    </div>
+  </div>
+
+</div>

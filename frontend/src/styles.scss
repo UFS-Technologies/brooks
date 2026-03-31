@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'tailwindcss/base' as *;
+@use 'tailwindcss/components' as *;
+@use 'tailwindcss/utilities' as *;
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;    background-color: #F7F9FB;}
+
+.ipv_selected-item{
+    background: none;
+    border: none;
+}
+
+// =============================
+// Fee List & Receipts Tab Styles Global
+// =============================
+.fee-tabs {
+  .mat-mdc-tab-header {
+    background-color: #f3f4f6 !important;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .mat-mdc-tab {
+    min-width: 140px !important;
+    opacity: 1 !important;
+  }
+
+  .mdc-tab {
+    background-color: transparent !important;
+  }
+
+  .mdc-tab--active {
+    background-color: #e5e7eb !important;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .mdc-tab__text-label {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #4b5563 !important;
+  }
+
+  .mdc-tab--active .mdc-tab__text-label {
+    color: #111827 !important;
+  }
+
+  .mdc-tab-indicator__content--underline {
+    border-color: #4b5563 !important;
+    border-top-width: 3px !important;
+  }
+}
