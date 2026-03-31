@@ -1,5 +1,7 @@
+require('dotenv').config();
 const http2 = require('http2');
 const fs = require('fs');
+const path = require('path');
 const jwts = require('jsonwebtoken');
 
 global.apnsJwtToken = null;
@@ -13,7 +15,41 @@ global.apnsJwtToken = null;
 // module.exports = fcm;
 
 const admin = require("firebase-admin");
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || "{}");
+
+function loadServiceAccount() {
+  const rawJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
+  const rawPath =
+    process.env.FIREBASE_SERVICE_ACCOUNT_PATH?.trim() ||
+    (rawJson && !rawJson.startsWith('{') ? rawJson : '');
+
+  if (rawJson && rawJson.startsWith('{')) {
+    return JSON.parse(rawJson);
+  }
+
+  if (rawPath) {
+    const normalizedPath = rawPath.replace(/^['"]|['"]$/g, '');
+    const candidatePaths = [
+      path.resolve(process.cwd(), normalizedPath),
+      path.resolve(__dirname, normalizedPath),
+      path.resolve(__dirname, '..', normalizedPath),
+    ];
+
+    const existingPath = candidatePaths.find((candidate) => fs.existsSync(candidate));
+    if (!existingPath) {
+      throw new Error(
+        `Firebase service account file not found. Checked: ${candidatePaths.join(', ')}`
+      );
+    }
+
+    return JSON.parse(fs.readFileSync(existingPath, 'utf8'));
+  }
+
+  throw new Error(
+    'Missing Firebase credentials. Set FIREBASE_SERVICE_ACCOUNT_JSON or FIREBASE_SERVICE_ACCOUNT_PATH in backend/.env.'
+  );
+}
+
+const serviceAccount = loadServiceAccount();
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
