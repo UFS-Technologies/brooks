@@ -134,9 +134,9 @@
           <th class="px-4 py-2 whitespace-nowrap">Follow-up Date</th>
           <th class="px-4 py-2 whitespace-nowrap">Enquiry Source</th>
           <th class="px-4 py-2 whitespace-nowrap">Status</th>
-          <th class="px-4 py-2 whitespace-nowrap">Branch</th>
+          <!-- <th class="px-4 py-2 whitespace-nowrap">Branch</th> -->
           <th class="px-4 py-2 whitespace-nowrap">Remark</th>
-          <th class="px-4 py-2 whitespace-nowrap">Follow-up</th>
+          <!-- <th class="px-4 py-2 whitespace-nowrap">Follow-up</th> -->
 
         </tr>
       </thead>
@@ -159,9 +159,17 @@
           </td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Enquiry_Source_Name'] || item['Enquiry_Source'] || item['Enquiry_Source_Id'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Remark'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Followup_Status'] == 1 ? 'Yes' : 'No' }}</td>
+          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td> -->
+          <td class="px-4 py-2 hover:bg-sky-50 transition cursor-pointer" 
+            (click)="item['showFullRemark'] = !item['showFullRemark']; $event.stopPropagation()"
+            [title]="(item['Remark'] && item['Remark'].length > 25 && !item['showFullRemark']) ? item['Remark'] : (item['showFullRemark'] ? 'Click to collapse' : 'Click to expand')">
+            @if(item['Remark'] && item['Remark'].length > 25 && !item['showFullRemark']) {
+                {{ item['Remark'] | slice:0:25 }}...
+            } @else {
+                {{ item['Remark'] || '-' }}
+            }
+          </td>
+          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Followup_Status'] == 1 ? 'Yes' : 'No' }}</td> -->
 
         </tr>
       </tbody>
