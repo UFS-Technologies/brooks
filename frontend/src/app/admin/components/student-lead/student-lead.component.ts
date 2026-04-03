@@ -1773,11 +1773,7 @@ onCancelEdit(): void {
         followUpData.Follow_Up_Status_Name ||
         followUpData.Status_Name ||
         null,
-      Status_Id: followUpData.Follow_Up_Status_ID || followUpData.Status_Id || null,
       Remark: followUpData.Remark || null,
-      Branch_Id: followUpData.Branch_ID || followUpData.Branch_Id || null,
-      Department_Id: followUpData.Department_ID || followUpData.Department_Id || null,
-      To_User_Name: followUpData.Assigned_Staff_Name || followUpData.To_User_Name || followUpData.First_Name || null,
     };
   }
 

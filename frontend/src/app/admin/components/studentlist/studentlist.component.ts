@@ -324,7 +324,6 @@ export class StudentlistComponent {
 
     if (this.mode === 'add') {
       this.branch_status = true;
-      this.showFollowUpSection = true;
       console.log('StudentList loaded in ADD mode');
       this.nextFollowUpDate = this.getCurrentDate();
       this.loadFollowupData();
