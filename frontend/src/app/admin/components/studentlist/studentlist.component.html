@@ -809,12 +809,13 @@
         </div> -->
         }
 
+        @if(!student_Form.get('Student_ID')?.value) {
         <!-- Editable Follow-up Section -->
         <section class="border border-gray-300 shadow p-6 rounded-lg bg-white mt-6">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-800">Student Follow-up</h2>
-                    <p class="text-sm text-gray-600">Adding follow-up for new student</p>
+                    <h2 class="text-xl font-semibold text-gray-800">Student Follow-up - {{ followUps?.First_Name }} {{ followUps?.Last_Name }}</h2>
+                    <p class="text-sm text-gray-600">Adding follow-up for student</p>
                 </div>
                 <button type="button" (click)="toggleFollowUpSection()" class="text-gray-500 hover:text-gray-700"
                     title="Close follow-up section">
@@ -907,14 +908,10 @@
                         placeholder="Enter follow-up remarks, notes, or action items (optional)..."
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         maxlength="1000"></textarea>
-                    <div class="flex justify-between">
-                        <div class="text-xs text-gray-500">
-                            Follow-up details are optional. Leave blank if no follow-up needed.
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
+        }
 
         <!-- Follow-up History Button and List (only for existing students) -->
         @if(student_Form.get('Student_ID')?.value) {

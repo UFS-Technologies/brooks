@@ -1107,10 +1107,14 @@ doc.text(
       Department_Name: this.currentFollowUpData.Department_Name || '',
       Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
       Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
-      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
       Follow_Up_Status_Name:
-        this.currentFollowUpData.Follow_Up_Status_Name || '',
-      Next_Follow_Up_Date: this.currentFollowUpData.Next_Follow_Up_Date || null,
+        this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
+      Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Followup_Status: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Status_Name: this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || '',
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Next_Follow_Up_Date || this.currentFollowUpData.Follow_Up_Date || null)?.toString().split('T')[0],
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Follow_Up_Date || this.currentFollowUpData.Next_Follow_Up_Date || null)?.toString().split('T')[0],
       Remark: this.currentFollowUpData.Remark || '',
       Created_Date:
         this.currentFollowUpData.Created_Date ||
@@ -1142,7 +1146,11 @@ doc.text(
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
-      Next_Follow_Up_Date: this.nextFollowUpDate || null,
+      Status_ID: this.Search_status?.Status_Id || null,
+      Status_Name: this.Search_status?.Status_Name || '',
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null,
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null, // Double map for table consistency
+      Followup_Status: this.Search_status?.Status_Id || null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
@@ -1250,6 +1258,7 @@ doc.text(
       Last_Name: this.selectedStudentForFollowup.Last_Name,
       Email: this.selectedStudentForFollowup.Email,
       Phone_Number: this.selectedStudentForFollowup.Phone_Number,
+      Enquiry_Source_Id: this.selectedStudentForFollowup.Enquiry_Source_Id || this.selectedStudentForFollowup.Enquiry_Source_ID,
       // Add follow-up data
       ...this.getFollowUpData(),
       // Flag to indicate this is follow-up only save
@@ -1400,7 +1409,11 @@ doc.text(
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
-      Next_Follow_Up_Date: this.nextFollowUpDate || null,
+      Status_ID: this.Search_status?.Status_Id || null,
+      Status_Name: this.Search_status?.Status_Name || '',
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null,
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null, // Double map for table consistency
+      Followup_Status: this.Search_status?.Status_Id || null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
@@ -1476,13 +1489,22 @@ doc.text(
     const email = this.student_Form.get('Email')?.value;
     const phone = this.student_Form.get('Phone_Number')?.value;
 
+    // Explicitly set registration status and active status (status = 1)
     this.student_Form.get('isRegistering')?.setValue(this.registration_Status);
-    this.student_Form.get('Registered_By')?.setValue(User_Id);
-
-    // if (this.student_Form.get('isRegistering')?.setValue(this.registration_Status)) {
-      // Only set Registered_On if not already registered
-      this.student_Form.get('Registered_On')?.setValue(new Date());
-    // }
+    this.student_Form.get('Active_Status')?.setValue('Active');
+    
+    if (this.registration_Status) {
+      this.student_Form.get('Registered_By')?.setValue(User_Id);
+      // Only set Registered_On if not already registered (no Roll_No)
+      if (!this.student_Form.get('Roll_No')?.value) {
+        this.student_Form.get('Registered_On')?.setValue(new Date());
+      }
+    } else {
+      // Clear registration info for leads to prevent them from becoming students
+      this.student_Form.get('Registered_By')?.setValue(null);
+      this.student_Form.get('Registered_On')?.setValue(null);
+      this.student_Form.get('Roll_No')?.setValue(null);
+    }
 
     if (!email && !phone) {
       this.dialogBox.open(DialogBox_Component, {
@@ -1502,14 +1524,16 @@ doc.text(
       });
       return;
     }
- console.log('this.student_Form11111', this.student_Form.value);
+
     // Prepare follow-up data
     const followUpData = this.getFollowUpData();
- console.log('this.student_Form2222', this.student_Form.value);
+
     // Merge follow-up fields into student form value before saving
     const studentPayload = {
       ...this.student_Form.value,
-      Address: this.isRegistering ? this.student_Form.value.Address : this.student_Form.value.District, // Use full Address if registering
+      isRegistering: this.registration_Status ? 1 : 0, // Ensure numeric for backend if needed
+      isRegistered: this.registration_Status ? 1 : 0, // Explicitly add isRegistered for clarity
+      Address: this.registration_Status ? this.student_Form.value.Address : (this.student_Form.value.District || this.student_Form.value.Address), 
       ...followUpData,
       Installments: this.installments,
       Branch_Id: this.student_Form.value.Branch_Id,
@@ -2470,8 +2494,7 @@ doc.text(
     console.log('mode', this.mode);
     console.log("this.student_Form['Roll_No']", this.student_Form.value.Roll_No);
 
-    if (this.student_Form.value.Roll_No) {
-      // this.registration_Status
+    if (this.student_Form.get('Roll_No')?.value) {
       this.isLoading = true;
       console.log('Student ID:', student);
       console.log('Currently Registered:', isRegistered);
@@ -2504,27 +2527,15 @@ doc.text(
     })
    
   }
+  
   studentRegistration(student: any, isRegistered: boolean) {
-    console.log('isRegistered', isRegistered);
-    const action = !isRegistered ? 'register' : 'unregister';
-    this.registration_Status = !isRegistered;
-    const message = `Do you want to ${action}?`;
-    const User_ID = localStorage.getItem('User_Type');
-    // Is_Registered
+    this.registration_Status = isRegistered;
+    this.isRegistering = isRegistered;
 
-
-         console.log("this.student_Form['Roll_No']", this.student_Form.value.Branch_Id);
-    console.log('mode', this.mode);
-    console.log("this.student_Form['Roll_No']", this.student_Form.value.Roll_No);
-
-    if (!this.student_Form['Roll_No']) {
-      // this.registration_Status
+    if (isRegistered && !this.student_Form.get('Roll_No')?.value) {
       this.isLoading = true;
-      console.log('Student ID:', student);
-      console.log('Currently Registered:', isRegistered);
-
-      console.log('User_ID', User_ID);
-      // Registration_Using_Student_Branch
+      const User_ID = localStorage.getItem('User_Type');
+      
       this.feesService
         .Registration_Using_Student_Branch(
           student.Student_ID,
@@ -2546,6 +2557,9 @@ doc.text(
           }
         );
       this.isLoading = false;
+    } else if (!isRegistered && this.student_Form.get('Roll_No')?.value) {
+      // If unchecked and has Roll_No, trigger removal
+      this.studentRemoveRegistration(student, isRegistered);
     }
   }
 
@@ -2614,9 +2628,8 @@ doc.text(
       //student_e['Active_Status'] = 'Inactive';
       student_e['Active_Status'] = 'Deactivated';
     }
-    if (this.followUps['Roll_No']) {
-      this.registration_Status = true;
-    }
+    this.registration_Status = !!student_e['Roll_No'];
+    this.isRegistering = this.registration_Status;
     // Always hide follow-up section when editing existing student
     this.showFollowUpSection = false;
 
@@ -2670,14 +2683,10 @@ doc.text(
         this.student_Form.patchValue({
           Guardian_Type: followUpData.Guardian_Type
             ? followUpData.Guardian_Type
-            : ['Father'],
-          Guardian_Name: followUpData.Guardian_Name || [''],
-          Guardian_Phone: followUpData.Guardian_Phone || [''],
+            : 'Father',
+          Guardian_Name: followUpData.Guardian_Name || '',
+          Guardian_Phone: followUpData.Guardian_Phone || '',
           Guardian_Alt_Phone: followUpData.Guardian_Alt_Phone,
-          // Active_Status: followUpData.Active_Status
-          //   ? followUpData.Active_Status
-          //   : ['Active'],
-
           Active_Status:
             followUpData.isActive === 0
               ? 'Deactivated'
@@ -2685,17 +2694,15 @@ doc.text(
               ? 'Active'
               : 'Active',
 
-          Height_cm: followUpData.Height_cm || [''],
-          Weight_kg: followUpData.Weight_kg || [''],
-          Admission_Date: followUpData.Admission_Date || [today],
+          Height_cm: followUpData.Height_cm || '',
+          Weight_kg: followUpData.Weight_kg || '',
+          Admission_Date: followUpData.Admission_Date || today,
           Roll_No: followUpData.Roll_No || null,
-          Age: followUpData.Age || [''],
-          Qualification: followUpData.Qualification || [''],
-          Qualification_Description: followUpData.Qualification_Description || [
-            '',
-          ],
-          Alt_Phone_Number: followUpData.Alt_Phone_Number || [''],
-          Address: followUpData.Address || [''],
+          Age: followUpData.Age || '',
+          Qualification: followUpData.Qualification || '',
+          Qualification_Description: followUpData.Qualification_Description || '',
+          Alt_Phone_Number: followUpData.Alt_Phone_Number || '',
+          Address: followUpData.Address || '',
         });
         // this.student_Form.patchValue(followUpData);
         // Just store the data, don't show any UI
@@ -3045,6 +3052,7 @@ doc.text(
 
     this.Edit_student(student);
     this.loadFollowupData();
+    this.remark = '';
     this.showFollowUpSection = true;
     this.loadFollowupHistoryList();
   }

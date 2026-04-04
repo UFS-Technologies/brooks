@@ -3051,7 +3051,7 @@ onCancelEdit(): void {
       ? this.formatDateForInput(student.Follow_Up_Date)
       : this.getCurrentDate(); // default to today
 
-    this.remark = student.Remark || '';
+    this.remark = '';
 
     // Load history
     this.loadFollowupHistoryList();

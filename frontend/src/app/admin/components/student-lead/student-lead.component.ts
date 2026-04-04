@@ -1838,8 +1838,9 @@ onCancelEdit(): void {
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
-      Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
-      Next_Follow_Up_Date: this.nextFollowUpDate || null,
+      Follow_Up_Status_Name: this.Search_status?.Status_Name || '', Followup_Status: this.Search_status?.Status_Id || null,
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null,
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
@@ -2062,10 +2063,13 @@ onCancelEdit(): void {
       Department_Name: this.currentFollowUpData.Department_Name || '',
       Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
       Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
-      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || null,
-      Follow_Up_Status_Name:
-        this.currentFollowUpData.Follow_Up_Status_Name || '',
-      Next_Follow_Up_Date: this.currentFollowUpData.Next_Follow_Up_Date || null,
+      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
+      Follow_Up_Status_Name: this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
+      Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Followup_Status: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Status_Name: this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || '',
+      Next_Follow_Up_Date: (this.currentFollowUpData.Next_Follow_Up_Date || this.nextFollowUpDate || this.currentFollowUpData.Follow_Up_Date || null)?.toString().split('T')[0],
+      Follow_Up_Date: (this.currentFollowUpData.Follow_Up_Date || this.currentFollowUpData.Next_Follow_Up_Date || null)?.toString().split('T')[0],
       Remark: this.currentFollowUpData.Remark || '',
       Created_Date:
         this.currentFollowUpData.Created_Date ||
@@ -2969,17 +2973,9 @@ onCancelEdit(): void {
     }
 
     this.isLoading = true;
-    ;
-    this.isLoading = true;
-    ;
     // Create a payload that mimics the student save structure but only for follow-up
     const followUpPayload = {
-      Student_ID: this.selectedStudentForFollowup.Student_ID,
-      // Include existing student data to maintain the same API structure
-      First_Name: this.selectedStudentForFollowup.First_Name,
-      Last_Name: this.selectedStudentForFollowup.Last_Name,
-      Email: this.selectedStudentForFollowup.Email,
-      Phone_Number: this.selectedStudentForFollowup.Phone_Number,
+      ...this.selectedStudentForFollowup,
       // Add follow-up data
       ...this.getFollowUpData(),
       // Flag to indicate this is follow-up only save
@@ -3028,6 +3024,7 @@ onCancelEdit(): void {
           this.resetFollowUpForm();
           this.view = 'list';
           this.selectedStudentForFollowup = null;
+          this.Search_student_lead();
         },
       });
   }
@@ -3100,8 +3097,9 @@ onCancelEdit(): void {
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
-      Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
-      Next_Follow_Up_Date: this.nextFollowUpDate || null,
+      Follow_Up_Status_Name: this.Search_status?.Status_Name || '', Followup_Status: this.Search_status?.Status_Id || null,
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null,
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
@@ -3162,27 +3160,30 @@ onCancelEdit(): void {
     this.resetFollowUpForm();
 
     // 🔽 Populate follow-up form fields if data is present
+    const studentBranchId = student.Branch_Id || student.Branch_ID;
     this.Search_Branch = this.Search_Branch_Data.find(
-      (b) => b.Branch_Id === student.Branch_Id
-    );
+      (b) => (b.Branch_Id || b.Branch_ID) == studentBranchId
+    ) || this.Search_Branch_Data[0];
 
+    const studentDeptId = student.Department_Id || student.Department_ID;
     this.Search_Department = this.Search_Department_Data.find(
-      (d) => d.Department_Id === student.Department_Id
-    );
+      (d) => (d.Department_Id || d.Department_ID) == studentDeptId
+    ) || this.Search_Department_Data[0];
 
     this.Search_staff = this.staffData.find(
-      (s) => s.First_Name === student.To_User_Name
-    );
+      (s) => s.User_ID == student.Assigned_Staff_ID || s.First_Name === student.To_User_Name || s.First_Name === student.Assigned_Staff_Name || s.First_Name === student.To_User_Name
+    ) || this.staffData[0];
 
+    const studentStatusId = student.Status_Id || student.Followup_Status || student.Status_ID || student.Follow_Up_Status_ID;
     this.Search_status = this.followUpStatusData.find(
-      (s) => s.Status_Id === student.Status_Id
-    );
+      (s) => (s.Status_Id || s.Status_ID) == studentStatusId
+    ) || this.followUpStatusData[0];
 
     this.nextFollowUpDate = student.Follow_Up_Date
       ? this.formatDateForInput(student.Follow_Up_Date)
       : this.getCurrentDate(); // default to today
 
-    this.remark = student.Remark || '';
+    this.remark = '';
 
     // Load history
     this.loadFollowupHistoryList();
@@ -3248,11 +3249,12 @@ onCancelEdit(): void {
           this.followupHistoryList
         );
          const history = this.followupHistoryList[0];
-
-          this.Search_Branch = this.Search_Branch_Data.find(b => b.Branch_Id === history.Branch_Id);
-          this.Search_Department = this.Search_Department_Data.find(d => d.Department_Id === history.Department_Id);
-          this.Search_staff = this.staffData.find(s => s.First_Name === history.Assigned_Staff_Name);
-          this.Search_status = this.followUpStatusData.find(s => s.Status_Id === history.Follow_Up_Status_ID);
+         if (history) {
+           this.Search_Branch = this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) === (history.Branch_Id || history.Branch_ID)) || this.Search_Branch;
+           this.Search_Department = this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) === (history.Department_Id || history.Department_ID)) || this.Search_Department;
+           this.Search_staff = this.staffData.find(s => s.First_Name === history.Assigned_Staff_Name) || this.Search_staff;
+           this.Search_status = this.followUpStatusData.find(s => (s.Status_Id || s.Status_ID) === (history.Follow_Up_Status_ID || history.Followup_Status || history.Status_Id)) || this.Search_status;
+         }
 
       },
       error: (error: any) => {
