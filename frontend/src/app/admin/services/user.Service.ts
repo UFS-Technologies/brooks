@@ -208,6 +208,12 @@ export class user_Service {
     Get_Teacher_Students(userId: number, courseId: number = 0): Observable<any> {
         return this.http.get(environment.BasePath + `teacher/Get_Teacher_Students/${userId}/${courseId}`);
     }
+    Get_Staff_Team_Assignment(teamLeadId: number): Observable<any> {
+        return this.http.get(environment.BasePath + `teacher/Get_Staff_Team_Assignment/${teamLeadId}`);
+    }
+    Save_Staff_Team_Assignment(payload: { teamLeadId: number; staffIds: number[] }): Observable<any> {
+        return this.http.post(environment.BasePath + 'teacher/Save_Staff_Team_Assignment/', payload);
+    }
     Get_Teacher_Timing(userId):Observable<any>{
         return this.http.get(environment.BasePath + 'teacher/Get_Teacher_Timing/' + userId);
     }

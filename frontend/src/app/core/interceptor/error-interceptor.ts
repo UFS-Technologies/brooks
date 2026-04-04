@@ -35,6 +35,7 @@ export class ErrorInterceptor implements HttpInterceptor {
  
             // Extract error message
             const errorMessage = err?.error?.error?.message
+                || err?.error?.errors?.message
                 || err?.error?.message
                 || err?.message
                 || err?.statusText

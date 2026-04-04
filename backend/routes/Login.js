@@ -4,11 +4,12 @@ const Login = require("../models/Login");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
-const jwtSecret = process.env.jwtSecret;
+const { getJwtSecret } = require("../helpers/jwt-secret");
 const Student = require("../models/student");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
 const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
+const jwtSecret = getJwtSecret();
 
 const apiKey = process.env.BREVO_API_KEY;
 const senderEmail = process.env.BREVO_SENDER_EMAIL || "ufsdev123@gmail.com";
@@ -21,6 +22,7 @@ router.post("/Login_Check", async (req, res, next) => {
     let { email, password, Device_ID } = req.body;
     email = String(email || "").trim();
     password = String(password || "").trim();
+    Device_ID = Device_ID ?? 0;
     console.log("Device_ID: ", Device_ID);
     const rows = await Login.Login_Check(email, password, Device_ID);
 
@@ -29,7 +31,7 @@ router.post("/Login_Check", async (req, res, next) => {
     if (rows.error) {
       console.error(rows.error);
       res.status(500).json({
-        errors: {
+        error: {
           message: rows.error,
         },
       });
@@ -68,8 +70,9 @@ router.post("/Login_Check", async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      errors: {
-        message: "An error occurred while processing your request.",
+      error: {
+        message:
+          error.message || "An error occurred while processing your request.",
       },
     });
   }

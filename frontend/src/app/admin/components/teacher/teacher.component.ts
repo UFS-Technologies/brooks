@@ -29,10 +29,11 @@ import { SharedModule } from '../../../shared/shared.module';
 import { student_Service } from '../../services/student.Service';
 import { ViewPermissionsComponent } from '../view-permissions/view-permissions.component';
 import { ActivatedRoute } from '@angular/router';
+import { ViewTeamAssignmentComponent } from '../view-team-assignment/view-team-assignment.component';
 
 @Component({
   selector: 'app-teacher',
-  imports: [ReactiveFormsModule, DatePipe, SharedModule, CommonModule,ViewPermissionsComponent],
+  imports: [ReactiveFormsModule, DatePipe, SharedModule, CommonModule, ViewPermissionsComponent, ViewTeamAssignmentComponent],
   templateUrl: './teacher.component.html',
   styleUrl: './teacher.component.scss',
 })
@@ -99,6 +100,8 @@ export class TeacherComponent implements OnInit {
   isHodCourse: boolean;
   teacher_Id: number;
   User_Type_Id_status: any;
+  selectedTeamLeadId: number = 0;
+  selectedTeamLeadName: string = '';
   constructor(private student_Service_: student_Service) {
     this.user_Form = this.fb.group({
       User_ID: [0],
@@ -649,6 +652,11 @@ export class TeacherComponent implements OnInit {
     this.view = 'View_permissions';
     // this.isLoading = true;
   }
+  View_team(teamLeadId: number, firstName: string, lastName: string) {
+    this.selectedTeamLeadId = teamLeadId;
+    this.selectedTeamLeadName = `${firstName || ''} ${lastName || ''}`.trim();
+    this.view = 'View_team';
+  }
 
   View_courses(teacher_Id, User_Type_Id) {
     this.view = 'courses';
@@ -670,10 +678,17 @@ export class TeacherComponent implements OnInit {
       });
     }
   }
+
   onUserIdChange(newUserId: number) {
      this.view = 'list';
     console.log("onUserIdChange called with newUserId:", newUserId);
     this.User_Type_Id_status = newUserId;
+  }
+  onTeamAssignmentClose() {
+    this.selectedTeamLeadId = 0;
+    this.selectedTeamLeadName = '';
+    this.view = 'list';
+    this.Search_user();
   }
 
   // Course filter change handler

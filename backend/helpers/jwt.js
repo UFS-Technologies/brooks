@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const secret = process.env.jwtSecret;
+const { getJwtSecret } = require('./jwt-secret');
+const secret = getJwtSecret();
 const { executeTransaction } = require('./sp-caller');
 
 // Cache for token verification results
