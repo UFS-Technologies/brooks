@@ -119,7 +119,7 @@ export class StudentlistComponent {
   Search_status: any = {};
   Search_Department: any = {};
   Search_Branch_Data: any[] = [];
-  Search_Department_Data: any = {};
+  Search_Department_Data: any[] = [];
   Search_Branch_Temp: any = {};
   staffData: any[] = [];
   followUpStatusData: any[] = [];
@@ -150,6 +150,7 @@ export class StudentlistComponent {
   };
   available_Time_Slots: any = [];
   isRegistering: boolean = false;
+  registration_Status: boolean = false;
 
   isEdit: boolean = false;
   isSave: boolean = false;
@@ -162,7 +163,6 @@ export class StudentlistComponent {
   private fb = inject(FormBuilder);
   private url = inject(ActivatedRoute);
   totals: any;
-  registration_Status: boolean = false;
   originalInstallments: any[] = [];
   totalFeeAmount: any;
   calculatedTotalAmount: number = 0;
@@ -170,6 +170,18 @@ export class StudentlistComponent {
   feeAmountInWords: string = '';
   trackByIndex(index: number): number {
     return index;
+  }
+  compareBranch(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Branch_Id || o1.Branch_ID) === (o2.Branch_Id || o2.Branch_ID) : o1 === o2;
+  }
+  compareDepartment(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Department_Id || o1.Department_ID) === (o2.Department_Id || o2.Department_ID) : o1 === o2;
+  }
+  compareStaff(o1: any, o2: any): boolean {
+    return o1 && o2 ? o1.User_ID === o2.User_ID : o1 === o2;
+  }
+  compareStatus(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Status_Id || o1.Status_ID) === (o2.Status_Id || o2.Status_ID) : o1 === o2;
   }
   constructor(
     private expenseApi: ExpenseTypeService,
@@ -277,6 +289,8 @@ export class StudentlistComponent {
     this.course_Service_.Search_course('').subscribe((res) => {
       this.allCourse = res;
     });
+    this.Followup_status_Dropdown();
+
     this.courseSubscription?.unsubscribe();
 
     this.courseSubscription = this.student_Course
@@ -902,6 +916,24 @@ doc.text(
       Enquiry_Source_Name: name,
     }));
   }
+
+  onRegistrationToggle(event: any) {
+    this.isRegistering = event;
+    if (!event) {
+      this.student_Form.patchValue({
+        Roll_No: null,
+        Admission_Date: null,
+        isRegistering: false,
+      });
+    } else {
+      this.student_Form.patchValue({
+        isRegistering: true,
+      });
+      const today = new Date().toISOString().split('T')[0];
+      this.student_Form.get('Admission_Date')?.setValue(today);
+    }
+  }
+
   getRoundedInstallments(
     total: number,
     count: number,
@@ -1107,10 +1139,14 @@ doc.text(
       Department_Name: this.currentFollowUpData.Department_Name || '',
       Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
       Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
-      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
       Follow_Up_Status_Name:
-        this.currentFollowUpData.Follow_Up_Status_Name || '',
-      Next_Follow_Up_Date: this.currentFollowUpData.Next_Follow_Up_Date || null,
+        this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
+      Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Followup_Status: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Status_Name: this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || '',
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Next_Follow_Up_Date || this.currentFollowUpData.Follow_Up_Date || null)?.toString().split('T')[0],
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Follow_Up_Date || this.currentFollowUpData.Next_Follow_Up_Date || null)?.toString().split('T')[0],
       Remark: this.currentFollowUpData.Remark || '',
       Created_Date:
         this.currentFollowUpData.Created_Date ||
@@ -1135,8 +1171,10 @@ doc.text(
     // For new students or when follow-up section is shown, use form data
     return {
       Branch_Id: this.Search_Branch?.Branch_Id || null,
+      Branch_ID: this.Search_Branch?.Branch_Id || null,
       Branch_Name: this.Search_Branch?.Branch_Name || '',
       Department_Id: this.Search_Department?.Department_Id || null,
+      Department_ID: this.Search_Department?.Department_Id || null,
       Department_Name: this.Search_Department?.Department_Name || '',
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
@@ -1161,11 +1199,11 @@ doc.text(
     if (
       !this.Search_Branch ||
       this.Search_Branch === '' ||
-      !this.Search_Branch.Branch_Id ||
-      this.Search_Branch.Branch_Id === 0 ||
-      this.Search_Branch.Branch_Id === '0' ||
-      this.Search_Branch.Branch_Id === undefined ||
-      this.Search_Branch.Branch_Id === null
+      !(this.Search_Branch.Branch_Id || this.Search_Branch.Branch_ID) ||
+      (this.Search_Branch.Branch_Id === 0 && this.Search_Branch.Branch_ID === 0) ||
+      (this.Search_Branch.Branch_Id === '0' && this.Search_Branch.Branch_ID === '0') ||
+      (this.Search_Branch.Branch_Id === undefined && this.Search_Branch.Branch_ID === undefined) ||
+      (this.Search_Branch.Branch_Id === null && this.Search_Branch.Branch_ID === null)
     ) {
       validationErrors.push('Branch is required in follow-up section');
     }
@@ -1174,11 +1212,11 @@ doc.text(
     if (
       !this.Search_Department ||
       this.Search_Department === '' ||
-      !this.Search_Department.Department_Id ||
-      this.Search_Department.Department_Id === 0 ||
-      this.Search_Department.Department_Id === '0' ||
-      this.Search_Department.Department_Id === undefined ||
-      this.Search_Department.Department_Id === null
+      !(this.Search_Department.Department_Id || this.Search_Department.Department_ID) ||
+      (this.Search_Department.Department_Id === 0 && this.Search_Department.Department_ID === 0) ||
+      (this.Search_Department.Department_Id === '0' && this.Search_Department.Department_ID === '0') ||
+      (this.Search_Department.Department_Id === undefined && this.Search_Department.Department_ID === undefined) ||
+      (this.Search_Department.Department_Id === null && this.Search_Department.Department_ID === null)
     ) {
       validationErrors.push('Department is required in follow-up section');
     }
@@ -1250,6 +1288,7 @@ doc.text(
       Last_Name: this.selectedStudentForFollowup.Last_Name,
       Email: this.selectedStudentForFollowup.Email,
       Phone_Number: this.selectedStudentForFollowup.Phone_Number,
+      Enquiry_Source_Id: this.selectedStudentForFollowup.Enquiry_Source_Id || this.selectedStudentForFollowup.Enquiry_Source_ID,
       // Add follow-up data
       ...this.getFollowUpData(),
       // Flag to indicate this is follow-up only save
@@ -1392,8 +1431,10 @@ doc.text(
 
     return {
       Student_ID: studentId,
+      Branch_Id: this.Search_Branch?.Branch_Id || null,
       Branch_ID: this.Search_Branch?.Branch_Id || null,
       Branch_Name: this.Search_Branch?.Branch_Name || '',
+      Department_Id: this.Search_Department?.Department_Id || null,
       Department_ID: this.Search_Department?.Department_Id || null,
       Department_Name: this.Search_Department?.Department_Name || '',
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
@@ -1460,7 +1501,7 @@ doc.text(
     console.log('feesForm', this.feesForm);
     console.log('installments', this.installments);
     console.log('this.student_Form', this.student_Form.value);
-    console.log('this.registration_Status', this.registration_Status);
+    console.log('this.isRegistering', this.isRegistering);
     debugger;
     const User_Id = localStorage.getItem('User_Type');
     // Check if this is a follow-up only save from list view
@@ -1502,14 +1543,16 @@ doc.text(
       });
       return;
     }
- console.log('this.student_Form11111', this.student_Form.value);
+
     // Prepare follow-up data
     const followUpData = this.getFollowUpData();
- console.log('this.student_Form2222', this.student_Form.value);
+
     // Merge follow-up fields into student form value before saving
     const studentPayload = {
       ...this.student_Form.value,
-      Address: this.isRegistering ? this.student_Form.value.Address : this.student_Form.value.District, // Use full Address if registering
+      isRegistering: this.registration_Status ? 1 : 0, // Ensure numeric for backend if needed
+      isRegistered: this.registration_Status ? 1 : 0, // Explicitly add isRegistered for clarity
+      Address: this.registration_Status ? this.student_Form.value.Address : (this.student_Form.value.District || this.student_Form.value.Address), 
       ...followUpData,
       Installments: this.installments,
       Branch_Id: this.student_Form.value.Branch_Id,
@@ -1665,30 +1708,43 @@ doc.text(
   }
 
   Followup_status_Dropdown() {
-    const statuses = [
-      'Initial',
-      'Call not picking',
-      'Call not connected',
-      'First follow up',
-      'Mid range',
-      'Potential',
-      'Not interested',
-      'Walk - in',
-      'Admission'
-    ];
+    this.student_Service_.Get_Followup_Status().subscribe(
+      (res: any) => {
+        let rows: any[] = [];
+        if (res && Array.isArray(res[0])) {
+          rows = res[0];
+        } else if (Array.isArray(res)) {
+          rows = res;
+        }
 
-    this.followUpStatusData = statuses.map((name, index) => ({
-      Status_ID: index + 1,
-      Status_Name: name
-    }));
+        // Filter for active statuses only as per dynamic status page requirement
+        rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
 
-    const defaultOption = { Status_ID: 0, Status_Name: 'Select Status' };
-    this.followUpStatusData.unshift(defaultOption);
-    
-    this.Search_status = this.followUpStatusData.find(
-      (status: any) => status.Status_Name?.toLowerCase() === 'pending'
-    ) || defaultOption;
+        const defaultOption = { Status_Id: 0, Status_Name: 'Select Status' };
+        this.followUpStatusData = [defaultOption, ...rows];
+
+        // Ensure Status_ID exists for components that might depend on it
+        this.followUpStatusData.forEach((item: any) => {
+          if (item.Status_Id !== undefined && item.Status_ID === undefined) {
+            item.Status_ID = item.Status_Id;
+          }
+        });
+
+        const pendingStatus = this.followUpStatusData.find(
+          (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        );
+
+        this.Search_status = pendingStatus || defaultOption;
+
+        console.log('Follow-up statuses loaded from DB (StudentList Dynamic):', this.followUpStatusData);
+      },
+      (err) => {
+        console.error('Failed to fetch follow-up statuses:', err);
+      }
+    );
   }
+
+
 
   User_Dropdown() {
     this.student_Service_.User_Dropdown().subscribe(
@@ -2449,12 +2505,13 @@ doc.text(
     this.studentExpense = student;
   }
   studentRemoveRegistration(student: any, isRegistered: boolean) {
-    console.log('isRegistered', isRegistered);
+    console.log('studentRemoveRegistration', isRegistered);
     const action = !isRegistered ? 'register' : 'unregister';
-    this.registration_Status = !isRegistered;
+    // this.isRegistering = !isRegistered; // Don't toggle state here, let the UI/Confirmation handle it
     const message = `Do you want to Remove Registration?`;
     const User_ID = localStorage.getItem('User_Type');
-    // Is_Registered
+
+    const rollNo = this.student_Form.get('Roll_No')?.value;
 
      const dialogRef = this.dialogBox.open(DialogBox_Component, {
       panelClass: 'Dialogbox-Class',
@@ -2534,14 +2591,14 @@ doc.text(
         .subscribe(
           (res: RegistrationResponse) => {
             console.log('Registration response:', res);
-            this.followUps['Roll_No'] = res.RollNumber;
+            if (this.followUps) {
+              this.followUps['Roll_No'] = res.RollNumber;
+            }
             this.student_Form.get('Roll_No')?.setValue(res.RollNumber);
-
-            // this.ngOnInit();
             this.isLoading = false;
           },
           (err) => {
-            console.error('Error loading fee list:', err);
+            console.error('Error in registration call:', err);
             this.isLoading = false;
           }
         );
@@ -2614,8 +2671,9 @@ doc.text(
       //student_e['Active_Status'] = 'Inactive';
       student_e['Active_Status'] = 'Deactivated';
     }
-    if (this.followUps['Roll_No']) {
+    if (student_e['Roll_No'] || (this.followUps && this.followUps['Roll_No'])) {
       this.registration_Status = true;
+      this.isRegistering = true;
     }
     // Always hide follow-up section when editing existing student
     this.showFollowUpSection = false;
@@ -2625,6 +2683,13 @@ doc.text(
     const admissionDate = new Date(student_e.Admission_Date);
     const formatted = admissionDate.toLocaleDateString('en-CA'); // "2025-06-16"
     student_e.Admission_Date = formatted;
+
+    // For leads, 'Place' is stored in the 'Address' field.
+    // Ensure 'District' (bound to Place UI) is populated from Address.
+    if (!this.isRegistering && student_e.Address) {
+      student_e.District = student_e.Address;
+    }
+
     this.student_Form.patchValue(student_e);
     this.View_courses(student_e.Student_ID, false);
 
@@ -2656,12 +2721,14 @@ doc.text(
           } else if (response[0] && typeof response[0] === 'object') {
             followUpData = response[0]; // response[0] is the object
           }
-        } else if (
-          response &&
-          typeof response === 'object' &&
-          !Array.isArray(response)
-        ) {
-          followUpData = response; // Direct object response
+        }
+
+        if (!followUpData) {
+          console.log('No existing follow-up data found');
+          this.nextFollowUpDate = this.getCurrentDate();
+          this.remark = '';
+          this.isLoading = false;
+          return;
         }
         const admissionDate = new Date(followUpData.Admission_Date);
         const formatted = admissionDate.toLocaleDateString('en-CA');
@@ -2670,14 +2737,10 @@ doc.text(
         this.student_Form.patchValue({
           Guardian_Type: followUpData.Guardian_Type
             ? followUpData.Guardian_Type
-            : ['Father'],
-          Guardian_Name: followUpData.Guardian_Name || [''],
-          Guardian_Phone: followUpData.Guardian_Phone || [''],
+            : 'Father',
+          Guardian_Name: followUpData.Guardian_Name || '',
+          Guardian_Phone: followUpData.Guardian_Phone || '',
           Guardian_Alt_Phone: followUpData.Guardian_Alt_Phone,
-          // Active_Status: followUpData.Active_Status
-          //   ? followUpData.Active_Status
-          //   : ['Active'],
-
           Active_Status:
             followUpData.isActive === 0
               ? 'Deactivated'
@@ -2685,15 +2748,13 @@ doc.text(
               ? 'Active'
               : 'Active',
 
-          Height_cm: followUpData.Height_cm || [''],
-          Weight_kg: followUpData.Weight_kg || [''],
-          Admission_Date: followUpData.Admission_Date || [today],
+          Height_cm: followUpData.Height_cm || '',
+          Weight_kg: followUpData.Weight_kg || '',
+          Admission_Date: followUpData.Admission_Date || today,
           Roll_No: followUpData.Roll_No || null,
           Age: followUpData.Age || [''],
           Qualification: followUpData.Qualification || [''],
-          Qualification_Description: followUpData.Qualification_Description || [
-            '',
-          ],
+          Qualification_Description: followUpData.Qualification_Description || [''],
           Alt_Phone_Number: followUpData.Alt_Phone_Number || [''],
           Address: followUpData.Address || [''],
         });
@@ -2702,22 +2763,59 @@ doc.text(
         this.currentFollowUpData = followUpData;
 
         if (followUpData && Object.keys(followUpData).length > 0) {
-          console.log('Follow-up data loaded silently:', {
-            Branch_ID: followUpData.Branch_ID || followUpData.Branch_Id,
-            Department_ID:
-              followUpData.Department_ID || followUpData.Department_Id,
-            Staff_ID: followUpData.Assigned_Staff_ID,
-            Status_ID: followUpData.Follow_Up_Status_ID,
-            Next_Date: followUpData.Next_Follow_Up_Date,
-            Remark: followUpData.Remark,
+          // Correct field mappings from backend:
+          // Branch_Id, Department_Id, To_User_Id, Follow_Up_Date, Status_Name
+          const branchId = followUpData.Branch_Id || followUpData.Branch_ID;
+          const deptId = followUpData.Department_Id || followUpData.Department_ID;
+          const staffId = followUpData.To_User_Id || followUpData.Assigned_Staff_ID;
+          const statusName = followUpData.Status_Name || followUpData.Follow_Up_Status_Name;
+          const statusId = followUpData.Status_Id || followUpData.Follow_Up_Status_ID || followUpData.Status_ID;
+
+          console.log('Processed Follow-up data:', {
+            branchId,
+            deptId,
+            staffId,
+            statusName,
+            followUpDate: followUpData.Follow_Up_Date
           });
-          this.nextFollowUpDate =
-            followUpData.Next_Follow_Up_Date || this.getCurrentDate();
+
+          // Match IDs with dropdown objects to update UI
+          if (branchId && this.Search_Branch_Data?.length > 0) {
+            const matched = this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) == branchId);
+            if (matched) this.Search_Branch = matched;
+          }
+
+          if (deptId && this.Search_Department_Data?.length > 0) {
+            const matched = this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) == deptId);
+            if (matched) this.Search_Department = matched;
+          }
+
+          if (staffId && this.staffData?.length > 0) {
+            const matched = this.staffData.find(s => s.User_ID == staffId);
+            if (matched) this.Search_staff = matched;
+          }
+
+          if (this.followUpStatusData?.length > 0) {
+            let matched = null;
+            if (statusId) {
+              matched = this.followUpStatusData.find(s => (s.Status_Id || s.Status_ID) == statusId);
+            }
+            if (!matched && statusName) {
+              matched = this.followUpStatusData.find(s => s.Status_Name?.toLowerCase() === statusName.toLowerCase());
+            }
+            if (matched) this.Search_status = matched;
+          }
+
+          // Set Date and Remark
+          const rawDate = followUpData.Follow_Up_Date || followUpData.Next_Follow_Up_Date;
+          this.nextFollowUpDate = rawDate ? new Date(rawDate).toISOString().split('T')[0] : this.getCurrentDate();
+          this.remark = followUpData.Remark || '';
         } else {
           console.log('No existing follow-up data found');
           this.nextFollowUpDate = this.getCurrentDate();
+          this.remark = '';
         }
-         this.isLoading = false;
+        this.isLoading = false;
       },
       error: (error: any) => {
         console.error('Error loading follow-up data:', error);
@@ -2727,17 +2825,17 @@ doc.text(
     });
   }
 
-  View_courses(Student_ID, viewChange = true) {
+  View_courses(Student_ID: any, viewChange: boolean = true) {
     this.selectedTime = '';
     this.selectedSlot = null;
     this.optedCourseId = null;
     this.isLoading = true;
     this.student_Service_
       .getCoursesByStudentId(Student_ID)
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         this.courseList = result;
         console.log("Result!!!!!!", result);
-        if (result.length === 0) {
+        if (result && result.length > 0) {
         this.feesForm
           .get('Total_FeeAmount')
           ?.setValue(this.courseList[0].Total_FeeAmount);
@@ -3045,6 +3143,7 @@ doc.text(
 
     this.Edit_student(student);
     this.loadFollowupData();
+    this.remark = '';
     this.showFollowUpSection = true;
     this.loadFollowupHistoryList();
   }

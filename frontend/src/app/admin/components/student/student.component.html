@@ -152,13 +152,16 @@
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Batch_Name'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item.Email || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item.Country_Code }} {{ item.Phone_Number }}</td>
-          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Remark'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || '-' }}</td> -->
+          <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Is_Registered'] ? 'Yes' : 'No' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['To_User_Name'] || '-' }}</td> -->
           <td class="px-4 py-2 whitespace-nowrap">{{ item['is_enrolled'] ? 'Yes' : 'No' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Followup_Status'] == 1 ? 'Yes' : 'No' }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">
+            <span [ngClass]="item['Followup_Status'] == 1 ? 'text-green-600 font-semibold' : 'text-gray-500'">
+               {{ item['Status_Name'] || item['Follow_Up_Status_Name'] ? 'Yes' : 'No' }}
+            </span>
+          </td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">
             {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-' }}
           </td> -->
@@ -257,11 +260,7 @@
 <section class="border border-gray-300 shadow p-6 rounded-lg bg-white">
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-800">Student Follow-up</h2>
-      @if(selectedStudentForFollowup) {
-      <p class="text-gray-600 mt-1">{{ selectedStudentForFollowup.First_Name }} {{ selectedStudentForFollowup.Last_Name
-        }}</p>
-      }
+      <h2 class="text-xl font-semibold text-gray-800">Student Follow-up - {{ selectedStudentForFollowup?.First_Name }} {{ selectedStudentForFollowup?.Last_Name }}</h2>
     </div>
     <button type="button" (click)="closeFollowUp()"
       class="text-gray-500 hover:text-gray-700 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
@@ -280,7 +279,7 @@
         <label for="Branch" class="block text-sm font-medium text-gray-700">
           Branch
         </label>
-        <select [(ngModel)]="Search_Branch" name="Search_Branch"
+        <select [(ngModel)]="Search_Branch" name="Search_Branch" [compareWith]="compareBranch"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
           <option *ngFor="let branch of Search_Branch_Data" [ngValue]="branch">
@@ -294,7 +293,7 @@
         <label for="department-select" class="block text-sm font-medium text-gray-700">
           Department
         </label>
-        <select [(ngModel)]="Search_Department" name="Search_Department"
+        <select [(ngModel)]="Search_Department" name="Search_Department" [compareWith]="compareDepartment"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
           <option *ngFor="let department of Search_Department_Data" [ngValue]="department">
@@ -308,7 +307,7 @@
         <label for="staff-select" class="block text-sm font-medium text-gray-700">
           Assign To Staff
         </label>
-        <select [(ngModel)]="Search_staff" name="Search_staff"
+        <select [(ngModel)]="Search_staff" name="Search_staff" [compareWith]="compareStaff"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
           <option *ngFor="let staff of staffData" [ngValue]="staff">
@@ -322,7 +321,7 @@
         <label for="status-select" class="block text-sm font-medium text-gray-700">
           Follow-up Status
         </label>
-        <select [(ngModel)]="Search_status" name="Search_status"
+        <select [(ngModel)]="Search_status" name="Search_status" [compareWith]="compareStatus"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
           <option (ngModelChange)="Status_Change()"  *ngFor="let status of followUpStatusData" [ngValue]="status">
@@ -351,11 +350,6 @@
         placeholder="Enter follow-up remarks, notes, or action items (optional)..."
         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         maxlength="1000"></textarea>
-      <div class="flex justify-between">
-        <div class="text-xs text-gray-500">
-          Follow-up details are optional. Leave blank if no follow-up needed.
-        </div>
-      </div>
     </div>
 
     <!-- Action Buttons -->

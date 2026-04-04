@@ -26,6 +26,7 @@ import { UpcomingInstallmentComponent } from './components/upcoming-installment/
 import { DueInstalmentComponent } from './components/due-instalment/due-instalment.component';
 import { StudentLeadComponent } from './components/student-lead/student-lead.component';
 import { FollowUpReportsComponent } from './components/follow-up-reports/follow-up-reports.component';
+import { FollowUpStatusComponent } from './components/follow-up-status/follow-up-status.component';
 
 import { IncomeComponent } from './components/income/income.component';
 
@@ -179,5 +180,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Follow_up_Reports',
     component: FollowUpReportsComponent,
     data: { breadcrumb: 'Follow-up Reports'}
+  },
+  {
+    path: 'Follow_up_Status',
+    component: FollowUpStatusComponent,
+    data: { breadcrumb: 'Follow-up Status'}
   },
 ];

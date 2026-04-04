@@ -157,7 +157,7 @@ export class StudentLeadComponent implements OnInit {
   Search_status: any = {};
   Search_Department: any = {};
   Search_Branch_Data: any[] = [];
-  Search_Department_Data: any = {};
+  Search_Department_Data: any[] = [];
   Search_Branch_Temp: any = {};
   branchData: any[] = [];
   departmentData: any[] = [];
@@ -929,6 +929,18 @@ onCancelEdit(): void {
         return 1;
     }
   }
+  compareBranch(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Branch_Id || o1.Branch_ID) === (o2.Branch_Id || o2.Branch_ID) : o1 === o2;
+  }
+  compareDepartment(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Department_Id || o1.Department_ID) === (o2.Department_Id || o2.Department_ID) : o1 === o2;
+  }
+  compareStaff(o1: any, o2: any): boolean {
+    return o1 && o2 ? o1.User_ID === o2.User_ID : o1 === o2;
+  }
+  compareStatus(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Status_Id || o1.Status_ID) === (o2.Status_Id || o2.Status_ID) : o1 === o2;
+  }
   initForm(): void {
     this.feesForm = this.fb.group({
       Installment_information_ID: ['', Validators.required],
@@ -1168,30 +1180,48 @@ onCancelEdit(): void {
     );
   }
   Followup_status_Dropdown() {
-    const statuses = [
-      'Initial',
-      'Call not picking',
-      'Call not connected',
-      'First follow up',
-      'Mid range',
-      'Potential',
-      'Not interested',
-      'Walk - in',
-      'Admission'
-    ];
+    this.student_Service_.Get_Followup_Status().subscribe(
+      (res: any) => {
+        let rows: any[] = [];
+        if (res && Array.isArray(res[0])) {
+          rows = res[0];
+        } else if (Array.isArray(res)) {
+          rows = res;
+        }
 
-    this.followUpStatusData = statuses.map((name, index) => ({
-      Status_ID: index + 1,
-      Status_Name: name
-    }));
+        // Filter for active statuses only as per dynamic status page requirement
+        rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
 
-    const defaultOption = { Status_ID: 0, Status_Name: 'Select Status' };
-    this.followUpStatusData.unshift(defaultOption);
-    
-    this.Search_status = this.followUpStatusData.find(
-      (status: any) => status.Status_Name?.toLowerCase() === 'pending'
-    ) || defaultOption;
+        const defaultOption = { Status_Id: 0, Status_Name: 'Select Status' };
+        this.followUpStatusData = [defaultOption, ...rows];
+
+        // Ensure Status_ID exists for components that might depend on it
+        this.followUpStatusData.forEach((item: any) => {
+          if (item.Status_Id !== undefined && item.Status_ID === undefined) {
+            item.Status_ID = item.Status_Id;
+          }
+        });
+
+        const pendingStatus = this.followUpStatusData.find(
+          (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        );
+
+        if (this.view === 'list') {
+          // In list view, Search_status is often 'all'
+          // but we should ensure it's initialized
+        } else {
+          this.Search_status = pendingStatus || defaultOption;
+        }
+
+        console.log('Follow-up statuses loaded from DB (Dynamic):', this.followUpStatusData);
+      },
+      (err) => {
+        console.error('Failed to fetch follow-up statuses:', err);
+      }
+    );
   }
+
+
   Get_All_Enquiry() {
     const sources = [
       'Google',
@@ -1831,9 +1861,11 @@ onCancelEdit(): void {
     }
     // For new students or when follow-up section is shown, use form data
     return {
-      Branch_Id: this.Search_Branch?.Branch_Id || null,
+      Branch_Id: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
+      Branch_ID: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
       Branch_Name: this.Search_Branch?.Branch_Name || '',
-      Department_Id: this.Search_Department?.Department_Id || null,
+      Department_Id: this.Search_Department?.Department_ID || this.Search_Department?.Department_Id || null,
+      Department_ID: this.Search_Department?.Department_ID || this.Search_Department?.Department_Id || null,
       Department_Name: this.Search_Department?.Department_Name || '',
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
@@ -1858,11 +1890,11 @@ onCancelEdit(): void {
     if (
       !this.Search_Branch ||
       this.Search_Branch === '' ||
-      !this.Search_Branch.Branch_Id ||
-      this.Search_Branch.Branch_Id === 0 ||
-      this.Search_Branch.Branch_Id === '0' ||
-      this.Search_Branch.Branch_Id === undefined ||
-      this.Search_Branch.Branch_Id === null
+      !(this.Search_Branch.Branch_ID || this.Search_Branch.Branch_Id) ||
+      (this.Search_Branch.Branch_ID === 0 && this.Search_Branch.Branch_Id === 0) ||
+      (this.Search_Branch.Branch_ID === '0' && this.Search_Branch.Branch_Id === '0') ||
+      (this.Search_Branch.Branch_ID === undefined && this.Search_Branch.Branch_Id === undefined) ||
+      (this.Search_Branch.Branch_ID === null && this.Search_Branch.Branch_Id === null)
     ) {
       validationErrors.push('Branch is required in follow-up section');
     }
@@ -1871,11 +1903,11 @@ onCancelEdit(): void {
     if (
       !this.Search_Department ||
       this.Search_Department === '' ||
-      !this.Search_Department.Department_Id ||
-      this.Search_Department.Department_Id === 0 ||
-      this.Search_Department.Department_Id === '0' ||
-      this.Search_Department.Department_Id === undefined ||
-      this.Search_Department.Department_Id === null
+      !(this.Search_Department.Department_ID || this.Search_Department.Department_Id) ||
+      (this.Search_Department.Department_ID === 0 && this.Search_Department.Department_Id === 0) ||
+      (this.Search_Department.Department_ID === '0' && this.Search_Department.Department_Id === '0') ||
+      (this.Search_Department.Department_ID === undefined && this.Search_Department.Department_Id === undefined) ||
+      (this.Search_Department.Department_ID === null && this.Search_Department.Department_Id === null)
     ) {
       validationErrors.push('Department is required in follow-up section');
     }
@@ -2033,9 +2065,6 @@ onCancelEdit(): void {
           });
           this.nextFollowUpDate =
             followUpData.Next_Follow_Up_Date || this.getCurrentDate();
-        } else {
-          console.log('No existing follow-up data found');
-          this.nextFollowUpDate = this.getCurrentDate();
         }
       },
       error: (error: any) => {
@@ -2051,25 +2080,26 @@ onCancelEdit(): void {
 
     return {
       Branch_Id:
-        this.currentFollowUpData.Branch_ID ||
         this.currentFollowUpData.Branch_Id ||
+        this.currentFollowUpData.Branch_ID ||
         null,
       Branch_Name: this.currentFollowUpData.Branch_Name || '',
       Department_Id:
-        this.currentFollowUpData.Department_ID ||
         this.currentFollowUpData.Department_Id ||
+        this.currentFollowUpData.Department_ID ||
         null,
       Department_Name: this.currentFollowUpData.Department_Name || '',
       Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
       Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
-      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || null,
-      Follow_Up_Status_Name:
-        this.currentFollowUpData.Follow_Up_Status_Name || '',
-      Next_Follow_Up_Date: this.currentFollowUpData.Next_Follow_Up_Date || null,
-      Remark: this.currentFollowUpData.Remark || '',
-      Created_Date:
-        this.currentFollowUpData.Created_Date ||
-        new Date().toISOString().split('T')[0],
+      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
+      Follow_Up_Status_Name: this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
+      Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Followup_Status: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Status_Name: this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || '',
+      Next_Follow_Up_Date: this.nextFollowUpDate || null,
+      Follow_Up_Date: this.nextFollowUpDate || null,
+      Remark: this.remark?.trim() || '',
+      Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
     };
   }
@@ -2969,17 +2999,9 @@ onCancelEdit(): void {
     }
 
     this.isLoading = true;
-    ;
-    this.isLoading = true;
-    ;
     // Create a payload that mimics the student save structure but only for follow-up
     const followUpPayload = {
-      Student_ID: this.selectedStudentForFollowup.Student_ID,
-      // Include existing student data to maintain the same API structure
-      First_Name: this.selectedStudentForFollowup.First_Name,
-      Last_Name: this.selectedStudentForFollowup.Last_Name,
-      Email: this.selectedStudentForFollowup.Email,
-      Phone_Number: this.selectedStudentForFollowup.Phone_Number,
+      ...this.selectedStudentForFollowup,
       // Add follow-up data
       ...this.getFollowUpData(),
       // Flag to indicate this is follow-up only save
@@ -3028,6 +3050,7 @@ onCancelEdit(): void {
           this.resetFollowUpForm();
           this.view = 'list';
           this.selectedStudentForFollowup = null;
+          this.Search_student_lead();
         },
       });
   }
@@ -3093,9 +3116,11 @@ onCancelEdit(): void {
 
     return {
       Student_ID: studentId,
-      Branch_ID: this.Search_Branch?.Branch_Id || null,
+      Branch_Id: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
+      Branch_ID: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
       Branch_Name: this.Search_Branch?.Branch_Name || '',
-      Department_ID: this.Search_Department?.Department_Id || null,
+      Department_Id: this.Search_Department?.Department_ID || this.Search_Department?.Department_Id || null,
+      Department_ID: this.Search_Department?.Department_ID || this.Search_Department?.Department_Id || null,
       Department_Name: this.Search_Department?.Department_Name || '',
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
@@ -3162,25 +3187,28 @@ onCancelEdit(): void {
     this.resetFollowUpForm();
 
     // 🔽 Populate follow-up form fields if data is present
+    const studentBranchId = student.Branch_Id || student.Branch_ID;
     this.Search_Branch = this.Search_Branch_Data.find(
-      (b) => b.Branch_Id === student.Branch_Id
-    );
+      (b) => (b.Branch_Id || b.Branch_ID) == studentBranchId
+    ) || this.Search_Branch_Data[0];
 
+    const studentDeptId = student.Department_Id || student.Department_ID;
     this.Search_Department = this.Search_Department_Data.find(
-      (d) => d.Department_Id === student.Department_Id
-    );
+      (d) => (d.Department_Id || d.Department_ID) == studentDeptId
+    ) || this.Search_Department_Data[0];
 
     this.Search_staff = this.staffData.find(
-      (s) => s.First_Name === student.To_User_Name
-    );
+      (s) => s.User_ID == student.Assigned_Staff_ID || s.First_Name === student.To_User_Name || s.First_Name === student.Assigned_Staff_Name || s.First_Name === student.To_User_Name
+    ) || this.staffData[0];
 
+    const studentStatusId = student.Status_Id || student.Followup_Status || student.Status_ID || student.Follow_Up_Status_ID;
     this.Search_status = this.followUpStatusData.find(
-      (s) => s.Status_Id === student.Status_Id
-    );
+      (s) => (s.Status_Id || s.Status_ID) == studentStatusId
+    ) || this.followUpStatusData[0];
 
     this.nextFollowUpDate = student.Follow_Up_Date
       ? this.formatDateForInput(student.Follow_Up_Date)
-      : this.getCurrentDate(); // default to today
+      : (student.Next_Follow_Up_Date ? this.formatDateForInput(student.Next_Follow_Up_Date) : this.getCurrentDate()); // default to today
 
     this.remark = student.Remark || '';
 
@@ -3248,11 +3276,12 @@ onCancelEdit(): void {
           this.followupHistoryList
         );
          const history = this.followupHistoryList[0];
-
-          this.Search_Branch = this.Search_Branch_Data.find(b => b.Branch_Id === history.Branch_Id);
-          this.Search_Department = this.Search_Department_Data.find(d => d.Department_Id === history.Department_Id);
-          this.Search_staff = this.staffData.find(s => s.First_Name === history.Assigned_Staff_Name);
-          this.Search_status = this.followUpStatusData.find(s => s.Status_Id === history.Follow_Up_Status_ID);
+         if (history) {
+           this.Search_Branch = this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) === (history.Branch_Id || history.Branch_ID)) || this.Search_Branch;
+           this.Search_Department = this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) === (history.Department_Id || history.Department_ID)) || this.Search_Department;
+           this.Search_staff = this.staffData.find(s => s.First_Name === history.Assigned_Staff_Name) || this.Search_staff;
+           this.Search_status = this.followUpStatusData.find(s => (s.Status_Id || s.Status_ID) === (history.Follow_Up_Status_ID || history.Followup_Status || history.Status_Id)) || this.Search_status;
+         }
 
       },
       error: (error: any) => {

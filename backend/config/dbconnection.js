@@ -3,8 +3,7 @@ var connection = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "password",
-    // database: "igm",
-    database:"brookss_db",
+    database: "igm",
     multipleStatements: true,
 });
 
