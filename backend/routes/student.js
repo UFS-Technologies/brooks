@@ -604,6 +604,33 @@ router.post('/Save_Occupation/', async (req, res, next) => {
         res.status(500).json({ success: false, message: 'Failed to save message', error: e.message });
     }
 });
+router.post('/Save_Followup_Status/', async (req, res, next) => {
+    try {
+        const rows = await student.Save_Followup_Status(req.body);
+        res.json(rows[0]);
+    }
+    catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to save follow-up status', error: e.message });
+    }
+});
+router.get('/Get_Followup_Status/', async (req, res, next) => {
+    try {
+        const rows = await student.Get_Followup_Status();
+        res.json(rows[0]);
+    }
+    catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get follow-up status', error: e.message });
+    }
+});
+router.post('/Delete_Followup_Status/', async (req, res, next) => {
+    try {
+        const rows = await student.Delete_Followup_Status(req.body.Status_Id);
+        res.json(rows[0]);
+    }
+    catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to delete follow-up status', error: e.message });
+    }
+});
 router.post('/Bulk_Student_Import/', async (req, res, next) => {
     try {
         console.log('req.body: ', req.body.students);

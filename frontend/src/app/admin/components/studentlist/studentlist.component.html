@@ -374,12 +374,12 @@
         </form>
 
         <div class="mb-4" style="padding: 5px;">
-            <label class="inline-flex items-center">
-                <input type="checkbox" [(ngModel)]="isRegistering"
-                    (click)="studentRegistration(followUps, isRegistering)" name="isRegistering"
-                    class="form-checkbox h-5 w-5 text-indigo-600">
-                <span class="ml-2 text-sm text-gray-700">Registration</span>
-            </label>
+        <label class="inline-flex items-center">
+            <input type="checkbox" [(ngModel)]="isRegistering"
+                (ngModelChange)="onRegistrationToggle($event)" name="isRegistering"
+                class="form-checkbox h-5 w-5 text-indigo-600">
+            <span class="ml-2 text-sm text-gray-700">Registration</span>
+        </label>
         </div>
 
         @if (isRegistering) {
@@ -834,7 +834,7 @@
                         <label for="Branch" class="block text-sm font-medium text-gray-700">
                             Branch
                         </label>
-                        <select [(ngModel)]="Search_Branch" name="Search_Branch"
+                        <select [(ngModel)]="Search_Branch" name="Search_Branch" [compareWith]="compareBranch"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
                             <option *ngFor="let branch of Search_Branch_Data" [ngValue]="branch">
@@ -848,7 +848,7 @@
                         <label for="department-select" class="block text-sm font-medium text-gray-700">
                             Department
                         </label>
-                        <select [(ngModel)]="Search_Department" name="Search_Department"
+                        <select [(ngModel)]="Search_Department" name="Search_Department" [compareWith]="compareDepartment"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
                             <option *ngFor="let department of Search_Department_Data" [ngValue]="department">
@@ -862,7 +862,7 @@
                         <label for="staff-select" class="block text-sm font-medium text-gray-700">
                             Assign To Staff
                         </label>
-                        <select [(ngModel)]="Search_staff" name="Search_staff"
+                        <select [(ngModel)]="Search_staff" name="Search_staff" [compareWith]="compareStaff"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <div *ngIf="staffData.length >0">
                             <option *ngFor="let staff of staffData" [ngValue]="staff">
@@ -877,7 +877,7 @@
                         <label for="status-select" class="block text-sm font-medium text-gray-700">
                             Follow-up Status
                         </label>
-                        <select [(ngModel)]="Search_status" name="Search_status"
+                        <select [(ngModel)]="Search_status" name="Search_status" [compareWith]="compareStatus"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
 
                             <option *ngFor="let status of followUpStatusData" [ngValue]="status">

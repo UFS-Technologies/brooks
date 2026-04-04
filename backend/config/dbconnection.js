@@ -1,9 +1,15 @@
 var mysql = require("mysql2");
 var connection = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database: "igm",
+    // host: "localhost",
+    // user: "root",
+    // password: "password",
+    // database: "igm",
+
+
+    host: "DESKTOP-IK6ME8M",
+    user: 'root',
+    password: 'root',
+    database: "brooks",
     multipleStatements: true,
 });
 

@@ -199,6 +199,8 @@ export class NavbarComponent implements OnInit {
         return isActive
           ? 'assets/images/navbar/income-active.png'
           : 'assets/images/navbar/income.png';
+      case 'Status':
+        return '';
       default:
         return ''; 
     }

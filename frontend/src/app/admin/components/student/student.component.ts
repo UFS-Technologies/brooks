@@ -157,7 +157,7 @@ export class StudentComponent implements OnInit {
   Search_status: any = {};
   Search_Department: any = {};
   Search_Branch_Data: any[] = [];
-  Search_Department_Data: any = {};
+  Search_Department_Data: any[] = [];
   Search_Branch_Temp: any = {};
   branchData: any[] = [];
   departmentData: any[] = [];
@@ -240,6 +240,18 @@ export class StudentComponent implements OnInit {
   studentList: any[];
   student_Details: any;
 
+  compareBranch(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Branch_Id || o1.Branch_ID) === (o2.Branch_Id || o2.Branch_ID) : o1 === o2;
+  }
+  compareDepartment(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Department_Id || o1.Department_ID) === (o2.Department_Id || o2.Department_ID) : o1 === o2;
+  }
+  compareStaff(o1: any, o2: any): boolean {
+    return o1 && o2 ? o1.User_ID === o2.User_ID : o1 === o2;
+  }
+  compareStatus(o1: any, o2: any): boolean {
+    return o1 && o2 ? (o1.Status_Id || o1.Status_ID) === (o2.Status_Id || o2.Status_ID) : o1 === o2;
+  }
   constructor(
     public dialog: MatDialog,
     private feesService: StudentFeesService,
@@ -1166,35 +1178,42 @@ onCancelEdit(): void {
     );
   }
   Followup_status_Dropdown() {
-    ;
-    this.student_Service_.Followup_status_Dropdown().subscribe(
-      (Rows) => {
-        ;
-        console.log('Raw Followup_status Response:', Rows);
-
-        // If Rows is an object, try:
-        if (Rows && Array.isArray(Rows[0])) {
-          this.followUpStatusData = Rows[0];
-        } else if (Array.isArray(Rows)) {
-          this.followUpStatusData = Rows;
-        } else {
-          console.error('Unexpected Branch data format:', Rows);
-          this.followUpStatusData = [];
-          return;
+    this.student_Service_.Get_Followup_Status().subscribe(
+      (res: any) => {
+        let rows: any[] = [];
+        if (res && Array.isArray(res[0])) {
+          rows = res[0];
+        } else if (Array.isArray(res)) {
+          rows = res;
         }
 
-        const defaultOption = { Status_ID: 0, Status_Name: 'Select Status' };
-        this.followUpStatusData.unshift(defaultOption);
-        this.Search_status =
-          this.followUpStatusData.find(
-            (status: any) => status.Status_Name?.toLowerCase() === 'pending'
-          ) || defaultOption;
+        // Filter for active statuses only as per dynamic status page requirement
+        rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
+
+        const defaultOption = { Status_Id: 0, Status_Name: 'Select Status' };
+        this.followUpStatusData = [defaultOption, ...rows];
+
+        // Ensure Status_ID exists for components that might depend on it
+        this.followUpStatusData.forEach((item: any) => {
+          if (item.Status_Id !== undefined && item.Status_ID === undefined) {
+            item.Status_ID = item.Status_Id;
+          }
+        });
+
+        const pendingStatus = this.followUpStatusData.find(
+          (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        );
+
+        this.Search_status = pendingStatus || defaultOption;
+
+        console.log('Follow-up statuses loaded from DB (Student Dynamic):', this.followUpStatusData);
       },
       (err) => {
-        console.error('Failed to fetch branch data:', err);
+        console.error('Failed to fetch follow-up statuses:', err);
       }
     );
   }
+
   Department_Dropdown() {
     ;
     this.student_Service_.Department_Dropdown().subscribe(
