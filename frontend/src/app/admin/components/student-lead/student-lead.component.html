@@ -159,9 +159,17 @@
           </td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Enquiry_Source_Name'] || item['Enquiry_Source'] || item['Enquiry_Source_Id'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Remark'] || '-' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">{{ item['Followup_Status'] == 1 ? 'Yes' : 'No' }}</td>
+          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td> -->
+          <td class="px-4 py-2 hover:bg-sky-50 transition cursor-pointer" 
+            (click)="item['showFullRemark'] = !item['showFullRemark']; $event.stopPropagation()"
+            [title]="item['Remark'] || ''">
+            @if(item['Remark'] && item['Remark'].split(' ').length > 10 && !item['showFullRemark']) {
+                {{ item['Remark'].split(' ').slice(0, 10).join(' ') }}...
+            } @else {
+                {{ item['Remark'] || '-' }}
+            }
+          </td>
+          <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Followup_Status'] == 1 ? 'Yes' : 'No' }}</td> -->
 
         </tr>
       </tbody>
