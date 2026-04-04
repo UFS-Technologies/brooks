@@ -150,6 +150,7 @@ export class StudentlistComponent {
   };
   available_Time_Slots: any = [];
   isRegistering: boolean = false;
+  registration_Status: boolean = false;
 
   isEdit: boolean = false;
   isSave: boolean = false;
@@ -1120,10 +1121,14 @@ doc.text(
       Department_Name: this.currentFollowUpData.Department_Name || '',
       Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
       Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
-      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
       Follow_Up_Status_Name:
-        this.currentFollowUpData.Follow_Up_Status_Name || '',
-      Next_Follow_Up_Date: this.currentFollowUpData.Next_Follow_Up_Date || null,
+        this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
+      Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Followup_Status: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Status_Name: this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || '',
+      Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Next_Follow_Up_Date || this.currentFollowUpData.Follow_Up_Date || null)?.toString().split('T')[0],
+      Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Follow_Up_Date || this.currentFollowUpData.Next_Follow_Up_Date || null)?.toString().split('T')[0],
       Remark: this.currentFollowUpData.Remark || '',
       Created_Date:
         this.currentFollowUpData.Created_Date ||
@@ -1158,7 +1163,6 @@ doc.text(
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
       Next_Follow_Up_Date: this.nextFollowUpDate || null,
-      Follow_Up_Date: this.nextFollowUpDate || null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
@@ -1266,6 +1270,7 @@ doc.text(
       Last_Name: this.selectedStudentForFollowup.Last_Name,
       Email: this.selectedStudentForFollowup.Email,
       Phone_Number: this.selectedStudentForFollowup.Phone_Number,
+      Enquiry_Source_Id: this.selectedStudentForFollowup.Enquiry_Source_Id || this.selectedStudentForFollowup.Enquiry_Source_ID,
       // Add follow-up data
       ...this.getFollowUpData(),
       // Flag to indicate this is follow-up only save
@@ -1419,7 +1424,6 @@ doc.text(
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
       Next_Follow_Up_Date: this.nextFollowUpDate || null,
-      Follow_Up_Date: this.nextFollowUpDate || null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,
@@ -1495,12 +1499,13 @@ doc.text(
     const email = this.student_Form.get('Email')?.value;
     const phone = this.student_Form.get('Phone_Number')?.value;
 
-    this.student_Form.get('isRegistering')?.setValue(this.isRegistering);
+    this.student_Form.get('isRegistering')?.setValue(this.registration_Status);
     this.student_Form.get('Registered_By')?.setValue(User_Id);
 
-    if (this.isRegistering) {
+    // if (this.student_Form.get('isRegistering')?.setValue(this.registration_Status)) {
+      // Only set Registered_On if not already registered
       this.student_Form.get('Registered_On')?.setValue(new Date());
-    }
+    // }
 
     if (!email && !phone) {
       this.dialogBox.open(DialogBox_Component, {
@@ -1520,14 +1525,16 @@ doc.text(
       });
       return;
     }
- console.log('this.student_Form11111', this.student_Form.value);
+
     // Prepare follow-up data
     const followUpData = this.getFollowUpData();
- console.log('this.student_Form2222', this.student_Form.value);
+
     // Merge follow-up fields into student form value before saving
     const studentPayload = {
       ...this.student_Form.value,
-      Address: this.isRegistering ? this.student_Form.value.Address : this.student_Form.value.District, // Use full Address if registering
+      isRegistering: this.registration_Status ? 1 : 0, // Ensure numeric for backend if needed
+      isRegistered: this.registration_Status ? 1 : 0, // Explicitly add isRegistered for clarity
+      Address: this.registration_Status ? this.student_Form.value.Address : (this.student_Form.value.District || this.student_Form.value.Address), 
       ...followUpData,
       Installments: this.installments,
       Branch_Id: this.student_Form.value.Branch_Id,
@@ -2498,71 +2505,68 @@ doc.text(
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result == 'Yes') {
-        if (rollNo) {
-          this.isLoading = true;
-          const studentId = student.Student_ID || this.student_Form.get('Student_ID')?.value;
+         console.log("this.student_Form['Roll_No']", this.student_Form.value.Branch_Id);
+    console.log('mode', this.mode);
+    console.log("this.student_Form['Roll_No']", this.student_Form.value.Roll_No);
 
-          this.feesService
-            .Remove_Student_Registration(
-              studentId,
-              isRegistered,
-              User_ID
-            )
-            .subscribe(
-              (res: RegistrationResponse) => {
-                console.log('Registration response:', res);
-                if (this.followUps) {
-                  this.followUps['Roll_No'] = res.RollNumber;
-                }
-                this.student_Form.get('Roll_No')?.setValue(res.RollNumber);
-                this.isLoading = false;
-              },
-              (err) => {
-                console.error('Error removing registration:', err);
-                this.isLoading = false;
-              }
-            );
-        }
-      }
-    });
-  }
-  onRegistrationToggle(isRegistered: boolean) {
-    console.log('onRegistrationToggle', isRegistered);
-    this.isRegistering = isRegistered;
-    this.student_Form.get('isRegistering')?.setValue(isRegistered);
-
-    const studentId = this.student_Form.get('Student_ID')?.value;
-    // If student exists but is not registered yet, and we just checked registration
-    if (isRegistered && studentId && studentId !== 0 && !this.student_Form.get('Roll_No')?.value) {
-      this.studentRegistration(this.followUps, false);
-    }
-  }
-
-  studentRegistration(student: any, isRegistered: boolean) {
-    console.log('studentRegistration called', isRegistered);
-    const action = !isRegistered ? 'register' : 'unregister';
-    const message = `Do you want to ${action}?`;
-    const User_ID = localStorage.getItem('User_Type');
-
-    const rollNo = this.student_Form.get('Roll_No')?.value;
-
-    if (!rollNo) {
+    if (this.student_Form.value.Roll_No) {
+      // this.registration_Status
       this.isLoading = true;
       console.log('Student ID:', student);
       console.log('Currently Registered:', isRegistered);
+
       console.log('User_ID', User_ID);
+      // Registration_Using_Student_Branch
+      this.feesService
+        .Remove_Student_Registration(
+          student.Student_ID,
+          isRegistered,
+          User_ID
+        )
+        .subscribe(
+          (res: RegistrationResponse) => {
+            console.log('Registration response:', res);
+            this.followUps['Roll_No'] = res.RollNumber;
+            this.student_Form.get('Roll_No')?.setValue(res.RollNumber);
 
-      const studentId = student.Student_ID || this.student_Form.get('Student_ID')?.value;
-
-      if (!studentId || studentId === 0) {
-        console.log('Add mode: skipping immediate registration call');
-        this.isLoading = false;
-        return;
+            // this.ngOnInit();
+            this.isLoading = false;
+          },
+          (err) => {
+            console.error('Error loading fee list:', err);
+            this.isLoading = false;
+          }
+        );
+      this.isLoading = false;
+    }
       }
+    })
+   
+  }
+  studentRegistration(student: any, isRegistered: boolean) {
+    console.log('isRegistered', isRegistered);
+    const action = !isRegistered ? 'register' : 'unregister';
+    this.registration_Status = !isRegistered;
+    const message = `Do you want to ${action}?`;
+    const User_ID = localStorage.getItem('User_Type');
+    // Is_Registered
 
+
+         console.log("this.student_Form['Roll_No']", this.student_Form.value.Branch_Id);
+    console.log('mode', this.mode);
+    console.log("this.student_Form['Roll_No']", this.student_Form.value.Roll_No);
+
+    if (!this.student_Form['Roll_No']) {
+      // this.registration_Status
+      this.isLoading = true;
+      console.log('Student ID:', student);
+      console.log('Currently Registered:', isRegistered);
+
+      console.log('User_ID', User_ID);
+      // Registration_Using_Student_Branch
       this.feesService
         .Registration_Using_Student_Branch(
-          studentId,
+          student.Student_ID,
           isRegistered,
           User_ID
         )
@@ -2580,6 +2584,7 @@ doc.text(
             this.isLoading = false;
           }
         );
+      this.isLoading = false;
     }
   }
 
@@ -2649,6 +2654,7 @@ doc.text(
       student_e['Active_Status'] = 'Deactivated';
     }
     if (student_e['Roll_No'] || (this.followUps && this.followUps['Roll_No'])) {
+      this.registration_Status = true;
       this.isRegistering = true;
     }
     // Always hide follow-up section when editing existing student
@@ -2713,14 +2719,10 @@ doc.text(
         this.student_Form.patchValue({
           Guardian_Type: followUpData.Guardian_Type
             ? followUpData.Guardian_Type
-            : ['Father'],
-          Guardian_Name: followUpData.Guardian_Name || [''],
-          Guardian_Phone: followUpData.Guardian_Phone || [''],
+            : 'Father',
+          Guardian_Name: followUpData.Guardian_Name || '',
+          Guardian_Phone: followUpData.Guardian_Phone || '',
           Guardian_Alt_Phone: followUpData.Guardian_Alt_Phone,
-          // Active_Status: followUpData.Active_Status
-          //   ? followUpData.Active_Status
-          //   : ['Active'],
-
           Active_Status:
             followUpData.isActive === 0
               ? 'Deactivated'
@@ -2728,19 +2730,15 @@ doc.text(
               ? 'Active'
               : 'Active',
 
-          Height_cm: followUpData.Height_cm || [''],
-          Weight_kg: followUpData.Weight_kg || [''],
-          Admission_Date: followUpData.Admission_Date || [today],
+          Height_cm: followUpData.Height_cm || '',
+          Weight_kg: followUpData.Weight_kg || '',
+          Admission_Date: followUpData.Admission_Date || today,
           Roll_No: followUpData.Roll_No || null,
           Age: followUpData.Age || [''],
           Qualification: followUpData.Qualification || [''],
-          Qualification_Description: followUpData.Qualification_Description || [
-            '',
-          ],
+          Qualification_Description: followUpData.Qualification_Description || [''],
           Alt_Phone_Number: followUpData.Alt_Phone_Number || [''],
           Address: followUpData.Address || [''],
-          // For leads, District (Place) is often stored in Address field
-          District: followUpData.District || followUpData.Address || this.student_Form.get('District')?.value || [''],
         });
         // this.student_Form.patchValue(followUpData);
         // Just store the data, don't show any UI
@@ -3127,6 +3125,7 @@ doc.text(
 
     this.Edit_student(student);
     this.loadFollowupData();
+    this.remark = '';
     this.showFollowUpSection = true;
     this.loadFollowupHistoryList();
   }
