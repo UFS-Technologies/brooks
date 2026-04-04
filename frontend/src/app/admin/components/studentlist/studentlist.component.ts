@@ -916,6 +916,24 @@ doc.text(
       Enquiry_Source_Name: name,
     }));
   }
+
+  onRegistrationToggle(event: any) {
+    this.isRegistering = event;
+    if (!event) {
+      this.student_Form.patchValue({
+        Roll_No: null,
+        Admission_Date: null,
+        isRegistering: false,
+      });
+    } else {
+      this.student_Form.patchValue({
+        isRegistering: true,
+      });
+      const today = new Date().toISOString().split('T')[0];
+      this.student_Form.get('Admission_Date')?.setValue(today);
+    }
+  }
+
   getRoundedInstallments(
     total: number,
     count: number,
