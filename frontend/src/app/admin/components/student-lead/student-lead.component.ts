@@ -1190,8 +1190,8 @@ onCancelEdit(): void {
           rows = res;
         }
 
-        // Filter for active statuses only as per dynamic status page requirement
-        rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
+        // Displaying all statuses without filtering by Is_Active based on requirement
+        // rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
 
         const defaultOption = { Status_Id: 0, Status_Name: 'Select Status' };
         this.followUpStatusData = [defaultOption, ...rows];
@@ -1765,7 +1765,23 @@ onCancelEdit(): void {
           ).subscribe({
             next: (enrichedRows: any[]) => {
               this.student_Data = enrichedRows;
-              
+
+              // Filter out leads whose follow-up status is marked as 'No' (Is_Active === 0 / false)
+              if (this.followUpStatusData && this.followUpStatusData.length > 0) {
+                this.student_Data = this.student_Data.filter((student: any) => {
+                  const statusName = student.Status_Name || student.Follow_Up_Status_Name || student.Followup_Status_Name;
+                  if (statusName) {
+                    const matchedStatus = this.followUpStatusData.find(
+                      (s: any) => s.Status_Name === statusName
+                    );
+                    if (matchedStatus && (matchedStatus.Is_Active === 0 || matchedStatus.Is_Active === false || matchedStatus.Is_Active === '0')) {
+                      return false; // exclude leads with inactive follow-up statuses
+                    }
+                  }
+                  return true; // keep others
+                });
+              }
+
               if (this.selectedStaffFilter && this.selectedStaffFilter !== 'all') {
                 this.student_Data = this.student_Data.filter(
                   (s) =>
@@ -1778,6 +1794,22 @@ onCancelEdit(): void {
             },
             error: () => {
               this.student_Data = rows;
+
+              // Filter out leads whose follow-up status is marked as 'No' (Is_Active === 0 / false)
+              if (this.followUpStatusData && this.followUpStatusData.length > 0) {
+                this.student_Data = this.student_Data.filter((student: any) => {
+                  const statusName = student.Status_Name || student.Follow_Up_Status_Name || student.Followup_Status_Name;
+                  if (statusName) {
+                    const matchedStatus = this.followUpStatusData.find(
+                      (s: any) => s.Status_Name === statusName
+                    );
+                    if (matchedStatus && (matchedStatus.Is_Active === 0 || matchedStatus.Is_Active === false || matchedStatus.Is_Active === '0')) {
+                      return false; // exclude leads with inactive follow-up statuses
+                    }
+                  }
+                  return true;
+                });
+              }
               
               if (this.selectedStaffFilter && this.selectedStaffFilter !== 'all') {
                 this.student_Data = this.student_Data.filter(

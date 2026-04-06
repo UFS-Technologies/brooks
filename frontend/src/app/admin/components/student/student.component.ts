@@ -1187,8 +1187,8 @@ onCancelEdit(): void {
           rows = res;
         }
 
-        // Filter for active statuses only as per dynamic status page requirement
-        rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
+        // Displaying all statuses without filtering by Is_Active based on requirement
+        // rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
 
         const defaultOption = { Status_Id: 0, Status_Name: 'Select Status' };
         this.followUpStatusData = [defaultOption, ...rows];
