@@ -1927,6 +1927,8 @@ onCancelEdit(): void {
       return {};
     }
     // For new students or when follow-up section is shown, use form data
+    const followUpStatusId =
+      this.Search_status?.Status_Id ?? this.Search_status?.Status_ID ?? null;
     return {
       Branch_Id: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
       Branch_ID: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
@@ -1936,7 +1938,7 @@ onCancelEdit(): void {
       Department_Name: this.Search_Department?.Department_Name || '',
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
-      Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
+      Follow_Up_Status_ID: followUpStatusId,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
       Next_Follow_Up_Date: this.nextFollowUpDate || null,
       Remark: this.remark?.trim() || '',
@@ -3066,36 +3068,26 @@ onCancelEdit(): void {
     }
 
     this.isLoading = true;
-    // Create a payload that mimics the student save structure but only for follow-up
-    const followUpPayload = {
-      ...this.selectedStudentForFollowup,
-      // Add follow-up data
-      ...this.getFollowUpData(),
-      // Flag to indicate this is follow-up only save
-      isFollowUpOnly: true,
-    };
+    // Save follow-up directly. Avoid Save_student in follow-up-only mode.
+    const mockSaveStatus = [
+      {
+        Student_ID: this.selectedStudentForFollowup.Student_ID,
+        success: true,
+      },
+    ];
 
-    console.log('Follow-up only payload:', followUpPayload);
-
-    // Use the same save structure as regular student save
-    this.student_Service_
-      .Save_student(followUpPayload)
+    this.processStudentSaveWithFollowup(mockSaveStatus)
       .pipe(
-        switchMap((saveStatus) => {
-          ; // Create a mock save status for follow-up processing
-          const mockSaveStatus = [
-            {
-              Student_ID: this.selectedStudentForFollowup.Student_ID,
-              success: true,
-            },
-          ];
-          return this.processStudentSaveWithFollowup(mockSaveStatus);
-        }),
         catchError((error) => {
+          const errorMessage =
+            error?.error?.message ||
+            error?.error?.error ||
+            error?.message ||
+            'Error saving follow-up';
           this.dialogBox.open(DialogBox_Component, {
             panelClass: 'Dialogbox-Class',
             data: {
-              Message: error.error || 'Error saving follow-up',
+              Message: errorMessage,
               Type: '2',
             },
           });
@@ -3181,6 +3173,8 @@ onCancelEdit(): void {
         : Save_status[0]?.Student_ID ||
           this.student_Form.get('Student_ID')?.value;
 
+    const followUpStatusId =
+      this.Search_status?.Status_Id ?? this.Search_status?.Status_ID ?? null;
     return {
       Student_ID: studentId,
       Branch_Id: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
@@ -3191,7 +3185,7 @@ onCancelEdit(): void {
       Department_Name: this.Search_Department?.Department_Name || '',
       Assigned_Staff_ID: this.Search_staff?.User_ID || null,
       Assigned_Staff_Name: this.Search_staff?.First_Name || '',
-      Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
+      Follow_Up_Status_ID: followUpStatusId,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
       Next_Follow_Up_Date: this.nextFollowUpDate || null,
       Remark: this.remark?.trim() || '',
@@ -3269,9 +3263,12 @@ onCancelEdit(): void {
     ) || this.staffData[0];
 
     const studentStatusId = student.Status_Id || student.Followup_Status || student.Status_ID || student.Follow_Up_Status_ID;
+    const pendingStatus = this.followUpStatusData.find(
+      (s) => s.Status_Name?.toLowerCase() === 'pending'
+    );
     this.Search_status = this.followUpStatusData.find(
       (s) => (s.Status_Id || s.Status_ID) == studentStatusId
-    ) || this.followUpStatusData[0];
+    ) || pendingStatus || this.followUpStatusData[0];
 
     this.nextFollowUpDate = student.Follow_Up_Date
       ? this.formatDateForInput(student.Follow_Up_Date)
