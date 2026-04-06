@@ -2664,12 +2664,9 @@ doc.text(
     this.view = 'edit';
     this.nextFollowUpDate = this.getCurrentDate();
     // isActive
-    if (student_e['isActive']) {
-      student_e['Active_Status'] = 'Active';
-      // student_e['isActive'] === 1 || student_e['isActive'] === '1'
-    } else {
-      //student_e['Active_Status'] = 'Inactive';
-      student_e['Active_Status'] = 'Deactivated';
+    // Preservation of Active_Status from database
+    if (!student_e['Active_Status']) {
+      student_e['Active_Status'] = student_e['isActive'] ? 'Active' : 'Dropout';
     }
     if (student_e['Roll_No'] || (this.followUps && this.followUps['Roll_No'])) {
       this.registration_Status = true;

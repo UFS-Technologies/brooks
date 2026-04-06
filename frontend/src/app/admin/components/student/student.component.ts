@@ -1850,11 +1850,9 @@ onCancelEdit(): void {
     console.log('student_e: ', student_e);
     this.view = 'edit';
     this.nextFollowUpDate = this.getCurrentDate();
-    // isActive
-    if (student_e['isActive']) {
-      student_e['Active_Status'] = 'Active';
-    } else {
-      student_e['Active_Status'] = 'Deactivated';
+    // Preservation of Active_Status from database
+    if (!student_e['Active_Status']) {
+      student_e['Active_Status'] = student_e['isActive'] ? 'Active' : 'Dropout';
     }
       // Fix Admission Date format
   if (student_e['Admission_Date']) {

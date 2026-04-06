@@ -40,14 +40,15 @@
       </div>
 
       <!-- Active Status Filter -->
-      <!-- <div class="min-w-[180px]">
-        <label for="activeStatus" class="block text-sm font-medium text-gray-600 mb-1">Active Status</label>
+      <div class="min-w-[180px]">
+        <label for="activeStatus" class="block text-sm font-medium text-gray-600 mb-1">Status</label>
         <div class="relative">
           <select id="activeStatus" [(ngModel)]="activeStatus" (change)="onSearchChange()"
             class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-2.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="deactivated">Deactivated</option>
+            <option value="all">All Statuses</option>
+            <option value="Active">Active</option>
+            <option value="Dropout">Dropout</option>
+            <option value="Completed">Completed</option>
           </select>
           <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -56,7 +57,7 @@
               clip-rule="evenodd" />
           </svg>
         </div>
-      </div> -->
+      </div>
 
 
       <!-- Course Filter -->
@@ -129,6 +130,7 @@
           <!-- <th class="px-4 py-2 whitespace-nowrap">Remark</th>
           <th class="px-4 py-2 whitespace-nowrap">Status</th> -->
           <th class="px-4 py-2 whitespace-nowrap">Registered</th>
+          <th class="px-4 py-2 whitespace-nowrap">Status</th>
           <th class="px-4 py-2 whitespace-nowrap">Branch</th>
           <!-- <th class="px-4 py-2 whitespace-nowrap">To Staff</th> -->
           <th class="px-4 py-2 whitespace-nowrap">Enrolled</th>
@@ -154,6 +156,15 @@
           <td class="px-4 py-2 whitespace-nowrap">{{ item.Country_Code }} {{ item.Phone_Number }}</td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}</td> -->
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Is_Registered'] ? 'Yes' : 'No' }}</td>
+          <td class="px-4 py-2 whitespace-nowrap">
+            <span [ngClass]="{
+              'text-green-600 font-semibold': item['Active_Status'] === 'Active',
+              'text-red-600 font-semibold': item['Active_Status'] === 'Dropout',
+              'text-blue-600 font-semibold': item['Active_Status'] === 'Completed'
+            }">
+              {{ item['Active_Status'] || 'Active' }}
+            </span>
+          </td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['To_User_Name'] || '-' }}</td> -->
           <td class="px-4 py-2 whitespace-nowrap">{{ item['is_enrolled'] ? 'Yes' : 'No' }}</td>
