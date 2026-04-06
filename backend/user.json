@@ -1,0 +1,20 @@
+[
+  {
+    "User_ID": 1,
+    "First_Name": "admin_user",
+    "Last_Name": "last_name",
+    "Email": "admin_user@G.COM",
+    "PhoneNumber": "1111111111",
+    "Delete_Status": 0,
+    "User_Type_Id": 1,
+    "User_Role_Id": null,
+    "User_Active_Status": null,
+    "OTP": null,
+    "password": "123",
+    "Profile_Photo_Path": null,
+    "Profile_Photo_Name": null,
+    "token": null,
+    "Device_ID": null,
+    "Branch_Id": 1
+  }
+]

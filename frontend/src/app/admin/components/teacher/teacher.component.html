@@ -79,6 +79,11 @@
       </div>
       <div class="flex  flex-wrap gap-3 cursor-pointer items-center">
 
+        <button (click)="View_team(item.User_ID, item.First_Name, item.Last_Name)" title="view Team"
+          class="flex items-center px-4 py-2 h-10 text-[#0f766e] bg-[#ecfeff] rounded-md hover:bg-[#cffafe] transition-all duration-300 transform hover:scale-105">
+          <span class="material-symbols-outlined mr-2">groups</span>
+          <span class="font-medium">Team</span>
+        </button>
 
         <button (click)="View_permissions(item.User_ID,item.User_Type_Id)" title="view Permissions"
           class="flex items-center px-4 py-2   h-10  text-[#fefffe] bg-[#3f9b23] rounded-md hover:bg-[#dbeafe] transition-all duration-300 transform hover:scale-105">
@@ -942,6 +947,12 @@
 </div>
 } @else if (view == 'View_permissions') {
 <app-view-permissions  [userId]="User_Type_Id_status" (userIdChange)="onUserIdChange($event)"></app-view-permissions>
+} @else if (view == 'View_team') {
+<app-view-team-assignment
+  [teamLeadId]="selectedTeamLeadId"
+  [teamLeadName]="selectedTeamLeadName"
+  (closeView)="onTeamAssignmentClose()">
+</app-view-team-assignment>
 }
 
 <div #invoiceContainer *ngIf="printInvoice_view"

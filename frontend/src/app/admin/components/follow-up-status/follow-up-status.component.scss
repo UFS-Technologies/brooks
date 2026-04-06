@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+.action-icons {
+  button {
+    @apply transition-all duration-200 transform;
+    &:active {
+      @apply scale-95;
+    }
+  }
+}
+
+// Custom styles for color input to make it look premium
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  width: 48px;
+  height: 40px;
+  cursor: pointer;
+  background: none;
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  &::-webkit-color-swatch {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+}
+
+.container {
+  max-width: 1200px;
+}

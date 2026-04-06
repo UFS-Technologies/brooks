@@ -274,6 +274,22 @@ if (student.Registered_On) {
   course_batch_Dropdown: async function () {
     return executeTransaction("course_batch_Dropdown", []);
   },
+  Save_Followup_Status: async function (data) {
+    return executeTransaction("Save_Followup_Status", [
+      data.Status_Id || 0,
+      data.Status_Name,
+      data.Status_Color || '#6B7280',
+      data.Description || '',
+      data.Display_Order || 0,
+      data.Is_Active !== undefined ? data.Is_Active : 1
+    ]);
+  },
+  Get_Followup_Status: async function () {
+    return getmultipleSP("Get_Followup_Status", []);
+  },
+  Delete_Followup_Status: async function (id) {
+    return executeTransaction("Delete_Followup_Status", [id]);
+  },
   Delete_Student_Account: async function (userId) {
     return executeTransaction("Delete_Student_Account", [userId]);
   },

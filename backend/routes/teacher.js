@@ -33,6 +33,34 @@ router.get('/Get_Teacher_Students/:teacher_Id_/:course_id_?', async(req, res, ne
         res.status(500).json({ success: false, message: 'Failed to get courses', error: e.message });
     }
 });
+router.get('/Get_Staff_Team_Assignment/:team_lead_id', async(req, res, next) => {
+    try {
+        const teamLeadId = Number(req.params.team_lead_id);
+        if (!Number.isInteger(teamLeadId) || teamLeadId <= 0) {
+            return res.status(400).json({ success: false, message: 'Invalid team lead id' });
+        }
+
+        const rows = await teacher.Get_Staff_Team_Assignment(teamLeadId);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get team assignment', error: e.message });
+    }
+});
+router.post('/Save_Staff_Team_Assignment/', async(req, res, next) => {
+    try {
+        const teamLeadId = Number(req.body?.teamLeadId);
+        const staffIds = req.body?.staffIds;
+
+        if (!Number.isInteger(teamLeadId) || teamLeadId <= 0) {
+            return res.status(400).json({ success: false, message: 'Invalid team lead id' });
+        }
+
+        const rows = await teacher.Save_Staff_Team_Assignment(teamLeadId, staffIds);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to save team assignment', error: e.message });
+    }
+});
 router.get('/Get_teacherBatch_of_oneOnOne/:teacher_Id_?', async(req, res, next) => {
     try {
         console.log('req.params.teacher_Id_: ', req.params.teacher_Id_);

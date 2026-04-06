@@ -286,4 +286,19 @@ Delete_StudentDocument(student_Id) {
     ;
     return this.http.get(environment.BasePath + 'Student/loadBatches/');
   }
+  Save_Followup_Status(data: any) {
+    return this.http.post(
+      environment.BasePath + 'student/Save_Followup_Status/',
+      data
+    );
+  }
+  Get_Followup_Status(): Observable<any> {
+    return this.http.get(environment.BasePath + 'student/Get_Followup_Status/');
+  }
+  Delete_Followup_Status(Status_Id: number) {
+    return this.http.post(
+      environment.BasePath + 'student/Delete_Followup_Status/',
+      { Status_Id: Status_Id }
+    );
+  }
 }

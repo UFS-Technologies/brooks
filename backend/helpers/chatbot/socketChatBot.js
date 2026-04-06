@@ -10,7 +10,8 @@ const openai = new OpenAI({
 const { NlpManager } = require('node-nlp');
 
 const jwt = require('jsonwebtoken');
-const secret = process.env.jwtSecret;
+const { getJwtSecret } = require('../jwt-secret');
+const jwtSecret = getJwtSecret();
 
 const manager = new NlpManager({ languages: ['en'] });
 manager.load();
@@ -65,7 +66,7 @@ function initializeChatBot(io) {
 
             if (token) {
                 try {
-                    const decoded = jwt.verify(token, process.env.jwtSecret);
+                    const decoded = jwt.verify(token, jwtSecret);
                     console.log('Decoded token:', decoded);
                     socket.userId = decoded.userId;
                     next();
