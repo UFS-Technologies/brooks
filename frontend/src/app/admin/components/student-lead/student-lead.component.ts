@@ -132,6 +132,7 @@ export class StudentLeadComponent implements OnInit {
     'certificateContainer'
   );
   enrollmentStatus: string = 'all';
+  selectedStaffFilter: string = 'all';
   Student_Exam_Name: string = '';
   currentStudent: any = null;
   isInitializing = false;
@@ -1713,6 +1714,11 @@ onCancelEdit(): void {
                         studentDetails.Enquiry_Source_Id ||
                         studentDetails.Enquiry_Source
                     ),
+                    Assigned_Staff_Name: 
+                      row.Assigned_Staff_Name || 
+                      this.normalizeCurrentFollowup(followupResponse).Assigned_Staff_Name || 
+                      studentDetails.Assigned_Staff_Name ||
+                      '-'
                   };
                 }),
                 catchError(() =>
@@ -1721,6 +1727,7 @@ onCancelEdit(): void {
                     Enquiry_Source_Name: this.getEnquirySourceName(
                       row.Enquiry_Source_Id || row.Enquiry_Source
                     ),
+                    Assigned_Staff_Name: row.Assigned_Staff_Name || '-',
                   })
                 )
               )
@@ -1728,10 +1735,28 @@ onCancelEdit(): void {
           ).subscribe({
             next: (enrichedRows: any[]) => {
               this.student_Data = enrichedRows;
+              
+              if (this.selectedStaffFilter && this.selectedStaffFilter !== 'all') {
+                this.student_Data = this.student_Data.filter(
+                  (s) =>
+                    s['Assigned_Staff_Name'] === this.selectedStaffFilter ||
+                    s['studentResponse']?.Assigned_Staff_Name === this.selectedStaffFilter
+                );
+              }
+              
               this.isLoading = false;
             },
             error: () => {
               this.student_Data = rows;
+              
+              if (this.selectedStaffFilter && this.selectedStaffFilter !== 'all') {
+                this.student_Data = this.student_Data.filter(
+                  (s) =>
+                    s['Assigned_Staff_Name'] === this.selectedStaffFilter ||
+                    s['studentResponse']?.Assigned_Staff_Name === this.selectedStaffFilter
+                );
+              }
+
               this.isLoading = false;
             },
           });
@@ -1774,6 +1799,8 @@ onCancelEdit(): void {
         followUpData.Status_Name ||
         null,
       Remark: followUpData.Remark || null,
+      Assigned_Staff_Name: followUpData.Assigned_Staff_Name || followUpData.To_User_Name || null,
+      Assigned_Staff_ID: followUpData.Assigned_Staff_ID || followUpData.To_User_Id || null,
     };
   }
 
@@ -1802,6 +1829,14 @@ onCancelEdit(): void {
         null,
       Enquiry_Source_Name:
         studentData.Enquiry_Source_Name ??
+        null,
+      Assigned_Staff_Name:
+        studentData.Assigned_Staff_Name ??
+        studentData.To_User_Name ??
+        null,
+      Assigned_Staff_ID:
+        studentData.Assigned_Staff_ID ??
+        studentData.To_User_Id ??
         null,
     };
   }
