@@ -4,7 +4,9 @@ var connection = mysql.createPool({
     user: "root",
     password: "password",
     // database: "igm",
-    database: "brooks_db",
+    // database: "brooks_db",
+        database: "brooks_new",
+
     multipleStatements: true,
 });
 
