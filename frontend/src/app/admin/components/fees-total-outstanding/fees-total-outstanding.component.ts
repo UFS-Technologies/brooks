@@ -38,6 +38,7 @@ export class FeesTotalOutstandingComponent implements OnInit {
   selectedStudent = new FormControl();
   selectedBatch = new FormControl();
   selectedAdmissionYear = new FormControl('');
+  selectedStudentStatus = new FormControl('');
   fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   // fromDate = new FormControl(new Date());
   toDate = new FormControl(new Date());
@@ -52,7 +53,8 @@ export class FeesTotalOutstandingComponent implements OnInit {
   'Email',
   'Batch_Name',
   // 'Entry_Date',
-  'Outstanding_Amount' // Assuming this is the column for outstanding fees
+  'Outstanding_Amount', // Assuming this is the column for outstanding fees
+  'Active_Status'       // Student Status from student record
 ];
 
   totalDuration = '';
@@ -81,10 +83,20 @@ export class FeesTotalOutstandingComponent implements OnInit {
   allTableData: any[] = [];
   rawTableData: any[] = [];
   studentAdmissionYearMap = new Map<number, string>();
+  studentStatusMap = new Map<number, string>();
   constructor() { }
+
+  getColumnLabel(column: string): string {
+    if (column === 'Active_Status') return 'Status';
+    return column.replace(/_/g, ' ');
+  }
 
   ngOnInit() {
     this.selectedAdmissionYear.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+      this.refreshFilteredData();
+    });
+    this.selectedStudentStatus.valueChanges.subscribe(() => {
       this.currentPage = 1;
       this.refreshFilteredData();
     });
@@ -105,6 +117,21 @@ export class FeesTotalOutstandingComponent implements OnInit {
           Number(student.Student_ID),
           this.getAdmissionStartYear(student)
         ])
+      );
+      // Build Active_Status lookup map
+      this.studentStatusMap = new Map(
+        (students || []).map((student: any) => {
+          let status = student.Active_Status || '';
+          if (!status) {
+            status = student.isActive ? 'Active' : 'Dropout';
+          } else {
+            const s = status.toString().toLowerCase();
+            if (s === 'active') status = 'Active';
+            else if (s === 'dropout' || s === 'deactivated') status = 'Dropout';
+            else if (s === 'completed') status = 'Completed';
+          }
+          return [Number(student.Student_ID), status];
+        })
       );
       const admissionYears: string[] = (students || [])
         .map((student: any) => this.getAdmissionStartYear(student))
@@ -141,7 +168,8 @@ export class FeesTotalOutstandingComponent implements OnInit {
         this.rawTableData = (data || []).map(item => ({
           ...item,
           Name: `${item.First_Name} ${item.Last_Name}`.trim(),
-          Admission_Start_Year: this.getAdmissionStartYear(item) || this.studentAdmissionYearMap.get(Number(item.Student_ID)) || ''
+          Admission_Start_Year: this.getAdmissionStartYear(item) || this.studentAdmissionYearMap.get(Number(item.Student_ID)) || '',
+          Active_Status: item.Active_Status || this.studentStatusMap.get(Number(item.Student_ID)) || ''
         }));
         this.refreshFilteredData();
       },
@@ -231,6 +259,7 @@ export class FeesTotalOutstandingComponent implements OnInit {
   clearFilters() {
     [this.selectedCourse, this.selectedStudent, this.selectedBatch].forEach(control => control.reset());
     this.selectedAdmissionYear.reset('');
+    this.selectedStudentStatus.reset('');
     this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     this.toDate.setValue(new Date());
     // this.fromDate.setValue(new Date());
@@ -284,8 +313,18 @@ export class FeesTotalOutstandingComponent implements OnInit {
     return rows.filter((row) => String(row.Admission_Start_Year ?? '').trim() === selectedYear);
   }
 
+  private applyStudentStatusFilter(rows: any[]): any[] {
+    const selectedStatus = String(this.selectedStudentStatus.value ?? '').trim();
+    if (!selectedStatus) {
+      return rows;
+    }
+    return rows.filter((row) => String(row.Active_Status ?? '').trim() === selectedStatus);
+  }
+
   private refreshFilteredData(): void {
-    this.allTableData = this.applyAdmissionYearFilter(this.rawTableData);
+    let filtered = this.applyAdmissionYearFilter(this.rawTableData);
+    filtered = this.applyStudentStatusFilter(filtered);
+    this.allTableData = filtered;
     this.totalRecords = this.allTableData.length;
     this.Total_Recieved_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Amount || 0), 0);
     this.Expense_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Paid_Amount || 0), 0);

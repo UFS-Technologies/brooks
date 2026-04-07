@@ -134,7 +134,7 @@
           <th class="px-4 py-2 whitespace-nowrap">Branch</th>
           <!-- <th class="px-4 py-2 whitespace-nowrap">To Staff</th> -->
           <th class="px-4 py-2 whitespace-nowrap">Enrolled</th>
-          <th class="px-4 py-2 whitespace-nowrap">Follow-up</th>
+          <!-- <th class="px-4 py-2 whitespace-nowrap">Follow-up</th> -->
           <!-- <th class="px-4 py-2 whitespace-nowrap">Follow-up Date</th> -->
         
         </tr>
@@ -168,11 +168,11 @@
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['To_User_Name'] || '-' }}</td> -->
           <td class="px-4 py-2 whitespace-nowrap">{{ item['is_enrolled'] ? 'Yes' : 'No' }}</td>
-          <td class="px-4 py-2 whitespace-nowrap">
+          <!-- <td class="px-4 py-2 whitespace-nowrap">
             <span [ngClass]="item['Followup_Status'] == 1 ? 'text-green-600 font-semibold' : 'text-gray-500'">
                {{ item['Status_Name'] || item['Follow_Up_Status_Name'] ? 'Yes' : 'No' }}
             </span>
-          </td>
+          </td> -->
           <!-- <td class="px-4 py-2 whitespace-nowrap">
             {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-' }}
           </td> -->

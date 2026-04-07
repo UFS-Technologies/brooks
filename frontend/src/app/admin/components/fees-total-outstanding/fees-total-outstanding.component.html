@@ -71,6 +71,17 @@
                 </mat-select>
             </mat-form-field>
 
+            <!-- Student Status Filter -->
+            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
+                <mat-label>Student Status</mat-label>
+                <mat-select [formControl]="selectedStudentStatus">
+                    <mat-option value="">All Statuses</mat-option>
+                    <mat-option value="Active">Active</mat-option>
+                    <mat-option value="Dropout">Dropout</mat-option>
+                    <mat-option value="Completed">Completed</mat-option>
+                </mat-select>
+            </mat-form-field>
+
             <!-- From Date -->
             <!-- <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
                 <mat-label>From Date</mat-label>
@@ -96,16 +107,29 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th *ngFor="let column of displayedColumns" class="px-6 py-3 font-semibold tracking-wider">
-                        {{ column.replace('_', ' ') }}
+                        {{ getColumnLabel(column) }}
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let row of tableData" class="bg-white border-b hover:bg-gray-50 transition duration-150"
                     (click)="student_List_Update(row)">
-                    <td *ngFor="let column of displayedColumns" class="px-6 py-4 whitespace-nowrap">
-                        {{ column === 'Entry_Date' ? (row[column] | date:'dd-MM-yyyy') : row[column] }}
-                    </td>
+                    <ng-container *ngFor="let column of displayedColumns">
+                        <!-- Status column with color-coded badge -->
+                        <td *ngIf="column === 'Active_Status'" class="px-6 py-4 whitespace-nowrap">
+                            <span [ngClass]="{
+                                'text-green-600 font-semibold': row[column] === 'Active',
+                                'text-red-600 font-semibold':   row[column] === 'Dropout',
+                                'text-blue-600 font-semibold':  row[column] === 'Completed'
+                            }">
+                                {{ row[column] || '—' }}
+                            </span>
+                        </td>
+                        <!-- All other columns -->
+                        <td *ngIf="column !== 'Active_Status'" class="px-6 py-4 whitespace-nowrap">
+                            {{ column === 'Entry_Date' ? (row[column] | date:'dd-MM-yyyy') : row[column] }}
+                        </td>
+                    </ng-container>
                 </tr>
                 <tr *ngIf="!tableData?.length">
                     <td [attr.colspan]="displayedColumns.length" class="px-6 py-4 text-center text-gray-500">
