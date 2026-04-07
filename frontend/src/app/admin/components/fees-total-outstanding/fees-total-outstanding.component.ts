@@ -91,6 +91,16 @@ export class FeesTotalOutstandingComponent implements OnInit {
     return column.replace(/_/g, ' ');
   }
 
+  formatDateOnly(dateValue: any): string {
+    if (!dateValue) return '';
+    const d = new Date(dateValue);
+    if (isNaN(d.getTime())) return String(dateValue).split('T')[0] || '';
+    const day   = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year  = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
   ngOnInit() {
     this.selectedAdmissionYear.valueChanges.subscribe(() => {
       this.currentPage = 1;
@@ -133,8 +143,9 @@ export class FeesTotalOutstandingComponent implements OnInit {
           return [Number(student.Student_ID), status];
         })
       );
-      const admissionYears: string[] = (students || [])
-        .map((student: any) => this.getAdmissionStartYear(student))
+      // Build Admission Year options from Batch Start Dates
+      const admissionYears: string[] = (this.BatchDatas || [])
+        .map((batch: any) => this.extractYearFromDate(batch.Start_Date))
         .filter((year: string): year is string => !!year);
       this.admissionYearOptions = [...new Set<string>(admissionYears)].sort(
         (a, b) => Number(b) - Number(a)
@@ -165,12 +176,24 @@ export class FeesTotalOutstandingComponent implements OnInit {
     ).subscribe({
       next: (res: any[]) => {
         const [, data] = res;
-        this.rawTableData = (data || []).map(item => ({
-          ...item,
-          Name: `${item.First_Name} ${item.Last_Name}`.trim(),
-          Admission_Start_Year: this.getAdmissionStartYear(item) || this.studentAdmissionYearMap.get(Number(item.Student_ID)) || '',
-          Active_Status: item.Active_Status || this.studentStatusMap.get(Number(item.Student_ID)) || ''
-        }));
+        this.rawTableData = (data || []).map(item => {
+          let batchYear = '';
+          if (this.BatchDatas) {
+            const batch = this.BatchDatas.find((b: any) => 
+               (item.Batch_ID && b.Batch_ID == item.Batch_ID) || 
+               (item.Batch_Name && b.Batch_Name === item.Batch_Name)
+            );
+            if (batch && batch.Start_Date) {
+              batchYear = this.extractYearFromDate(batch.Start_Date);
+            }
+          }
+          return {
+            ...item,
+            Name: `${item.First_Name} ${item.Last_Name}`.trim(),
+            Admission_Start_Year: batchYear || '',
+            Active_Status: item.Active_Status || this.studentStatusMap.get(Number(item.Student_ID)) || ''
+          };
+        });
         this.refreshFilteredData();
       },
       complete: () => this.IsLoaded = true
@@ -365,8 +388,8 @@ downloadPDF(): void {
         `${item.First_Name} ${item.Last_Name}`.trim(), // Name
         item.Email || '',                    // Email
         item.Batch_Name || '',               // Batch
-        item.Entry_Date || '',               // Next Due Date
-        item.Outstanding_Amount || 0         // Upcoming Amount
+        this.formatDateOnly(item.Entry_Date), // Entry Date (date only, no time)
+        item.Outstanding_Amount || 0         // Outstanding Amount
       ]);
 
       this.loadImageAsBase64('assets/images/logo2.svg').then((base64Image: string) => {
@@ -444,7 +467,7 @@ exportToExcel(): void {
         Name: `${item.First_Name} ${item.Last_Name}`,
         Email: item.Email || '',
         Batch: item.Batch_Name || '',
-        Entry_Date: item.Entry_Date || '',
+        Entry_Date: this.formatDateOnly(item.Entry_Date),
         Outstanding_Amount: item.Outstanding_Amount || 0
       }));
 
