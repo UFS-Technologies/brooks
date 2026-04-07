@@ -61,6 +61,16 @@
                 </mat-autocomplete>
             </mat-form-field>
 
+            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
+                <mat-label>Admission Year</mat-label>
+                <mat-select [formControl]="selectedAdmissionYear">
+                    <mat-option value="">All Years</mat-option>
+                    <mat-option *ngFor="let year of admissionYearOptions" [value]="year">
+                        {{ year }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
             <!-- From Date -->
             <!-- <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
                 <mat-label>From Date</mat-label>

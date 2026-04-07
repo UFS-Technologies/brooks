@@ -133,6 +133,8 @@ export class StudentLeadComponent implements OnInit {
   );
   enrollmentStatus: string = 'all';
   selectedStaffFilter: string = 'all';
+  selectedStudentStatusFilter: string = 'all';
+
   Student_Exam_Name: string = '';
   currentStudent: any = null;
   isInitializing = false;
@@ -1699,7 +1701,7 @@ onCancelEdit(): void {
   Search_student_lead() {
     this.isLoading = true;
     this.student_Data = [];
-    const followUpStatus = this.followUpStatus.Status_Name;
+const followUpStatus = this.followUpStatus?.Status_Name || 'all';
     this.student_Service_
       .Search_student_lead(
         this.searchTerm,
@@ -1789,7 +1791,11 @@ onCancelEdit(): void {
                     s['studentResponse']?.Assigned_Staff_Name === this.selectedStaffFilter
                 );
               }
-              
+               if (this.selectedStudentStatusFilter !== 'all') {
+                this.student_Data = this.student_Data.filter(
+                  (student: any) => this.getStudentStatusValue(student) === this.selectedStudentStatusFilter
+                );
+              }
               this.isLoading = false;
             },
             error: () => {
@@ -1816,6 +1822,11 @@ onCancelEdit(): void {
                   (s) =>
                     s['Assigned_Staff_Name'] === this.selectedStaffFilter ||
                     s['studentResponse']?.Assigned_Staff_Name === this.selectedStaffFilter
+                );
+              }
+               if (this.selectedStudentStatusFilter !== 'all') {
+                this.student_Data = this.student_Data.filter(
+                  (student: any) => this.getStudentStatusValue(student) === this.selectedStudentStatusFilter
                 );
               }
 
@@ -1900,9 +1911,27 @@ onCancelEdit(): void {
         studentData.Assigned_Staff_ID ??
         studentData.To_User_Id ??
         null,
+         Active_Status:
+        studentData.Active_Status ??
+        (studentData.isActive === true || studentData.isActive === 1 || studentData.isActive === '1'
+          ? 'Active'
+          : studentData.isActive === false || studentData.isActive === 0 || studentData.isActive === '0'
+          ? 'Dropout'
+          : null),
     };
   }
+private getStudentStatusValue(student: any): string {
+    const rawStatus =
+      student?.Active_Status ??
+      student?.studentResponse?.Active_Status ??
+      (student?.isActive === true || student?.isActive === 1 || student?.isActive === '1'
+        ? 'Active'
+        : student?.isActive === false || student?.isActive === 0 || student?.isActive === '0'
+        ? 'Dropout'
+        : '');
 
+    return String(rawStatus || '').trim().toLowerCase();
+  }
   private getEnquirySourceName(sourceId: any): string {
     if (!sourceId) return '-';
     const match = this.enquirySources.find(

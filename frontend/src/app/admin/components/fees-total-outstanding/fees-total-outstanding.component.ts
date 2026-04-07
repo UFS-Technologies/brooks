@@ -10,6 +10,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { course_Service } from '../../services/course.Service';
 import { student_Service } from '../../services/student.Service';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -23,7 +24,7 @@ import * as FileSaver from 'file-saver';
 @Component({
   selector: 'app-fees-total-outstanding',
   imports: [CommonModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatInputModule,
-    MatAutocompleteModule, MatDatepickerModule, MatButtonModule, MatIconModule, StudentlistComponent],
+    MatAutocompleteModule, MatDatepickerModule, MatButtonModule, MatIconModule, MatSelectModule, StudentlistComponent],
   providers: [provideNativeDateAdapter()],
   templateUrl: './fees-total-outstanding.component.html',
   styleUrl: './fees-total-outstanding.component.scss'
@@ -36,6 +37,7 @@ export class FeesTotalOutstandingComponent implements OnInit {
   selectedCourse = new FormControl();
   selectedStudent = new FormControl();
   selectedBatch = new FormControl();
+  selectedAdmissionYear = new FormControl('');
   fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   // fromDate = new FormControl(new Date());
   toDate = new FormControl(new Date());
@@ -68,6 +70,7 @@ export class FeesTotalOutstandingComponent implements OnInit {
   coursefilteredOptions: any[] = [];
   studentfilteredOptions: any[] = [];
   bacthfilteredOptions: any[] = [];
+  admissionYearOptions: string[] = [];
   IsLoaded = false;
   tempBatchData: any[];
   student_edit: boolean = false;
@@ -75,6 +78,8 @@ export class FeesTotalOutstandingComponent implements OnInit {
   Total_Recieved_Amount: any = 0;
   Expense_Amount: any = 0;
   Closing_Amount: any = 0;
+  allTableData: any[] = [];
+  studentAcademicYearMap = new Map<number, string>();
   constructor() { }
 
   ngOnInit() {
@@ -90,13 +95,24 @@ export class FeesTotalOutstandingComponent implements OnInit {
       this.courseDatas = this.coursefilteredOptions = courseNames[0];
       this.studentDatas = this.studentfilteredOptions = students;
       this.BatchDatas = this.bacthfilteredOptions = courseItems[3];
+      this.studentAcademicYearMap = new Map(
+        (students || []).map((student: any) => [
+          Number(student.Student_ID),
+          student.Academic_Year || ''
+        ])
+      );
+      const admissionYears: string[] = (students || [])
+        .map((student: any) => this.extractAdmissionStartYear(student.Academic_Year))
+        .filter((year: string): year is string => !!year);
+      this.admissionYearOptions = [...new Set<string>(admissionYears)].sort(
+        (a, b) => Number(b) - Number(a)
+      );
       this.fetchReportData();
     });
   }
 
   fetchReportData() {
-    this.currentPage = this.currentPage || 1; // fallback to page 1
-
+    this.currentPage = 1;
     this.IsLoaded = false;
     const params = {
       Student_ID: this.selectedStudent.value?.Student_ID || 0,
@@ -112,21 +128,24 @@ export class FeesTotalOutstandingComponent implements OnInit {
       params.Course_ID,
       params.fromDate,
       params.toDate,
-      this.currentPage,
-      this.pageSize
+      1,
+      10000
     ).subscribe({
       next: (res: any[]) => {
-        const [countResult, data] = res;
-        this.totalRecords = countResult?.[0]?.totalRecords || 0;
-        this.Total_Recieved_Amount = countResult?.[0]?.Total_Amount || 0;
-        this.Expense_Amount = countResult?.[0]?.Total_Paid_Amount || 0;
-        this.Closing_Amount = countResult?.[0]?.Outstanding_Amount || 0;
-        this.tableData = data || [];
-        this.tableData = data.map(item => ({
-  ...item,
-  Name: `${item.First_Name} ${item.Last_Name}`
-}));
-
+        const [, data] = res;
+        this.allTableData = this.applyAdmissionYearFilter((data || []).map(item => ({
+          ...item,
+          Name: `${item.First_Name} ${item.Last_Name}`.trim(),
+          Academic_Year: item.Academic_Year || this.studentAcademicYearMap.get(Number(item.Student_ID)) || '',
+          Admission_Start_Year: this.extractAdmissionStartYear(
+            item.Academic_Year || this.studentAcademicYearMap.get(Number(item.Student_ID)) || ''
+          )
+        })));
+        this.totalRecords = this.allTableData.length;
+        this.Total_Recieved_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Amount || 0), 0);
+        this.Expense_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Paid_Amount || 0), 0);
+        this.Closing_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Outstanding_Amount || 0), 0);
+        this.updatePagedTableData();
       },
       complete: () => this.IsLoaded = true
     });
@@ -213,6 +232,7 @@ export class FeesTotalOutstandingComponent implements OnInit {
 
   clearFilters() {
     [this.selectedCourse, this.selectedStudent, this.selectedBatch].forEach(control => control.reset());
+    this.selectedAdmissionYear.reset('');
     this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     this.toDate.setValue(new Date());
     // this.fromDate.setValue(new Date());
@@ -223,10 +243,32 @@ export class FeesTotalOutstandingComponent implements OnInit {
   onPageChange(event: { pageIndex: number, pageSize: number }) {
     this.currentPage = event.pageIndex + 1;
     this.pageSize = event.pageSize;
-    this.fetchReportData();
+    this.updatePagedTableData();
   }
   get totalPages(): number {
     return Math.ceil(this.totalRecords / this.pageSize) || 1;
+  }
+
+  private extractAdmissionStartYear(academicYear: string): string {
+    if (!academicYear) {
+      return '';
+    }
+    const match = academicYear.match(/\d{4}/);
+    return match ? match[0] : '';
+  }
+
+  private applyAdmissionYearFilter(rows: any[]): any[] {
+    const selectedYear = this.selectedAdmissionYear.value;
+    if (!selectedYear) {
+      return rows;
+    }
+    return rows.filter((row) => row.Admission_Start_Year === selectedYear);
+  }
+
+  private updatePagedTableData(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.tableData = this.allTableData.slice(startIndex, endIndex);
   }
 
 downloadPDF(): void {
