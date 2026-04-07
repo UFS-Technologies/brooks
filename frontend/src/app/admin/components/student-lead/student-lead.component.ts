@@ -251,7 +251,7 @@ export class StudentLeadComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private expenseApi: ExpenseTypeService
   ) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = this.getCurrentDate();
     this.student_Form = this.fb.group({
       Student_ID: [0],
       First_Name: ['', Validators.required],
@@ -285,10 +285,10 @@ export class StudentLeadComponent implements OnInit {
       Student_ID: [0, []],
       Course_ID: [0, []],
       //Course_ID: [0, [Validators.required, Validators.min(1)]],
-      Enrollment_Date: [new Date().toISOString().substring(0, 10)], // today's date
+      Enrollment_Date: [today], // today's date
       Expiry_Date: [''],
       Price: [''],
-      Payment_Date: [new Date().toISOString().substring(0, 16)], // today's datetime
+      Payment_Date: [today], // today's date
       Payment_Status: [''],
       LastAccessed_Content_ID: [0],
       Transaction_Id: [''],
@@ -1009,9 +1009,13 @@ onCancelEdit(): void {
             lastDueDate = new Date(lastDueDate);
             lastDueDate.setDate(lastDueDate.getDate() + inst.Duration);
           }
+            const d = new Date(lastDueDate);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
             return {
               ...inst,
-              DueDate: lastDueDate.toISOString().split('T')[0], // format as yyyy-MM-dd for <input type="date">
+              DueDate: `${y}-${m}-${day}`, // format as yyyy-MM-dd for <input type="date">
             };
           });
 
@@ -1375,7 +1379,7 @@ onCancelEdit(): void {
     this.student_Course.get('Price')?.setValue(selectedCourse?.Price);
 
     if (selectedCourse) {
-      const currentDate = new Date().toISOString().substring(0, 10);
+      const currentDate = this.getCurrentDate();
       this.student_Course.patchValue({
         Enrollment_Date: currentDate,
         Payment_Date: currentDate,
@@ -1680,14 +1684,15 @@ onCancelEdit(): void {
   }
   Clr_student_Course() {
     this.previewUrl = null;
+    const today = this.getCurrentDate();
     this.student_Course.reset({
       Student_ID: 0,
       StudentCourse_ID: 0,
       Course_ID: 0,
-      Enrollment_Date: new Date().toISOString().substring(0, 10), // today's date
+      Enrollment_Date: today, // today's date
       Expiry_Date: '',
       Price: '',
-      Payment_Date: new Date().toISOString().substring(0, 16), // today's datetime
+      Payment_Date: today, // today's date
       Payment_Status: '',
       LastAccessed_Content_ID: 0,
       Transaction_Id: '',
@@ -3312,8 +3317,14 @@ private getStudentStatusValue(student: any): string {
     
   }
   formatDateForInput(date: string): string {
+    if (!date) return this.getCurrentDate();
     const d = new Date(date);
-    return d.toISOString().split('T')[0]; // "YYYY-MM-DD"
+    if (isNaN(d.getTime())) return this.getCurrentDate();
+    
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // Updated loadFollowupHistoryList to work with selected student
