@@ -79,10 +79,15 @@ export class FeesTotalOutstandingComponent implements OnInit {
   Expense_Amount: any = 0;
   Closing_Amount: any = 0;
   allTableData: any[] = [];
-  studentAcademicYearMap = new Map<number, string>();
+  rawTableData: any[] = [];
+  studentAdmissionYearMap = new Map<number, string>();
   constructor() { }
 
   ngOnInit() {
+    this.selectedAdmissionYear.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+      this.refreshFilteredData();
+    });
     this.loadInitialData();
   }
 
@@ -95,14 +100,14 @@ export class FeesTotalOutstandingComponent implements OnInit {
       this.courseDatas = this.coursefilteredOptions = courseNames[0];
       this.studentDatas = this.studentfilteredOptions = students;
       this.BatchDatas = this.bacthfilteredOptions = courseItems[3];
-      this.studentAcademicYearMap = new Map(
+      this.studentAdmissionYearMap = new Map(
         (students || []).map((student: any) => [
           Number(student.Student_ID),
-          student.Academic_Year || ''
+          this.getAdmissionStartYear(student)
         ])
       );
       const admissionYears: string[] = (students || [])
-        .map((student: any) => this.extractAdmissionStartYear(student.Academic_Year))
+        .map((student: any) => this.getAdmissionStartYear(student))
         .filter((year: string): year is string => !!year);
       this.admissionYearOptions = [...new Set<string>(admissionYears)].sort(
         (a, b) => Number(b) - Number(a)
@@ -133,19 +138,12 @@ export class FeesTotalOutstandingComponent implements OnInit {
     ).subscribe({
       next: (res: any[]) => {
         const [, data] = res;
-        this.allTableData = this.applyAdmissionYearFilter((data || []).map(item => ({
+        this.rawTableData = (data || []).map(item => ({
           ...item,
           Name: `${item.First_Name} ${item.Last_Name}`.trim(),
-          Academic_Year: item.Academic_Year || this.studentAcademicYearMap.get(Number(item.Student_ID)) || '',
-          Admission_Start_Year: this.extractAdmissionStartYear(
-            item.Academic_Year || this.studentAcademicYearMap.get(Number(item.Student_ID)) || ''
-          )
-        })));
-        this.totalRecords = this.allTableData.length;
-        this.Total_Recieved_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Amount || 0), 0);
-        this.Expense_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Paid_Amount || 0), 0);
-        this.Closing_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Outstanding_Amount || 0), 0);
-        this.updatePagedTableData();
+          Admission_Start_Year: this.getAdmissionStartYear(item) || this.studentAdmissionYearMap.get(Number(item.Student_ID)) || ''
+        }));
+        this.refreshFilteredData();
       },
       complete: () => this.IsLoaded = true
     });
@@ -257,12 +255,42 @@ export class FeesTotalOutstandingComponent implements OnInit {
     return match ? match[0] : '';
   }
 
+  private extractYearFromDate(dateValue: any): string {
+    if (!dateValue) {
+      return '';
+    }
+
+    const parsed = new Date(dateValue);
+    if (!isNaN(parsed.getTime())) {
+      return String(parsed.getFullYear());
+    }
+
+    const match = String(dateValue).match(/\d{4}/);
+    return match ? match[0] : '';
+  }
+
+  private getAdmissionStartYear(student: any): string {
+    return (
+      this.extractAdmissionStartYear(student?.Academic_Year || '') ||
+      this.extractYearFromDate(student?.Admission_Date)
+    );
+  }
+
   private applyAdmissionYearFilter(rows: any[]): any[] {
-    const selectedYear = this.selectedAdmissionYear.value;
+    const selectedYear = String(this.selectedAdmissionYear.value ?? '').trim();
     if (!selectedYear) {
       return rows;
     }
-    return rows.filter((row) => row.Admission_Start_Year === selectedYear);
+    return rows.filter((row) => String(row.Admission_Start_Year ?? '').trim() === selectedYear);
+  }
+
+  private refreshFilteredData(): void {
+    this.allTableData = this.applyAdmissionYearFilter(this.rawTableData);
+    this.totalRecords = this.allTableData.length;
+    this.Total_Recieved_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Amount || 0), 0);
+    this.Expense_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Paid_Amount || 0), 0);
+    this.Closing_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Outstanding_Amount || 0), 0);
+    this.updatePagedTableData();
   }
 
   private updatePagedTableData(): void {
