@@ -131,7 +131,7 @@ export class StudentComponent implements OnInit {
   readonly certificateContainer = viewChild.required<ElementRef>(
     'certificateContainer'
   );
-  enrollmentStatus: string = 'all';
+  enrollmentStatus: string = 'not_enrolled';
   Student_Exam_Name: string = '';
   currentStudent: any = null;
   isInitializing = false;
@@ -1668,7 +1668,13 @@ onCancelEdit(): void {
 
   Search_student() {
     this.isLoading = true;
-    this.student_Data = [];
+    console.log('--- Search_student Params ---', {
+      searchTerm: this.searchTerm,
+      currentPage: this.currentPage,
+      pageSize: this.pageSize,
+      enrollmentStatus: this.enrollmentStatus,
+      activeStatus: this.activeStatus
+    });
     this.student_Service_
       .Search_student(
         this.searchTerm,
@@ -1677,12 +1683,35 @@ onCancelEdit(): void {
         this.selectedCourseId,
         this.selectedBatchId,
         this.enrollmentStatus,
-        this.activeStatus
+        'all' // Always request all to allow frontend filtering for status
       )
       .subscribe(
         (response: any) => {
-          console.log('response: ', response);
-          this.student_Data = response[1];
+          console.log('--- Search_student Response ---', response);
+          let rawData = response[1] || [];
+          
+          // 1. Normalize mapping first
+          this.student_Data = rawData.map((student: any) => {
+            // Normalize Active_Status string if present, handle casing differences consistently
+            if (student.Active_Status) {
+               const statusStr = student.Active_Status.toString().toLowerCase();
+               if (statusStr === 'active') student.Active_Status = 'Active';
+               else if (statusStr === 'dropout' || statusStr === 'deactivated') student.Active_Status = 'Dropout';
+               else if (statusStr === 'completed') student.Active_Status = 'Completed';
+            } else {
+               // Normalization as fallback for boolean isActive
+              student.Active_Status = student.isActive ? 'Active' : 'Dropout';
+            }
+            return student;
+          });
+
+          // 2. Apply frontend filter for Status
+          if (this.activeStatus && this.activeStatus !== 'all') {
+            this.student_Data = this.student_Data.filter(
+              (student: any) => student.Active_Status === this.activeStatus
+            );
+          }
+
           this.Total_Entries = response[0][0].total_count;
           // if (this.student_Data.length == 0) {
           //   this.isLoading = false;

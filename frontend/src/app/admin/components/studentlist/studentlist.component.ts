@@ -919,6 +919,7 @@ doc.text(
 
   onRegistrationToggle(event: any) {
     this.isRegistering = event;
+    this.registration_Status = event;
     if (!event) {
       this.student_Form.patchValue({
         Roll_No: null,
@@ -1502,7 +1503,6 @@ doc.text(
     console.log('installments', this.installments);
     console.log('this.student_Form', this.student_Form.value);
     console.log('this.isRegistering', this.isRegistering);
-    debugger;
     const User_Id = localStorage.getItem('User_Type');
     // Check if this is a follow-up only save from list view
     if (this.view === 'followup' && this.selectedStudentForFollowup) {

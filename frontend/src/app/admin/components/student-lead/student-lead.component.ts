@@ -131,7 +131,7 @@ export class StudentLeadComponent implements OnInit {
   readonly certificateContainer = viewChild.required<ElementRef>(
     'certificateContainer'
   );
-  enrollmentStatus: string = 'all';
+  enrollmentStatus: string = 'enrolled';
   selectedStaffFilter: string = 'all';
   selectedStudentStatusFilter: string = 'all';
 
