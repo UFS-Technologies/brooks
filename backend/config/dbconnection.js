@@ -4,8 +4,8 @@ var connection = mysql.createPool({
     user: "root",
     password: "password",
     // database: "igm",
-    database: "brooks_db",
-        // database: "brooks_new",
+    // database: "brooks_db",
+        database: "brooks_new",
 
     multipleStatements: true,
 });
@@ -28,7 +28,7 @@ module.exports = connection;
 //     password: "password",
 //     database: "igm_db",
 //     port: 3306,
-//     waitForConnections: true,
+//     waitForConnections: true,  
 //     connectionLimit: 10,
 //     queueLimit: 0,
 //     connectTimeout: 10000, 
