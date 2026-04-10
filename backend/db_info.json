@@ -1,0 +1,133 @@
+{
+  "users": [
+    {
+      "Field": "User_ID",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": null,
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "First_Name",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Last_Name",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Email",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "PhoneNumber",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Delete_Status",
+      "Type": "tinyint",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "User_Type_Id",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "MUL",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "User_Role_Id",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "MUL",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "User_Active_Status",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "OTP",
+      "Type": "varchar(45)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "password",
+      "Type": "varchar(45)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Profile_Photo_Path",
+      "Type": "varchar(145)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Profile_Photo_Name",
+      "Type": "varchar(145)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "token",
+      "Type": "varchar(45)",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Device_ID",
+      "Type": "longtext",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    },
+    {
+      "Field": "Branch_Id",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": null,
+      "Extra": ""
+    }
+  ],
+  "sp": "CREATE DEFINER=`root`@`localhost` PROCEDURE `Save_User`(\n IN User_ID_ INT,\n    IN First_Name_ VARCHAR(50),\n    IN Last_Name_ VARCHAR(100),\n    IN Email_ VARCHAR(100),\n    IN PhoneNumber_ VARCHAR(50),\n    IN Delete_Status_ TINYINT,\n    IN User_Type_Id_ INT,\n    IN User_Role_Id_ INT,\n    IN Branch_Id_ INT,\n    IN User_Status_ VARCHAR(50),\n    IN password_ VARCHAR(50),\n    IN Device_ID_ LONGTEXT,\n    IN Profile_Photo_Name_ LONGTEXT,\n    IN Profile_Photo_Path_ LONGTEXT,\n    IN Course_IDs_ JSON,  -- JSON array of course IDs\n    IN Hod_ BOOLEAN,\n\tIN teacherCourses JSON\n\n)\nBEGIN\n    DECLARE emailExists INT;\n    DECLARE phoneExists INT;\n    DECLARE emailExistsInStudent INT;\n    DECLARE courseIndex INT DEFAULT 0;\n    DECLARE HodtotalCourses INT;\n\n\n\n\n#for time slots\n\n\t\tDECLARE temp_start_time VARCHAR(20);\n\tDECLARE temp_end_time VARCHAR(20);\n    \n\n    DECLARE v_TimeSlotcourseIndex INT DEFAULT 0;\n    DECLARE v_totalCourses INT;\n    DECLARE v_totalSlots INT;\n    DECLARE v_slotIndex INT;\n    DECLARE v_course JSON;\n    DECLARE v_courseTeacher_ID INT;\n    DECLARE v_Course_ID INT;\n    DECLARE v_Delete_Status TINYINT;\n    DECLARE v_slot JSON;\n    DECLARE v_Slot_Id INT;\n    DECLARE v_start_time VARCHAR(50);\n    DECLARE v_end_time VARCHAR(50);\n    DECLARE v_Batch_ID INT;\n    -- Check for existing email in users table (case-insensitive)\n    SELECT COUNT(*)\n    INTO emailExists\n    FROM users\n    WHERE LOWER(Email) = LOWER(Email_) AND User_ID <> User_ID_ AND Delete_Status = 0;\n\n    -- Check for existing phone number in users table\n    SELECT COUNT(*)\n    INTO phoneExists\n    FROM users\n    WHERE PhoneNumber = PhoneNumber_ AND User_ID <> User_ID_ AND Delete_Status = 0;\n\n    -- Check if email exists in the student table (case-insensitive)\n    SELECT COUNT(*)\n    INTO emailExistsInStudent\n    FROM student\n    WHERE LOWER(Email) = LOWER(Email_) AND Delete_Status = 0;\n\n    -- If email or phone number exists in users table, or email exists in student table, signal an error\n    IF emailExists > 0 THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email already exists in users';\n    ELSEIF phoneExists > 0 THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Phone number already exists in users';\n    ELSEIF emailExistsInStudent > 0 THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email already exists in students';\n    ELSE\n        -- Update existing user\n        IF User_ID_ > 0 THEN\n        \t\t\t\t\tinsert into data_log values (442,User_Type_Id_);\n\n            UPDATE users\n            SET First_Name = First_Name_,\n                Last_Name = Last_Name_,\n                Email = Email_,\n                PhoneNumber = PhoneNumber_,\n                Delete_Status = Delete_Status_,\n                User_Type_Id = User_Type_Id_,\n                User_Role_Id = User_Role_Id_,\n                Branch_Id = Branch_Id_,\n                Device_ID = Device_ID_,\n                Profile_Photo_Name = Profile_Photo_Name_,\n                Profile_Photo_Path = Profile_Photo_Path_,\n                password = password_\n            WHERE User_ID = User_ID_;\n        ELSE\n            -- Insert new user\n            INSERT INTO users (First_Name, Last_Name, Email, PhoneNumber, Delete_Status, User_Type_Id, User_Role_Id,Branch_Id, password, Profile_Photo_Name, Profile_Photo_Path, Device_ID)\n            VALUES (First_Name_, Last_Name_, Email_, PhoneNumber_, Delete_Status_, User_Type_Id_, User_Role_Id_,Branch_Id_, password_, Profile_Photo_Name_, Profile_Photo_Path_, Device_ID_);\n            SET User_ID_ = LAST_INSERT_ID();\n        END IF;\n\n        -- Additional logic for course and user type handling\n        IF User_Type_Id_ = 2 THEN\n            DELETE FROM course_hod WHERE User_ID = User_ID_;\n            \n            \n\t\t\t\t\t SET v_totalCourses = JSON_LENGTH(teacherCourses);\n                     \t\t\t\t\tinsert into data_log values (2,v_TimeSlotcourseIndex);\n\n\t\t\t\t\tinsert into data_log values (3,v_totalCourses);\n\t\t\t\t\tWHILE v_TimeSlotcourseIndex < v_totalCourses DO\n                                         \t\t\t\t\tinsert into data_log values (256,v_TimeSlotcourseIndex);\n\n\t\t\t\t\t\t-- Extract each teacherCourse\n\t\t\t\t\t\tSET v_course = JSON_EXTRACT(teacherCourses, CONCAT('$[', v_TimeSlotcourseIndex, ']'));\n                        \t\t\t\t\tinsert into data_log values (73,v_course);\n\n\t\t\t\t\t\tSET v_CourseTeacher_ID = JSON_UNQUOTE(JSON_EXTRACT(v_course, '$.CourseTeacher_ID'));\n                          \tinsert into data_log values (64,v_CourseTeacher_ID);\n\n\t\t\t\t\t\tSET v_Course_ID = JSON_UNQUOTE(JSON_EXTRACT(v_course, '$.Course_ID'));\n\t\t\t\t\t\t\t\t\tinsert into data_log values (65,v_Course_ID);\n\n\t\t\t\t\t\tSET v_Delete_Status = JSON_UNQUOTE(JSON_EXTRACT(v_course, '$.Delete_Status'));\n\n\t\t\t\t\t\tIF v_CourseTeacher_ID IS NULL or v_CourseTeacher_ID <= 0 THEN\n\t\t\t\t\t\t\t-- Insert new course_teacher\n\t\t\t\t\t\t\tINSERT INTO course_teacher (Course_ID, Teacher_ID, Delete_Status)\n\t\t\t\t\t\t\tVALUES (v_Course_ID, User_ID_, v_Delete_Status);\n\t\t\t\t\t\t\tSET v_CourseTeacher_ID = LAST_INSERT_ID();\n\t\t\t\t\t\tELSE\n\t\t\t\t\t\t\t-- Update existing course_teacher\n\t\t\t\t\t\t\tUPDATE course_teacher\n\t\t\t\t\t\t\tSET Course_ID = v_Course_ID,\n\t\t\t\t\t\t\t\tTeacher_ID = User_ID_,\n\t\t\t\t\t\t\t\tDelete_Status = v_Delete_Status\n\t\t\t\t\t\t\tWHERE CourseTeacher_ID = v_CourseTeacher_ID;\n\t\t\t\t\t\tEND IF;\n\n\t\t\t\t\t\t-- Process timeSlots within this teacherCourse\n\t\t\t\t\t\tSET v_totalSlots = JSON_LENGTH(JSON_EXTRACT(v_course, '$.timeSlots'));\n\t\t\t\t\t\tSET v_slotIndex = 0;\n\n\t\t\t\t\t\tWHILE v_slotIndex < v_totalSlots DO\n\t\t\t\t\t\t\tSET v_slot = JSON_EXTRACT(v_course, CONCAT('$.timeSlots[', v_slotIndex, ']'));\n\t\t\t\t\t\t\tSET v_Slot_Id = JSON_UNQUOTE(JSON_EXTRACT(v_slot, '$.Slot_Id'));\n\t\t\t\t\t\t\tSET temp_start_time = JSON_UNQUOTE(JSON_EXTRACT(v_slot, '$.start_time'));\n\t\t\t\t\t\t\tSET temp_end_time = JSON_UNQUOTE(JSON_EXTRACT(v_slot, '$.end_time'));\n\t\t\t\t\t\t\tSET v_Batch_ID = JSON_UNQUOTE(JSON_EXTRACT(v_slot, '$.Batch_ID'));\n\t\t\t\t\t\t\tSET v_Delete_Status = JSON_UNQUOTE(JSON_EXTRACT(v_slot, '$.Delete_Status'));\n\t\t\t\t\t\t\t\t SET v_start_time = CASE \n\t\t\t\t\t\t\t\t\tWHEN temp_start_time REGEXP '^[0-9]{1,2}:[0-9]{2} [AP]M$' \n\t\t\t\t\t\t\t\t\tTHEN TIME_FORMAT(STR_TO_DATE(temp_start_time, '%l:%i %p'), '%H:%i')\n\t\t\t\t\t\t\t\t\tELSE TIME_FORMAT(TIME(temp_start_time), '%H:%i')\n\t\t\t\t\t\t\t\tEND;\n\n\t\t\t\t\t\t\t\tSET v_end_time = CASE \n\t\t\t\t\t\t\t\t\tWHEN temp_end_time REGEXP '^[0-9]{1,2}:[0-9]{2} [AP]M$' \n\t\t\t\t\t\t\t\t\tTHEN TIME_FORMAT(STR_TO_DATE(temp_end_time, '%l:%i %p'), '%H:%i')\n\t\t\t\t\t\t\t\t\tELSE TIME_FORMAT(TIME(temp_end_time), '%H:%i')\n\t\t\t\t\t\t\t\tEND;\n\n\t\t\t\t\t\t\tIF v_Slot_Id IS NULL OR v_Slot_Id <= 0 THEN\n\t\t\t\t\t\t\t\t-- Insert new teacher_time_slot\n\t\t\t\t\t\t\t\tIF v_Batch_ID > 0 THEN\n\t\t\t\t\t\t\t\t\tINSERT INTO teacher_time_slot (CourseTeacher_ID, start_time, end_time, batch_id, Delete_Status)\n\t\t\t\t\t\t\t\t\tVALUES (v_CourseTeacher_ID, v_start_time, v_end_time, v_Batch_ID, v_Delete_Status);\n\t\t\t\t\t\t\t\tELSE\n\t\t\t\t\t\t\t\t\tINSERT INTO teacher_time_slot (CourseTeacher_ID, start_time, end_time, Delete_Status)\n\t\t\t\t\t\t\t\t\tVALUES (v_CourseTeacher_ID, v_start_time, v_end_time, v_Delete_Status);\n\t\t\t\t\t\t\t\tEND IF;\n\t\t\t\t\t\t\tELSE\n\t\t\t\t\t\t\t\t-- Update existing teacher_time_slot (skip batch_id update if NULL)\n\t\t\t\t\t\t\t\tIF v_Batch_ID > 0 THEN\n\t\t\t\t\t\t\t\t\tUPDATE teacher_time_slot\n\t\t\t\t\t\t\t\t\tSET start_time = v_start_time,\n\t\t\t\t\t\t\t\t\t\tend_time = v_end_time,\n\t\t\t\t\t\t\t\t\t\tbatch_id = v_Batch_ID,\n\t\t\t\t\t\t\t\t\t\tDelete_Status = v_Delete_Status\n\t\t\t\t\t\t\t\t\tWHERE Slot_Id = v_Slot_Id;\n\t\t\t\t\t\t\t\tELSE\n\t\t\t\t\t\t\t\t\tUPDATE teacher_time_slot\n\t\t\t\t\t\t\t\t\tSET start_time = v_start_time,\n\t\t\t\t\t\t\t\t\t\tend_time = v_end_time,\n                                       batch_id = Null,\n\n\t\t\t\t\t\t\t\t\t\tDelete_Status = v_Delete_Status\n\t\t\t\t\t\t\t\t\tWHERE Slot_Id = v_Slot_Id;\n\t\t\t\t\t\t\t\tEND IF;\n\t\t\t\t\t\t\tEND IF;\n\n\t\t\t\t\t\t\tSET v_slotIndex = v_slotIndex + 1;\n\t\t\t\t\t\tEND WHILE;\n\n\t\t\t\t\t\tSET v_TimeSlotcourseIndex = v_TimeSlotcourseIndex + 1;\n\t\t\t\t\tEND WHILE;\n\n        ELSEIF User_Type_Id_ = 3 THEN\n            IF EXISTS (SELECT 1 FROM course_teacher WHERE Teacher_ID = User_ID_ AND Delete_Status = 0) THEN\n                UPDATE users SET User_Type_Id = 2 WHERE User_ID = User_ID_;\n                SET User_ID_ = -1;\n            ELSE\n                DELETE FROM course_hod WHERE User_ID = User_ID_;\n\t\t\t\t\n                -- Get total number of items in the Course_IDs_ JSON array\n                SET HodtotalCourses = JSON_LENGTH(Course_IDs_);\n \n                -- Loop through each Course_ID in the JSON array and insert into course_hod\n                WHILE courseIndex < HodtotalCourses DO\n                    INSERT INTO course_hod (Course_ID, User_ID, Delete_Status)\n                    VALUES (CAST(JSON_EXTRACT(Course_IDs_, CONCAT('$[', courseIndex, ']')) AS UNSIGNED), User_ID_, 0);\n                    SET courseIndex = courseIndex + 1;\n                END WHILE;\n            END IF;\n        END IF;\n    END IF;\n                                         \t\t\t\t\tinsert into data_log values (2546,v_TimeSlotcourseIndex);\n\n    -- Return User_ID\n    SELECT User_ID_ AS User_ID;\nEND"
+}

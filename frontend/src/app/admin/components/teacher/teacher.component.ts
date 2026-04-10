@@ -117,10 +117,10 @@ export class TeacherComponent implements OnInit {
       Device_ID: [''],
       Profile_Photo_Path: [''],
       Profile_Photo_Name: [''],
-      Hod: [false],
       Course_ID: [[]], // Multi-select initialized as an array,
       teacherCourses: this.fb.array([]),
       Branch_Id: [''],
+      Basic_Pay: [null],
     });
     this.invoiceForm = this.fb.group({
       Invoice_Id: [0, Validators.required],
@@ -451,6 +451,7 @@ export class TeacherComponent implements OnInit {
       User_Status: null,
       Hod: false,
       Course_ID: [[]],
+      Basic_Pay: null,
     });
     while (this.teacherCourses.length !== 0) {
       this.teacherCourses.removeAt(0);

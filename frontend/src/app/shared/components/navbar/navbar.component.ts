@@ -59,51 +59,45 @@ export class NavbarComponent implements OnInit {
   }
 
   async getMenu() {
-      
-    const User_Id =localStorage.getItem('User_Id')
-    // const result = await this.http.get(`Get_All_Menu?User_Id=${User_Id}`);
+    const User_Id = localStorage.getItem('User_Id');
+    const menuOrder = [
+      'Dashboard',
+      'Lead',
+      'Student',
+      'Expenses',
+      'Income',
+      'Staff',
+      'Expense Category',
+      'Expense Type',
+      'Course',
+      'Student Reports',
+      'Exam Upload',
+      'Studentfile upload',
+      'Fees Total Outstanding',
+      'Upcoming Installment',
+      'Due Instalment',
+      'Reports',
+      'Status',
+      'Leave',
+    ];
 
- this.user_Service.Get_user_Menus(User_Id).subscribe((res) => {
-      this.menuItems = res[0] ;
+    this.user_Service.Get_user_Menus(User_Id).subscribe((res) => {
+      let items = res[0] || [];
+
+      items.sort((a: any, b: any) => {
+        const indexA = menuOrder.indexOf(a.Menu_Name);
+        const indexB = menuOrder.indexOf(b.Menu_Name);
+
+        if (indexA === -1 && indexB === -1) return 0;
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+
+        return indexA - indexB;
+      });
+
+      this.menuItems = items;
       console.log(this.menuItems);
-      
-
-     
-
-
-      // console.log('res[0]', res[0]);
-      // console.log('this.menuItems', this.menuItems);
     });
-
-
-
-    // if (result) {
-  
-      //  const filteredMenu = result.filter((item: any) => item.IsView === 1);
-      // this.menuItems = result;
-
-      // 1 for admin   2 for student
-      // this.user=='1'?this.menuItems= [
-      //   { label: 'Student', link: '/admin/student', action: '' },
-      //    { label: 'Banner', link: '/admin/Banner', action: '' },
-      //    { label: 'Department', link: '/admin/department', action: '' },
-      //    { label: 'PPT', link: '/admin/presentations', action: '' },
-      //    { label: 'Eligibility Criteria', link: '/admin/eligibility_criteria', action: '' },
-      //    { label: 'Exam Type', link: '/admin/exam_types', action: '' },
-      //    { label: 'Question', link: '/admin/question', action: '' },
-
-      //  ]:this.menuItems=[{ label: 'Dashboard', link: '/user/dash', action: '' },
-      //  { label: 'PPT', link: '/user/ppt', action: '' },
-      //  // { label: 'E-commerce', subItems: [
-      //  //   { label: 'Products', link: '#',action: '' },
-      //  //   { label: 'Billing', link: '#',action: '' },
-      //  //   { label: 'Invoice', link: '#',action: '' }
-      //  // ] },
-      //  { label: 'Question Bank', link: '/user/question_bank', action: '' },
-      //  { label: 'Online Test', link: '/user/student-exam', action: '' },
-
-      // ]
-    // }
   }
 
   ngOnInit(): void {
@@ -146,6 +140,9 @@ export class NavbarComponent implements OnInit {
       }
       if (routeData.breadcrumb == 'Student') {
         breadcrumb = `Student`;
+      }
+      if (routeData.breadcrumb == 'Leave') {
+        breadcrumb = `Leave`;
       }
     } else {
       breadcrumb = '';
@@ -201,6 +198,10 @@ export class NavbarComponent implements OnInit {
           : 'assets/images/navbar/income.png';
       case 'Status':
         return '';
+      case 'Leave':
+        return isActive
+          ? 'assets/images/navbar/ppt-active.png'
+          : 'assets/images/navbar/ppt.svg';
       default:
         return ''; 
     }

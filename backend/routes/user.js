@@ -671,4 +671,31 @@ router.get('/Check_User_Blocked_Status/:blocked_user_id', async (req, res, next)
 }
 });
 
+router.post('/Save_Leave', async (req, res, next) => {
+    try {
+        const rows = await user.Save_Leave(req.body);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to save leave', error: e.message });
+    }
+});
+
+router.get('/Get_Leaves/:user_Id?', async (req, res, next) => {
+    try {
+        const rows = await user.Get_Leaves(req.params.user_Id || 0);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get leaves', error: e.message });
+    }
+});
+
+router.get('/Delete_Leave/:leave_Id', async (req, res, next) => {
+    try {
+        const rows = await user.Delete_Leave(req.params.leave_Id);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to delete leave', error: e.message });
+    }
+});
+
  module.exports = router;  

@@ -20,8 +20,27 @@ var user = {
             JSON.stringify(user.Course_ID),
             user.Hod,
             JSON.stringify(user.teacherCourses),        
-       
+            user.Basic_Pay || null
         ]);
+    },
+    
+    Save_Leave: async function(leave) {
+        return executeTransaction('Save_Leave', [
+            leave.Leave_Id || 0,
+            leave.User_Id,
+            leave.From_Date,
+            leave.To_Date,
+            leave.Reason,
+            leave.Status || 'Pending'
+        ]);
+    },
+    
+    Get_Leaves: async function(user_Id) {
+        return executeTransaction('Get_Leaves', [user_Id || 0]);
+    },
+    
+    Delete_Leave: async function(leave_Id) {
+        return executeTransaction('Delete_Leave', [leave_Id]);
     },
     
     Save_StudentLiveClass: async function(student) {

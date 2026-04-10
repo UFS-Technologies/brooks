@@ -29,6 +29,7 @@ import { FollowUpReportsComponent } from './components/follow-up-reports/follow-
 import { FollowUpStatusComponent } from './components/follow-up-status/follow-up-status.component';
 
 import { IncomeComponent } from './components/income/income.component';
+import { LeaveComponent } from './components/leave/leave.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -185,5 +186,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Follow_up_Status',
     component: FollowUpStatusComponent,
     data: { breadcrumb: 'Follow-up Status'}
+  },
+  {
+    path: 'Leave',
+    component: LeaveComponent,
+    data: { breadcrumb: 'Leave'}
   },
 ];
