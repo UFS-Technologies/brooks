@@ -1,19 +1,18 @@
 // Base Reset
 :host {
   display: block;
-  padding: 1rem;
+  padding: 0.5rem;
   font-family: 'Inter', sans-serif;
 }
 
 // Section Containers
 section {
-  margin-top:10px;
-      height: 73px;
+  margin-top:5px;
     background-color: #ffffff;
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    padding: 0.5rem;
-    margin-bottom: 1.5rem;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 // Filters
@@ -43,7 +42,7 @@ table {
     color: #374151;
 
     th {
-      padding: 0.75rem;
+      padding: 0.5rem;
       text-align: left;
       font-weight: 600;
       letter-spacing: 0.05em;
@@ -60,7 +59,7 @@ table {
       }
 
       td {
-        padding: 0.75rem;
+        padding: 0.5rem;
         white-space: nowrap;
         color: #4b5563;
         font-size: 0.875rem;

@@ -87,9 +87,9 @@ export class user_Service {
         return this.http.get(environment.BasePath + 'user/Get_Report_LiveClasses_By_BatchAndTeacher/',{ params: Search_Data } );
     }
     Get_Report_Student(
-        Student_ID: number,
-        Batch_ID: number,
-        Course_ID: number,
+        studentSearch: string,
+        batchSearch: string,
+        courseSearch: string,
         fromDate: string,
         toDate: string,
         pageNumber: number,
@@ -97,9 +97,9 @@ export class user_Service {
     ) {
         return this.http.get(environment.BasePath + 'user/Get_Report_Student/', {
             params: {
-                Student_ID: Student_ID.toString(),
-                Batch_ID: Batch_ID.toString(),
-                Course_ID: Course_ID.toString(),
+                Student_Search: studentSearch || '',
+                Batch_Search: batchSearch || '',
+                Course_Search: courseSearch || '',
                 Start_Date: fromDate || '',
                 End_Date: toDate || '',
                 PageNumber: pageNumber.toString(),

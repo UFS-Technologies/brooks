@@ -1,86 +1,56 @@
 <div style="overflow: hidden;">
     @if(!student_edit){
-    <!-- Action Buttons -->
-    <div class="flex justify-end gap-3">
-        <button (click)="fetchReportData()" mat-raised-button
-            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            <mat-icon class="mr-2">search</mat-icon>
-            Search
-        </button>
-
-        <button (click)="clearFilters()" mat-raised-button
-            class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
-            <mat-icon class="mr-2">clear</mat-icon>
-            Clear
-        </button>
-        <button (click)="exportToExcel()" style="background-color: gray;" class=" text-white px-4 py-2 rounded ">
-  Export to Excel
-</button>
-
-         <button (click)="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-  Download PDF
-</button>
-  
-    </div>
     <!-- Filters Section -->
     <section class="container-section">
         <div class="flex flex-wrap gap-4 items-start">
          
-            <!-- Course Filter -->
-            <mat-form-field appearance="fill" class="min-w-[10px] flex-1">
+            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[10px] flex-1">
                 <mat-label>Course</mat-label>
-                <input #Course type="text" placeholder="Pick one" matInput [formControl]="selectedCourse"
-                    [matAutocomplete]="auto" (input)="filter('course')" (focus)="filter('course')">
-                <mat-autocomplete [displayWith]="displayFn" #auto="matAutocomplete">
-                    <mat-option *ngFor="let option of coursefilteredOptions" [value]="option">
-                        {{option['Course_Name']}}
-                    </mat-option>
-                </mat-autocomplete>
+                <input type="text" matInput [formControl]="selectedCourse" (keyup)="fetchReportData()">
             </mat-form-field>
 
-            <!-- Student Filter -->
-            <mat-form-field appearance="fill" class="min-w-[200px] flex-1">
-                <mat-label>Student</mat-label>
-                <input #Student type="text" placeholder="Pick one" matInput [formControl]="selectedStudent"
-                    [matAutocomplete]="auto2" (input)="filter('student')" (focus)="filter('student')">
-                <mat-autocomplete #auto2="matAutocomplete" [displayWith]="displayFn">
-                    @for (option of studentfilteredOptions; track option) {
-                    <mat-option [value]="option">{{option['First_Name']}}</mat-option>
-                    }
-                </mat-autocomplete>
+            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[200px] flex-1">
+                <mat-label>Student Name / Phone Number</mat-label>
+                <input type="text" matInput [formControl]="selectedStudent" (keyup)="fetchReportData()">
             </mat-form-field>
 
-            <!-- Batch Filter -->
-            <mat-form-field appearance="fill" class="min-w-[200px] flex-1">
+            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[200px] flex-1">
                 <mat-label>Batch</mat-label>
-                <input #Batch type="text" placeholder="Pick one" matInput [formControl]="selectedBatch"
-                    [matAutocomplete]="auto3" (input)="filter('batch')" (focus)="filter('batch')">
-                <mat-autocomplete [displayWith]="displayFn" #auto3="matAutocomplete">
-                    <mat-option *ngFor="let option of bacthfilteredOptions" [value]="option">
-                        {{option['Batch_Name']}}
-                    </mat-option>
-                </mat-autocomplete>
+                <input type="text" matInput [formControl]="selectedBatch" (keyup)="fetchReportData()">
             </mat-form-field>
 
- <!-- Need Date Toggle -->
-<mat-checkbox [(ngModel)]="needDate">Apply Date Filter</mat-checkbox>
 
+            <button mat-raised-button (click)="showMoreOptions = !showMoreOptions" color="primary" class="mt-2">
+                <mat-icon>{{ showMoreOptions ? 'expand_less' : 'expand_more' }}</mat-icon>
+                {{ showMoreOptions ? 'Less Options' : 'More Options' }}
+            </button>
 
-            <!-- From Date -->
-            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
-                <mat-label>From Date</mat-label>
-                <input matInput [formControl]="fromDate" [matDatepicker]="picker">
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
+            <ng-container *ngIf="showMoreOptions">
+                <!-- From Date -->
+                <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[180px] flex-1">
+                    <mat-label>From Date</mat-label>
+                    <input matInput [formControl]="fromDate" [matDatepicker]="picker" (dateChange)="fetchReportData()">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
 
-            <!-- To Date -->
-            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
-                <mat-label>To Date</mat-label>
-                <input matInput [formControl]="toDate" [matDatepicker]="picker2">
-                <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                <mat-datepicker #picker2></mat-datepicker>
-            </mat-form-field>
+                <!-- To Date -->
+                <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[180px] flex-1">
+                    <mat-label>To Date</mat-label>
+                    <input matInput [formControl]="toDate" [matDatepicker]="picker2" (dateChange)="fetchReportData()">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+
+                <div class="flex gap-2 mt-2">
+                    <button (click)="exportToExcel()" style="background-color: gray;" class="text-white px-4 py-2 rounded">
+                        Export to Excel
+                    </button>
+                    <button (click)="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                        Download PDF
+                    </button>
+                </div>
+            </ng-container>
         </div>
 
     </section>
@@ -92,8 +62,8 @@
         <table class="w-full text-sm text-left text-gray-500">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
-                    <th *ngFor="let column of displayedColumns" class="px-6 py-3 font-semibold tracking-wider">
-                        {{ column.replace('_', ' ') }}
+                    <th *ngFor="let column of displayedColumns" class="px-6 py-3 font-semibold tracking-wider text-left">
+                        {{ column === 'Action' ? 'Action' : column.replace('_', ' ') }}
                     </th>
                 </tr>
             </thead>
@@ -101,7 +71,16 @@
                 <tr *ngFor="let row of tableData" class="bg-white border-b hover:bg-gray-50 transition duration-150"
                     (click)="student_List_Update(row)">
                     <td *ngFor="let column of displayedColumns" class="px-6 py-4 whitespace-nowrap">
-                        {{ column === 'Entry_Date' ? (row[column] | date:'dd-MM-yyyy') : row[column] }}
+                        <ng-container *ngIf="column === 'Action'">
+                            <button (click)="$event.stopPropagation(); openFollowUp(row)"
+                                class="flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105 shadow-sm border border-green-200">
+                                <span class="material-symbols-outlined text-sm mr-1">follow_the_signs</span>
+                                <span class="text-xs font-medium">Follow-up</span>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf="column !== 'Action'">
+                             {{ column === 'Entry_Date' ? (row[column] | date:'dd-MM-yyyy') : row[column] }}
+                        </ng-container>
                     </td>
                 </tr>
                 <tr *ngIf="!tableData?.length">
@@ -150,7 +129,7 @@
     </div>
     }
     @else if(student_edit){
-    <app-studentlist [followUps]="student_Details" [mode]="'list'" (cancel)="onCancelEdit()"
+    <app-studentlist [followUps]="student_Details" [mode]="'list'" [isFollowupOnly]="isFollowupOnly" (cancel)="onCancelEdit()"
         (save)="onSaveStudent($event)">
         <!--  [totalFollowUps]="totalFollowUps"
   [missedFollowUps]="missedFollowUps" -->

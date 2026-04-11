@@ -73,6 +73,7 @@ export class StudentlistComponent {
   @Input() followUps: any = [];
   @Input() totalFollowUps: number = 0;
   @Input() missedFollowUps: number = 0;
+  @Input() isFollowupOnly: boolean = false;
   @Output() cancel = new EventEmitter<any>();
   @Output() save = new EventEmitter<any>();
   preferredCountryCodes: string[] = ['in', 'ae'];
@@ -348,6 +349,11 @@ export class StudentlistComponent {
       this.Edit_student(this.followUps);
       const studentID = this.followUps.Student_ID;
       this.loadStudentCourse(studentID);
+
+      if (this.isFollowupOnly) {
+        this.view = 'followup';
+        this.selectedStudentForFollowup = this.followUps;
+      }
     }
     this.feesForm
       .get('Total_FeeAmount')

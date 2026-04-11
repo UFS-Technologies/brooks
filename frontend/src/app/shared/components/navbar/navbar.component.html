@@ -58,15 +58,15 @@
 
     <!-- ✅ Navbar -->
     <nav class="fixed top-0 z-40  w-full">
-      <div class="px-4 py-3 lg:px-4 lg:pl-0 bg-[#F7F9FB]">
+      <div class="px-4 py-1 lg:px-4 lg:pl-0 bg-[#F7F9FB]">
         <div class="flex items-center justify-between">
 
 
 
           <!-- 👤 User Info -->
-          <div class="flex-auto px-8 pb-2">
+          <div class="flex-auto px-8 pb-1">
 
-            <div class="bg-white shadow rounded-lg py-4 px-5 border flex  items-center justify-around w-full"
+            <div class="bg-white shadow rounded-lg py-1 px-5 border flex  items-center justify-around w-full"
               [ngStyle]="{ width: (isSidebarVisible || isSidebarPinned) ? '84%' : 'auto' }">
               <div class="flex items-center justify-self-start w-full">
               <!-- 🔘 Sidebar Toggle -->
@@ -95,7 +95,7 @@
     </nav>
 
     <!-- ✅ Scrollable Page Content -->
-    <main class="flex-1 overflow-y-auto pt-24 px-6">
+    <main class="flex-1 overflow-y-auto pt-16 px-6">
       <router-outlet></router-outlet>
     </main>
 
