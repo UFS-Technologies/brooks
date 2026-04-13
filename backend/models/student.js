@@ -71,7 +71,7 @@ if (student.Registered_On) {
     student.Roll_No,
     student.Branch_Name,
     Branch_Id_,
-    student.Follow_Up_Date || null,
+    student.Follow_Up_Date || student.Next_Follow_Up_Date || null,
     student.Admission_Date || null,
     toInt(student.Follow_Up_Status_ID),       // ✅
     student.Follow_Up_Status_Name || "",

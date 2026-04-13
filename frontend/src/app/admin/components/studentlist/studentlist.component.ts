@@ -1188,6 +1188,7 @@ doc.text(
       Follow_Up_Status_ID: this.Search_status?.Status_Id || null,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
       Next_Follow_Up_Date: this.nextFollowUpDate || null,
+      Follow_Up_Date: this.nextFollowUpDate || null,
       Remark: this.remark?.trim() || '',
       Created_Date: new Date().toISOString().split('T')[0],
       Delete_Status: 0,

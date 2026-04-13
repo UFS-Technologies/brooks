@@ -1741,19 +1741,32 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
                 map(({ followupResponse, studentResponse }: any) => {
                   const studentDetails =
                     this.normalizeStudentDetails(studentResponse);
+                  const normalizedFollowup = this.normalizeCurrentFollowup(followupResponse);
+
                   return {
                     ...row,
                     ...studentDetails,
-                    ...this.normalizeCurrentFollowup(followupResponse),
+                    // Only merge follow-up fields if they are present in the response
+                    ...(Object.keys(normalizedFollowup).length > 0 ? normalizedFollowup : {}),
+                    // Ensure Next_Follow_Up_Date from search row is preserved if normalized is null
+                    Next_Follow_Up_Date:
+                      normalizedFollowup.Next_Follow_Up_Date ||
+                      row.Next_Follow_Up_Date ||
+                      null,
+                    Follow_Up_Date:
+                      row.Follow_Up_Date ||
+                      normalizedFollowup.Follow_Up_Date ||
+                      row.Next_Follow_Up_Date ||
+                      null,
                     Enquiry_Source_Name: this.getEnquirySourceName(
                       row.Enquiry_Source_Id ||
                         row.Enquiry_Source ||
                         studentDetails.Enquiry_Source_Id ||
                         studentDetails.Enquiry_Source
                     ),
-                    Assigned_Staff_Name: 
-                      row.Assigned_Staff_Name || 
-                      this.normalizeCurrentFollowup(followupResponse).Assigned_Staff_Name || 
+                    Assigned_Staff_Name:
+                      row.Assigned_Staff_Name ||
+                      normalizedFollowup.Assigned_Staff_Name ||
                       studentDetails.Assigned_Staff_Name ||
                       '-'
                   };
@@ -1963,6 +1976,7 @@ private getStudentStatusValue(student: any): string {
     // For new students or when follow-up section is shown, use form data
     const followUpStatusId =
       this.Search_status?.Status_Id ?? this.Search_status?.Status_ID ?? null;
+    const assignedStaff = this.resolveAssignedStaffForSave();
     return {
       Branch_Id: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
       Branch_ID: this.Search_Branch?.Branch_ID || this.Search_Branch?.Branch_Id || null,
@@ -1970,8 +1984,8 @@ private getStudentStatusValue(student: any): string {
       Department_Id: this.Search_Department?.Department_ID || this.Search_Department?.Department_Id || null,
       Department_ID: this.Search_Department?.Department_ID || this.Search_Department?.Department_Id || null,
       Department_Name: this.Search_Department?.Department_Name || '',
-      Assigned_Staff_ID: this.Search_staff?.User_ID || null,
-      Assigned_Staff_Name: this.Search_staff?.First_Name || '',
+      Assigned_Staff_ID: assignedStaff.Assigned_Staff_ID,
+      Assigned_Staff_Name: assignedStaff.Assigned_Staff_Name,
       Follow_Up_Status_ID: followUpStatusId,
       Follow_Up_Status_Name: this.Search_status?.Status_Name || '',
       Next_Follow_Up_Date: this.nextFollowUpDate || null,
@@ -2096,6 +2110,7 @@ private getStudentStatusValue(student: any): string {
   Edit_student(student_e: student) {
     console.log('student_e: ', student_e);
     this.view = 'edit';
+    this.selectedStudent = { ...student_e };
     this.nextFollowUpDate = this.getCurrentDate();
     // isActive
     if (student_e['isActive']) {
@@ -2153,8 +2168,24 @@ private getStudentStatusValue(student: any): string {
           followUpData = response; // Direct object response
         }
 
-        // Just store the data, don't show any UI
-        this.currentFollowUpData = followUpData;
+        // Preserve assigned staff from the selected lead when the current
+        // follow-up payload does not return full assignment data.
+        this.currentFollowUpData = {
+          ...(this.selectedStudent || {}),
+          ...(followUpData || {}),
+          Assigned_Staff_ID:
+            followUpData?.Assigned_Staff_ID ??
+            followUpData?.To_User_Id ??
+            this.selectedStudent?.Assigned_Staff_ID ??
+            this.selectedStudent?.To_User_Id ??
+            null,
+          Assigned_Staff_Name:
+            followUpData?.Assigned_Staff_Name ??
+            followUpData?.To_User_Name ??
+            this.selectedStudent?.Assigned_Staff_Name ??
+            this.selectedStudent?.To_User_Name ??
+            '',
+        };
 
         if (followUpData && Object.keys(followUpData).length > 0) {
           console.log('Follow-up data loaded silently:', {
@@ -2172,14 +2203,53 @@ private getStudentStatusValue(student: any): string {
       },
       error: (error: any) => {
         console.error('Error loading follow-up data:', error);
-        this.currentFollowUpData = null;
+        this.currentFollowUpData = {
+          ...(this.selectedStudent || {}),
+          Assigned_Staff_ID:
+            this.selectedStudent?.Assigned_Staff_ID ??
+            this.selectedStudent?.To_User_Id ??
+            null,
+          Assigned_Staff_Name:
+            this.selectedStudent?.Assigned_Staff_Name ??
+            this.selectedStudent?.To_User_Name ??
+            '',
+        };
       },
     });
+  }
+  private resolveAssignedStaffForSave(): {
+    Assigned_Staff_ID: number | null;
+    Assigned_Staff_Name: string;
+  } {
+    const selectedStaff = this.Search_staff || {};
+    const currentFollowUp = this.currentFollowUpData || {};
+    const currentStudent = this.selectedStudent || {};
+
+    return {
+      Assigned_Staff_ID:
+        selectedStaff.User_ID ??
+        selectedStaff.Staff_ID ??
+        currentFollowUp.Assigned_Staff_ID ??
+        currentFollowUp.To_User_Id ??
+        currentStudent.Assigned_Staff_ID ??
+        currentStudent.To_User_Id ??
+        null,
+      Assigned_Staff_Name:
+        selectedStaff.First_Name ??
+        selectedStaff.Staff_Name ??
+        currentFollowUp.Assigned_Staff_Name ??
+        currentFollowUp.To_User_Name ??
+        currentStudent.Assigned_Staff_Name ??
+        currentStudent.To_User_Name ??
+        '',
+    };
   }
   getCurrentFollowUpDataForSave(): any {
     if (!this.currentFollowUpData) {
       return null;
     }
+
+    const assignedStaff = this.resolveAssignedStaffForSave();
 
     return {
       Branch_Id:
@@ -2192,8 +2262,8 @@ private getStudentStatusValue(student: any): string {
         this.currentFollowUpData.Department_ID ||
         null,
       Department_Name: this.currentFollowUpData.Department_Name || '',
-      Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
-      Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
+      Assigned_Staff_ID: assignedStaff.Assigned_Staff_ID,
+      Assigned_Staff_Name: assignedStaff.Assigned_Staff_Name,
       Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
       Follow_Up_Status_Name: this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
       Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
@@ -3296,7 +3366,7 @@ private getStudentStatusValue(student: any): string {
       (s) => s.User_ID == student.Assigned_Staff_ID || s.First_Name === student.To_User_Name || s.First_Name === student.Assigned_Staff_Name || s.First_Name === student.To_User_Name
     ) || this.staffData[0];
 
-    const studentStatusId = student.Status_Id || student.Followup_Status || student.Status_ID || student.Follow_Up_Status_ID;
+    const studentStatusId = student.Status_Id || student.Follow_Up_Status_ID || student.Followup_Status || student.Status_ID;
     const pendingStatus = this.followUpStatusData.find(
       (s) => s.Status_Name?.toLowerCase() === 'pending'
     );
@@ -3304,11 +3374,12 @@ private getStudentStatusValue(student: any): string {
       (s) => (s.Status_Id || s.Status_ID) == studentStatusId
     ) || pendingStatus || this.followUpStatusData[0];
 
+    // Priority: Follow_Up_Date (from student table) -> Next_Follow_Up_Date (from followup table) -> today
     this.nextFollowUpDate = student.Follow_Up_Date
       ? this.formatDateForInput(student.Follow_Up_Date)
-      : (student.Next_Follow_Up_Date ? this.formatDateForInput(student.Next_Follow_Up_Date) : this.getCurrentDate()); // default to today
+      : (student.Next_Follow_Up_Date ? this.formatDateForInput(student.Next_Follow_Up_Date) : this.getCurrentDate());
 
-    this.remark = student.Remark || '';
+    this.remark = student.Remark || student.Followup_Remark || '';
 
     // Load history
     this.loadFollowupHistoryList();
@@ -3379,13 +3450,21 @@ private getStudentStatusValue(student: any): string {
           'Final processed follow-up history:',
           this.followupHistoryList
         );
-         const history = this.followupHistoryList[0];
-         if (history) {
-           this.Search_Branch = this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) === (history.Branch_Id || history.Branch_ID)) || this.Search_Branch;
-           this.Search_Department = this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) === (history.Department_Id || history.Department_ID)) || this.Search_Department;
-           this.Search_staff = this.staffData.find(s => s.First_Name === history.Assigned_Staff_Name) || this.Search_staff;
-           this.Search_status = this.followUpStatusData.find(s => (s.Status_Id || s.Status_ID) === (history.Follow_Up_Status_ID || history.Followup_Status || history.Status_Id)) || this.Search_status;
-         }
+        const history = this.followupHistoryList[0];
+        if (history) {
+          this.Search_Branch = this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) === (history.Branch_Id || history.Branch_ID)) || this.Search_Branch;
+          this.Search_Department = this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) === (history.Department_Id || history.Department_ID)) || this.Search_Department;
+          this.Search_staff = this.staffData.find(s => s.First_Name === (history.Assigned_Staff_Name || history.To_User_Name)) || this.Search_staff;
+          this.Search_status = this.followUpStatusData.find(s => (s.Status_Id || s.Status_ID) === (history.Follow_Up_Status_ID || history.Followup_Status || history.Status_Id)) || this.Search_status;
+
+          // Sync date and remark from the most recent history record
+          if (history.Next_Follow_Up_Date) {
+            this.nextFollowUpDate = this.formatDateForInput(history.Next_Follow_Up_Date);
+          }
+          if (history.Remark) {
+            this.remark = history.Remark;
+          }
+        }
 
       },
       error: (error: any) => {
