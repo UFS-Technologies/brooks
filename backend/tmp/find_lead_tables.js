@@ -1,26 +1,23 @@
 const mysql = require('mysql2/promise');
-const dbConfig = {
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database: "brooks_new",
-};
-
-async function findTables() {
-    let connection;
+const dbConfig = { host: "localhost", user: "root", password: "password", database: "brooks_new", multipleStatements: true };
+async function describeTables() {
+    let conn;
     try {
-        connection = await mysql.createConnection(dbConfig);
-        const [enquiryRows] = await connection.query("SHOW TABLES LIKE '%enq%'");
-        console.log('Enquiry Tables:', enquiryRows.map(r => Object.values(r)[0]));
-        const [leadRows] = await connection.query("SHOW TABLES LIKE '%lead%'");
-        console.log('Lead Tables:', leadRows.map(r => Object.values(r)[0]));
-        const [studentRows] = await connection.query("SHOW TABLES LIKE '%student%'");
-        console.log('Student Tables:', studentRows.map(r => Object.values(r)[0]));
-        await connection.end();
-    } catch (e) {
-        console.error(e);
-        if (connection) await connection.end();
-    }
-}
+        conn = await mysql.createConnection(dbConfig);
+        const [userStatus] = await conn.query("SELECT * FROM user_status");
+        console.log("user_status:", userStatus);
+        
+        const [followupStatus] = await conn.query("SELECT * FROM followup_status");
+        console.log("followup_status:", followupStatus);
+        
+        const [studentCourse] = await conn.query("DESCRIBE student_course");
+        console.log("student_course:", studentCourse.map(c => c.Field).join(", "));
+        
+        // Let's count some students
+        const [sCount] = await conn.query("SELECT COUNT(*) as c, Is_Registered, isActive, Status_Name FROM student GROUP BY Is_Registered, isActive, Status_Name");
+        console.log("Student aggregate:", sCount);
 
-findTables();
+    } catch(e) { console.error(e); }
+    if(conn) await conn.end();
+}
+describeTables();

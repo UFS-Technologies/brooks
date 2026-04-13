@@ -1,5 +1,6 @@
 var fs = require('fs');
 const { executeTransaction, getmultipleSP } = require('../helpers/sp-caller');
+const db = require('../config/dbconnection');
 var user = {
     Save_user: async function (user) {
         return executeTransaction('Save_User', [
@@ -97,6 +98,35 @@ var user = {
     Get_Dashboard: async function () {
 
         return getmultipleSP('Get_Dashboard', []);
+    },
+    Get_Dashboard_Course_Wise_Monthly_Enrollment: async function () {
+        const sql = `
+            SELECT
+                c.Course_Name,
+                MONTHNAME(COALESCE(sc.Enrollment_Date, s.Admission_Date)) AS Month,
+                COUNT(DISTINCT sc.Student_ID) AS Student_Count
+            FROM course c
+            INNER JOIN student_course sc
+                ON c.Course_ID = sc.Course_ID
+            INNER JOIN student s
+                ON s.Student_ID = sc.Student_ID
+            WHERE (c.Delete_Status IS NULL OR c.Delete_Status = 0)
+              AND (sc.Delete_Status IS NULL OR sc.Delete_Status = 0)
+              AND (s.Delete_Status IS NULL OR s.Delete_Status = 0)
+              AND (sc.Expiry_Date IS NULL OR DATE(sc.Expiry_Date) >= CURDATE())
+              AND COALESCE(sc.Enrollment_Date, s.Admission_Date) IS NOT NULL
+            GROUP BY
+                c.Course_ID,
+                c.Course_Name,
+                MONTH(COALESCE(sc.Enrollment_Date, s.Admission_Date)),
+                MONTHNAME(COALESCE(sc.Enrollment_Date, s.Admission_Date))
+            ORDER BY
+                c.Course_Name,
+                MONTH(COALESCE(sc.Enrollment_Date, s.Admission_Date));
+        `;
+
+        const [rows] = await db.promise().query(sql);
+        return rows;
     },
     Get_courses: async function (student_Id_) {
         return executeTransaction('GetCoursesByUserId', [student_Id_]);

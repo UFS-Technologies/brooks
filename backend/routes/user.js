@@ -225,6 +225,12 @@ router.get('/Search_user/', async (req, res, next) => {
 router.get('/Get_Dashboard/', async (req, res, next) => {
   try {
     const rows = await user.Get_Dashboard();
+    const courseWiseMonthlyEnrollment = await user.Get_Dashboard_Course_Wise_Monthly_Enrollment();
+
+    if (Array.isArray(rows)) {
+      rows[3] = courseWiseMonthlyEnrollment;
+    }
+
     res.json(rows);
   }
   catch (e) {

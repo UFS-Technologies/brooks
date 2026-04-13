@@ -173,10 +173,20 @@ export class DashboardComponent implements OnInit {
         }
 
         if (data[2]) {
+          const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          const counts = new Array(12).fill(0);
+          data[2].forEach((row: any) => {
+            const idx = months.indexOf(row.Month);
+            if (idx !== -1) counts[idx] = row.Student_Count;
+          });
+
           this.barChartData2 = {
-            labels: data[2].map((ele: any) => ele.Month),
+            labels: months,
             datasets: [{
-              data: data[2].map((ele: any) => ele.Student_Count),
+              data: counts,
               label: 'Student Count',
               backgroundColor: [
                 '#F59E0B'
@@ -232,10 +242,20 @@ export class DashboardComponent implements OnInit {
         }
 
         if (data[4]) {
+          const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          const leadCounts = new Array(12).fill(0);
+          data[4].forEach((row: any) => {
+            const idx = months.indexOf(row.Month);
+            if (idx !== -1) leadCounts[idx] = row.Lead_Count;
+          });
+
           this.barChartData4 = {
-            labels: data[4].map((ele: any) => ele.Month),
+            labels: months,
             datasets: [{
-              data: data[4].map((ele: any) => ele.Lead_Count),
+              data: leadCounts,
               label: 'Lead Count',
               backgroundColor: [
                 '#6366F1' // Indigo color for lead report
@@ -251,10 +271,17 @@ export class DashboardComponent implements OnInit {
         }
 
         if (data[5]) {
+          const statuses = ['Active', 'Dropout', 'Completed'];
+          const counts = [0, 0, 0];
+          data[5].forEach((row: any) => {
+            const idx = statuses.indexOf(row.Status);
+            if (idx !== -1) counts[idx] = row.Count;
+          });
+
           this.pieChartData3 = {
-            labels: data[5].map((ele: any) => ele.Status),
+            labels: statuses,
             datasets: [{
-              data: data[5].map((ele: any) => ele.Count),
+              data: counts,
               label: 'Student Status',
               backgroundColor: [
                 '#10B981', // Emerald for Active
