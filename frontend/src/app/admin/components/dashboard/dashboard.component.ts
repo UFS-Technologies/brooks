@@ -45,37 +45,71 @@ export class DashboardComponent implements OnInit {
   public barChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 20,
+        bottom: 20,
+        left: 20,
+        right: 20
+      }
+    },
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          drawBorder: false,
+          color: 'rgba(0, 0, 0, 0.05)',
+        },
         ticks: {
+          padding: 10,
           font: {
-            size: 14,
-            weight: 'bold'
-          }
+            size: 13,
+            family: "'Inter', sans-serif"
+          },
+          color: '#64748b'
         }
       },
       x: {
+        grid: {
+          display: false,
+          drawBorder: false
+        },
         ticks: {
+          padding: 10,
           font: {
             size: 12,
-            weight: 'bold'
-          }
+            family: "'Inter', sans-serif"
+          },
+          color: '#64748b'
         }
       }
     },
     plugins: {
       legend: {
+        display: true,
+        position: 'top',
+        align: 'center',
         labels: {
+          usePointStyle: true,
+          pointStyle: 'rectRounded',
+          padding: 20,
           font: {
-            size: 16,
-            weight: 'bold'
-          }
+            size: 14,
+            family: "'Inter', sans-serif",
+            weight: '500'
+          },
+          color: '#1e293b'
         }
       },
-    },
-    barPercentage: 0.3, // Adjust bar width
-    categoryPercentage: 0.8 // Adjust space betwe
+      tooltip: {
+        backgroundColor: '#1e293b',
+        padding: 12,
+        titleFont: { size: 14, family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        cornerRadius: 8,
+        displayColors: false
+      }
+    }
   };
 
   public barChartType: ChartType = 'bar';
@@ -100,7 +134,12 @@ export class DashboardComponent implements OnInit {
     labels: [],
     datasets: []
   };
-    public barChartData5: ChartData<'bar'> = {
+  public barChartData5: ChartData<'bar'> = {
+    labels: [],
+    datasets: []
+  };
+
+  public pieChartData3: ChartData<'pie'> = {
     labels: [],
     datasets: []
   };
@@ -114,56 +153,123 @@ export class DashboardComponent implements OnInit {
         this.Accounts = data[0] 
         console.log('Accounts:', this.Accounts);
         
-        // this.barChartData = {
-        //   labels: data[0].map((ele: any) => ele.Course_Name),
-        //   datasets: [{
-        //     data: data[0].map((ele: any) => ele.Enrollment_Count),
-        //     label: 'Total Count',
-        //     backgroundColor: ['#42A5F5', '#66BB6A'],
-        //     hoverBackgroundColor: ['#64B5F6', '#81C784']
-        //   }]
-        // };
+        if (data[1]) {
+          this.barChartData = {
+            labels: data[1].map((ele: any) => ele.Course_Name),
+            datasets: [{
+              data: data[1].map((ele: any) => ele.Enrollment_Count),
+              label: 'Total Count',
+              backgroundColor: [
+                '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'
+              ],
+              hoverBackgroundColor: [
+                '#4338CA', '#059669', '#D97706', '#DC2626', '#7C3AED', '#DB2777', '#0891B2'
+              ],
+              borderRadius: 8,
+              borderWidth: 0,
+              barThickness: 40
+            }]
+          };
+        }
 
-        // this.barChartData2 = {
-        //   labels: data[1].map((ele: any) => ele.Month),
-        //   datasets: [{
-        //     data: data[1].map((ele: any) => ele.Student_Count),
-        //     label: 'Student Count',
-        //     backgroundColor: ['#FFA726', '#EF5350','#42A5F5', '#66BB6A', '#FFA726', '#EF5350'],
-        //     hoverBackgroundColor: ['#FFA726', '#EF5350','#64B5F6', '#81C784', '#FFB74D', '#EF9A9A']
-        //   }]
-        // };
+        if (data[2]) {
+          this.barChartData2 = {
+            labels: data[2].map((ele: any) => ele.Month),
+            datasets: [{
+              data: data[2].map((ele: any) => ele.Student_Count),
+              label: 'Student Count',
+              backgroundColor: [
+                '#F59E0B'
+              ],
+              hoverBackgroundColor: [
+                '#D97706'
+              ],
+              borderRadius: 8,
+              borderWidth: 0,
+              barThickness: 30
+            }]
+          };
+        }
 
-        // this.barChartData3 = {
-        //   labels: data[2].map((ele: any) => ele.To_User_Name),
-        //   datasets: [{
-        //     data: data[2].map((ele: any) => ele.Student_Count),
-        //     label: 'Student Count',
-        //     backgroundColor: ['#FFA726', '#EF5350','#42A5F5', '#66BB6A', '#FFA726', '#EF5350'],
-        //     hoverBackgroundColor: ['#FFA726', '#EF5350','#64B5F6', '#81C784', '#FFB74D', '#EF9A9A']
-        //   }]
-        // };
+        if (data[3]) {
+          const coursesMap = new Map();
+          const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          const colors = [
+            '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4',
+            '#1E293B', '#FACC15', '#FB923C'
+          ];
+          
+          let colorIndex = 0;
+          data[3].forEach((row: any) => {
+            if (!coursesMap.has(row.Course_Name)) {
+              coursesMap.set(row.Course_Name, {
+                label: row.Course_Name,
+                data: new Array(12).fill(0),
+                fill: true,
+                tension: 0.4,
+                borderColor: colors[colorIndex % colors.length],
+                backgroundColor: colors[colorIndex % colors.length] + '20', // Add transparency for area chart
+                pointBackgroundColor: colors[colorIndex % colors.length],
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: colors[colorIndex % colors.length]
+              });
+              colorIndex++;
+            }
+            const monthIdx = months.indexOf(row.Month);
+            if (monthIdx !== -1) {
+              coursesMap.get(row.Course_Name).data[monthIdx] = row.Student_Count;
+            }
+          });
 
+          this.barChartData3 = {
+            labels: months,
+            datasets: Array.from(coursesMap.values())
+          };
+        }
 
-        // this.barChartData4 = {
-        //   labels: data[3].map((ele: any) => ele.Status_Name),
-        //   datasets: [{
-        //     data: data[3].map((ele: any) => ele.Student_Count),
-        //     label: 'Student Count',
-        //     backgroundColor: ['#FFA726', '#EF5350','#42A5F5', '#66BB6A', '#FFA726', '#EF5350'],
-        //     hoverBackgroundColor: ['#FFA726', '#EF5350','#64B5F6', '#81C784', '#FFB74D', '#EF9A9A']
-        //   }]
-        // };
+        if (data[4]) {
+          this.barChartData4 = {
+            labels: data[4].map((ele: any) => ele.Month),
+            datasets: [{
+              data: data[4].map((ele: any) => ele.Lead_Count),
+              label: 'Lead Count',
+              backgroundColor: [
+                '#6366F1' // Indigo color for lead report
+              ],
+              hoverBackgroundColor: [
+                '#4F46E5'
+              ],
+              borderRadius: 8,
+              borderWidth: 0,
+              barThickness: 30
+            }]
+          };
+        }
 
-        //    this.barChartData5 = {
-        //   labels: data[4].map((ele: any) => ele.Status_Name),
-        //   datasets: [{
-        //     data: data[4].map((ele: any) => ele.Student_Count),
-        //     label: 'Amount',
-        //     backgroundColor: ['#FFA726', '#EF5350','#42A5F5', '#66BB6A', '#FFA726', '#EF5350'],
-        //     hoverBackgroundColor: ['#FFA726', '#EF5350','#64B5F6', '#81C784', '#FFB74D', '#EF9A9A']
-        //   }]
-        // };
+        if (data[5]) {
+          this.pieChartData3 = {
+            labels: data[5].map((ele: any) => ele.Status),
+            datasets: [{
+              data: data[5].map((ele: any) => ele.Count),
+              label: 'Student Status',
+              backgroundColor: [
+                '#10B981', // Emerald for Active
+                '#EF4444', // Red for Dropout
+                '#3B82F6'  // Blue for Completed
+              ],
+              hoverBackgroundColor: [
+                '#059669',
+                '#DC2626',
+                '#2563EB'
+              ],
+              borderWidth: 0
+            }]
+          };
+        }
 
       },
       (error) => {

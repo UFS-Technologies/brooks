@@ -51,78 +51,110 @@
 </div> -->
 
 <!-- dashboard.component.html -->
-<div class="dashboard-container h-[85vh] overflow-y-scroll">
+<div class="dashboard-container h-[85vh] overflow-y-scroll bg-slate-50/50">
+  <div class="p-8 space-y-8">
+    <!-- Card 0: Accounts Summary -->
+    <!-- <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 transition-all hover:shadow-lg">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-2 h-8 bg-slate-400 rounded-full shadow-sm"></div>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Accounts Summary</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="border-b border-slate-100">
+              <th class="py-4 px-6 text-sm font-semibold text-slate-500 uppercase tracking-wider">Account Name</th>
+              <th class="py-4 px-6 text-sm font-semibold text-slate-500 uppercase tracking-wider text-right">Total Value</th>
+            </tr>
+          </thead>
+          <tbody class="text-slate-600 text-lg">
+            <tr *ngFor="let expense of Accounts; let i = index" class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+              <td class="py-5 px-6 font-medium">{{ expense.account_name }}</td>
+              <td class="py-5 px-6 text-right font-semibold text-indigo-600">₹{{ expense.total_value_b | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div> -->
 
- <table>
-   <tbody class="text-gray-600 text-sm font-light">
-          <tr *ngFor="let expense of Accounts; let i = index"
-            class="border-b border-gray-200 hover:bg-gray-100">
-             
-              <td class="py-3 px-6 text-center">{{ expense.account_name }}</td>
-            <td class="py-3 px-6 text-center">{{ expense.total_value_b }}</td>
-            
-          </tr>
-        </tbody>
-      </table>
-
-  <!-- Row 1 -->
-  <!-- <div class="chart-row">
-    <div class="chart-container">
-      <h2>Popular Course</h2>
-      <canvas baseChart
-        [data]="barChartData"
-        [options]="barChartOptions"
-        [type]="barChartType"
-        [legend]="barChartLegend">
-      </canvas>
-    </div>
- 
-    <div class="chart-container">
-      <h2>Month-wise Student Enrollment</h2>
-      <canvas baseChart
-        [data]="barChartData2"
-        [options]="barChartOptions"
-        [type]="barChartType"
-        [legend]="barChartLegend">
-      </canvas>
-    </div>
-  </div> -->
-
-  <!-- Row 2 -->
-  <!-- <div class="chart-row">
-    <div class="chart-container">
-      <h2>User-wise Students</h2>
-      <canvas baseChart
-        [data]="barChartData3"
-        [options]="barChartOptions"
-        [type]="barChartType"
-        [legend]="barChartLegend">
-      </canvas>
+    <!-- Card 1: Popular Course -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 transition-all hover:shadow-lg">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-2 h-8 bg-indigo-600 rounded-full shadow-sm shadow-indigo-200"></div>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Popular Course</h2>
+      </div>
+      <div class="h-[450px]">
+        <canvas baseChart
+          [data]="barChartData"
+          [options]="barChartOptions"
+          [type]="barChartType"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
     </div>
 
-    <div class="chart-container">
-      <h2>Status-wise Students</h2>
-      <canvas baseChart
-        [data]="barChartData4"
-        [options]="barChartOptions"
-        [type]="barChartType"
-        [legend]="barChartLegend">
-      </canvas>
-    </div>
-  </div> -->
-  <!-- receipt -->
-   
-  <!-- <div class="chart-row">
-    <div class="chart-container">
-      <h2>Receipts</h2>
-      <canvas baseChart
-        [data]="barChartData5"
-        [options]="barChartOptions"
-        [type]="barChartType"
-        [legend]="barChartLegend">
-      </canvas>
+    <!-- Card 2: Month Wise Student Enrollment -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 transition-all hover:shadow-lg">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-2 h-8 bg-amber-500 rounded-full shadow-sm shadow-amber-200"></div>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Month Wise Student Enrollment</h2>
+      </div>
+      <div class="h-[450px]">
+        <canvas baseChart
+          [data]="barChartData2"
+          [options]="barChartOptions"
+          [type]="barChartType"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
     </div>
 
-    
-  </div> -->
+    <!-- Card 3: Month Wise Lead Report -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 transition-all hover:shadow-lg">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-2 h-8 bg-indigo-500 rounded-full shadow-sm shadow-indigo-100"></div>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Month Wise Lead Report</h2>
+      </div>
+      <div class="h-[450px]">
+        <canvas baseChart
+          [data]="barChartData4"
+          [options]="barChartOptions"
+          [type]="barChartType"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Card 4: Course Wise Monthly Enrollment -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 transition-all hover:shadow-lg">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-2 h-8 bg-emerald-500 rounded-full shadow-sm shadow-emerald-200"></div>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Course Wise Monthly Enrollment</h2>
+      </div>
+      <div class="h-[450px]">
+        <canvas baseChart
+          [data]="barChartData3"
+          [options]="barChartOptions"
+          [type]="'line'"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Card 5: Student Status Representation -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 transition-all hover:shadow-lg">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-2 h-8 bg-teal-500 rounded-full shadow-sm shadow-teal-200"></div>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Student Status Representation</h2>
+      </div>
+      <div class="h-[450px] w-full lg:w-1/2 mx-auto flex justify-center pb-5">
+        <canvas baseChart
+          [data]="pieChartData3"
+          [options]="pieChartOptions"
+          [type]="pieChartType"
+          [legend]="pieChartLegend">
+        </canvas>
+      </div>
+    </div>
+  </div>
 </div>
