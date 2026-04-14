@@ -1,0 +1,156 @@
+<div class="work-report-page">
+  <section class="filter-card" *ngIf="!isDetailView">
+    <div class="filters filters-summary">
+      <label class="checkbox-line">
+        <input type="checkbox" [(ngModel)]="useCreatedDate" />
+        <span>Created On</span>
+      </label>
+
+      <label class="field">
+        <span>From Date</span>
+        <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" />
+      </label>
+
+      <label class="field">
+        <span>To Date</span>
+        <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" />
+      </label>
+
+      <button class="primary-btn" (click)="applySummaryFilters()">Search</button>
+    </div>
+  </section>
+
+  <section class="table-card" *ngIf="!isDetailView">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>By Staff</th>
+            <th>No. Of Follow Up</th>
+            <th class="action-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoadingSummary">
+            <td colspan="4" class="empty-state">Loading work report...</td>
+          </tr>
+          <tr *ngFor="let row of summaryRows">
+            <td>{{ row.rowNo }}</td>
+            <td>{{ row.Staff_Name || '-' }}</td>
+            <td>
+              <span class="count-pill">{{ row.Follow_Up_Count || 0 }}</span>
+            </td>
+            <td class="action-col">
+              <button class="ghost-btn" (click)="openDetails(row)">View Details</button>
+            </td>
+          </tr>
+          <tr *ngIf="!isLoadingSummary && !summaryRows.length">
+            <td colspan="4" class="empty-state">No work report data found for the selected dates.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section *ngIf="isDetailView">
+    <div class="detail-header">
+      <div>
+        <h2>Work Report</h2>
+        <p>{{ selectedStaff?.Staff_Name }}</p>
+      </div>
+      <button class="ghost-btn" (click)="backToSummary()">Back</button>
+    </div>
+
+    <section class="filter-card">
+      <div class="filters filters-detail">
+        <label class="field">
+          <span>Search By</span>
+          <select [(ngModel)]="searchBy">
+            <option value="name">Name</option>
+            <option value="mobile">Mobile</option>
+          </select>
+        </label>
+
+        <label class="field search-field">
+          <span>Search</span>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            [placeholder]="searchBy === 'mobile' ? 'Search mobile' : 'Search name'"
+          />
+        </label>
+
+        <label class="field">
+          <span>Department</span>
+          <select [(ngModel)]="selectedDepartmentId">
+            <option [ngValue]="null">All</option>
+            <option *ngFor="let department of departments" [ngValue]="department.Department_Id || department.Department_ID">
+              {{ department.Department_Name }}
+            </option>
+          </select>
+        </label>
+
+        <label class="checkbox-line">
+          <input type="checkbox" [(ngModel)]="useEntryDate" />
+          <span>Entry Date</span>
+        </label>
+
+        <label class="field">
+          <span>From</span>
+          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" />
+        </label>
+
+        <label class="field">
+          <span>To</span>
+          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" />
+        </label>
+
+        <button class="primary-btn" (click)="applyDetailFilters()">Search</button>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Student</th>
+              <th>Mobile</th>
+              <th>Follow Up</th>
+              <th>Entry Date</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Follow Up By</th>
+              <th>Assigned To</th>
+              <th>Remark</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="isLoadingDetails">
+              <td colspan="10" class="empty-state">Loading details...</td>
+            </tr>
+            <tr *ngFor="let row of detailRows">
+              <td>{{ row.rowNo }}</td>
+              <td class="name-cell">{{ row.Student_Name || '-' }}</td>
+              <td>{{ row.Mobile || '-' }}</td>
+              <td>{{ formatDate(row.Next_Follow_Up_Date) }}</td>
+              <td>{{ formatDate(row.Created_Date, true) }}</td>
+              <td>
+                <span class="tag">{{ row.Department_Name || '-' }}</span>
+              </td>
+              <td class="status-cell">{{ row.Follow_Up_Status_Name || '-' }}</td>
+              <td>{{ row.Follow_Up_By_Name || selectedStaff?.Staff_Name || '-' }}</td>
+              <td>{{ row.Assigned_Staff_Name || '-' }}</td>
+              <td class="remark-cell">{{ row.Remark || '-' }}</td>
+            </tr>
+            <tr *ngIf="!isLoadingDetails && !detailRows.length">
+              <td colspan="10" class="empty-state">No follow-up history found for this staff and filter set.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</div>

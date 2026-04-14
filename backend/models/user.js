@@ -1,6 +1,14 @@
 var fs = require('fs');
 const { executeTransaction, getmultipleSP } = require('../helpers/sp-caller');
 const db = require('../config/dbconnection');
+
+function normalizeDateBounds(fromDate, toDate) {
+    return {
+        fromDate: fromDate || null,
+        toDate: toDate || null,
+    };
+}
+
 var user = {
     Save_user: async function (user) {
         return executeTransaction('Save_User', [
@@ -343,6 +351,107 @@ var user = {
         console.log('End_Date: ', End_Date);
 
         return executeTransaction('Get_Report_LiveClasses_By_BatchAndTeacher', [Teacher_ID, Batch_ID, Course_ID, Start_Date, End_Date]);
+    },
+    Get_Work_Report_Summary: async function ({ fromDate, toDate, useCreatedDate = 0 }) {
+        const normalized = normalizeDateBounds(fromDate, toDate);
+        const dateColumn = Number(useCreatedDate) ? 'DATE(sf.Created_Date)' : 'DATE(sf.Next_Follow_Up_Date)';
+
+        const sql = `
+            SELECT
+                u.User_ID,
+                TRIM(CONCAT(COALESCE(u.First_Name, ''), ' ', COALESCE(u.Last_Name, ''))) AS Staff_Name,
+                COUNT(sf.Follow_Up_ID) AS Follow_Up_Count
+            FROM users u
+            LEFT JOIN student_followup sf
+                ON COALESCE(sf.Created_By, sf.Assigned_Staff_ID) = u.User_ID
+                AND IFNULL(sf.Delete_Status, 0) = 0
+                AND (? IS NULL OR ${dateColumn} >= ?)
+                AND (? IS NULL OR ${dateColumn} <= ?)
+            WHERE IFNULL(u.Delete_Status, 0) = 0
+            GROUP BY u.User_ID, u.First_Name, u.Last_Name
+            ORDER BY Follow_Up_Count DESC, Staff_Name ASC
+        `;
+
+        const [rows] = await db.promise().query(sql, [
+            normalized.fromDate, normalized.fromDate,
+            normalized.toDate, normalized.toDate
+        ]);
+
+        return rows;
+    },
+    Get_Work_Report_Details: async function ({
+        staffId,
+        fromDate,
+        toDate,
+        useCreatedDate = 0,
+        departmentId,
+        searchBy = 'name',
+        searchTerm = ''
+    }) {
+        const normalized = normalizeDateBounds(fromDate, toDate);
+        const dateColumn = Number(useCreatedDate) ? 'DATE(sf.Created_Date)' : 'DATE(sf.Next_Follow_Up_Date)';
+        const sanitizedSearchBy = String(searchBy || 'name').toLowerCase() === 'mobile' ? 'mobile' : 'name';
+        const trimmedSearch = String(searchTerm || '').trim();
+        const searchValue = trimmedSearch ? `%${trimmedSearch}%` : null;
+
+        const sql = `
+            SELECT
+                sf.Follow_Up_ID,
+                sf.Student_ID,
+                CONCAT(COALESCE(s.First_Name, ''), CASE WHEN COALESCE(s.Last_Name, '') <> '' THEN ' ' ELSE '' END, COALESCE(s.Last_Name, '')) AS Student_Name,
+                CONCAT(COALESCE(s.Country_Code, ''), CASE WHEN COALESCE(s.Country_Code, '') <> '' AND COALESCE(s.Phone_Number, '') <> '' THEN ' ' ELSE '' END, COALESCE(s.Phone_Number, '')) AS Mobile,
+                sf.Next_Follow_Up_Date,
+                sf.Created_Date,
+                sf.Department_ID,
+                sf.Department_Name,
+                sf.Follow_Up_Status_ID,
+                sf.Follow_Up_Status_Name,
+                COALESCE(sf.Created_By, sf.Assigned_Staff_ID) AS Follow_Up_By_ID,
+                TRIM(CONCAT(COALESCE(fu.First_Name, ''), ' ', COALESCE(fu.Last_Name, ''))) AS Follow_Up_By_Name,
+                sf.Assigned_Staff_ID,
+                sf.Assigned_Staff_Name,
+                sf.Remark
+            FROM student_followup sf
+            INNER JOIN student s ON s.Student_ID = sf.Student_ID
+            LEFT JOIN users fu ON fu.User_ID = COALESCE(sf.Created_By, sf.Assigned_Staff_ID)
+            WHERE IFNULL(sf.Delete_Status, 0) = 0
+                AND IFNULL(s.Delete_Status, 0) = 0
+                AND (? IS NULL OR COALESCE(sf.Created_By, sf.Assigned_Staff_ID) = ?)
+                AND (? IS NULL OR ${dateColumn} >= ?)
+                AND (? IS NULL OR ${dateColumn} <= ?)
+                AND (? IS NULL OR ? = 0 OR sf.Department_ID = ?)
+                AND (
+                    ? IS NULL
+                    OR (
+                        ? = 'mobile'
+                        AND (
+                            s.Phone_Number LIKE ?
+                            OR CONCAT(COALESCE(s.Country_Code, ''), ' ', COALESCE(s.Phone_Number, '')) LIKE ?
+                        )
+                    )
+                    OR (
+                        ? <> 'mobile'
+                        AND (
+                            CONCAT(COALESCE(s.First_Name, ''), ' ', COALESCE(s.Last_Name, '')) LIKE ?
+                            OR s.First_Name LIKE ?
+                            OR s.Last_Name LIKE ?
+                        )
+                    )
+                )
+            ORDER BY COALESCE(sf.Created_Date, sf.Next_Follow_Up_Date) DESC, sf.Follow_Up_ID DESC
+        `;
+
+        const [rows] = await db.promise().query(sql, [
+            staffId || null, staffId || null,
+            normalized.fromDate, normalized.fromDate,
+            normalized.toDate, normalized.toDate,
+            departmentId || null, departmentId || 0, departmentId || null,
+            searchValue,
+            sanitizedSearchBy, searchValue, searchValue,
+            sanitizedSearchBy, searchValue, searchValue, searchValue
+        ]);
+
+        return rows;
     },
     Get_User_Email_Number: async function (user_Id) {
         return executeTransaction('Get_User_Email_Number', [

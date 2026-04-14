@@ -27,6 +27,7 @@ import { DueInstalmentComponent } from './components/due-instalment/due-instalme
 import { StudentLeadComponent } from './components/student-lead/student-lead.component';
 import { FollowUpReportsComponent } from './components/follow-up-reports/follow-up-reports.component';
 import { FollowUpStatusComponent } from './components/follow-up-status/follow-up-status.component';
+import { WorkReportComponent } from './components/work-report/work-report.component';
 
 import { IncomeComponent } from './components/income/income.component';
 import { LeaveComponent } from './components/leave/leave.component';
@@ -191,5 +192,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Leave',
     component: LeaveComponent,
     data: { breadcrumb: 'Leave'}
+  },
+  {
+    path: 'Work_Report',
+    component: WorkReportComponent,
+    data: { breadcrumb: 'Work Report'}
   },
 ];

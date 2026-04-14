@@ -86,6 +86,42 @@ export class user_Service {
 
         return this.http.get(environment.BasePath + 'user/Get_Report_LiveClasses_By_BatchAndTeacher/',{ params: Search_Data } );
     }
+    Get_Work_Report_Summary(filters: {
+        fromDate?: string;
+        toDate?: string;
+        useCreatedDate?: boolean;
+    }): Observable<any> {
+        let params = new HttpParams();
+        if (filters.fromDate) params = params.set('fromDate', filters.fromDate);
+        if (filters.toDate) params = params.set('toDate', filters.toDate);
+        if (filters.useCreatedDate !== undefined) {
+            params = params.set('useCreatedDate', filters.useCreatedDate ? '1' : '0');
+        }
+
+        return this.http.get(environment.BasePath + 'user/Get_Work_Report_Summary', { params });
+    }
+    Get_Work_Report_Details(filters: {
+        staffId?: number | null;
+        fromDate?: string;
+        toDate?: string;
+        useCreatedDate?: boolean;
+        departmentId?: number | null;
+        searchBy?: string;
+        searchTerm?: string;
+    }): Observable<any> {
+        let params = new HttpParams();
+        if (filters.staffId != null) params = params.set('staffId', String(filters.staffId));
+        if (filters.fromDate) params = params.set('fromDate', filters.fromDate);
+        if (filters.toDate) params = params.set('toDate', filters.toDate);
+        if (filters.useCreatedDate !== undefined) {
+            params = params.set('useCreatedDate', filters.useCreatedDate ? '1' : '0');
+        }
+        if (filters.departmentId != null) params = params.set('departmentId', String(filters.departmentId));
+        if (filters.searchBy) params = params.set('searchBy', filters.searchBy);
+        if (filters.searchTerm) params = params.set('searchTerm', filters.searchTerm);
+
+        return this.http.get(environment.BasePath + 'user/Get_Work_Report_Details', { params });
+    }
     Get_Report_Student(
         studentSearch: string,
         batchSearch: string,

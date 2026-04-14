@@ -131,6 +131,9 @@ router.post('/Save_User_Permission/', async (req, res) => {
 });
 router.post('/Save_student_followup/', async (req, res) => {
     try {
+        if (!req.body.Created_By) {
+            req.body.Created_By = req.userId;
+        }
         const rows = await student.Save_student_followup(req.body);
         res.json({ success: true, data: rows });
     } catch (e) {

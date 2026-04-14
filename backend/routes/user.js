@@ -541,6 +541,36 @@ router.get('/Get_Report_LiveClasses_By_BatchAndTeacher', async (req, res, next) 
     res.status(500).json({ errors: { message: 'An error occurred while processing your request.' } });
   }
 });
+router.get('/Get_Work_Report_Summary', async (req, res, next) => {
+  try {
+    const rows = await user.Get_Work_Report_Summary({
+      fromDate: req.query.fromDate,
+      toDate: req.query.toDate,
+      useCreatedDate: req.query.useCreatedDate,
+    });
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to get work report summary', error: error.message });
+  }
+});
+router.get('/Get_Work_Report_Details', async (req, res, next) => {
+  try {
+    const rows = await user.Get_Work_Report_Details({
+      staffId: req.query.staffId ? Number(req.query.staffId) : null,
+      fromDate: req.query.fromDate,
+      toDate: req.query.toDate,
+      useCreatedDate: req.query.useCreatedDate,
+      departmentId: req.query.departmentId ? Number(req.query.departmentId) : null,
+      searchBy: req.query.searchBy,
+      searchTerm: req.query.searchTerm,
+    });
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to get work report details', error: error.message });
+  }
+});
 router.get('/Check_Call_Availability', async (req, res, next) => {
   try {
     const { user_Id, is_Student_Calling } = req.query;

@@ -77,6 +77,7 @@ export class NavbarComponent implements OnInit {
       'Upcoming Installment',
       'Due Instalment',
       'Reports',
+      'Work Report',
       'Status',
       'Leave',
     ];
