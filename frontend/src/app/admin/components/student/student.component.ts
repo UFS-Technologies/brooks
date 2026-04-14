@@ -1693,13 +1693,17 @@ onCancelEdit(): void {
           // 1. Normalize mapping first
           this.student_Data = rawData.map((student: any) => {
             // Normalize Active_Status string if present, handle casing differences consistently
-            if (student.Active_Status) {
-               const statusStr = student.Active_Status.toString().toLowerCase();
-               if (statusStr === 'active') student.Active_Status = 'Active';
-               else if (statusStr === 'dropout' || statusStr === 'deactivated') student.Active_Status = 'Dropout';
-               else if (statusStr === 'completed') student.Active_Status = 'Completed';
+            // Normalize Active_Status string if present, handle casing differences consistently
+            const currentStatus = (student.Active_Status || student.Status_Name || '').toString().toLowerCase();
+            
+            if (currentStatus === 'active') {
+              student.Active_Status = 'Active';
+            } else if (currentStatus === 'completed') {
+              student.Active_Status = 'Completed';
+            } else if (currentStatus === 'dropout' || currentStatus === 'deactivated') {
+              student.Active_Status = 'Dropout';
             } else {
-               // Normalization as fallback for boolean isActive
+              // Fallback to isActive if no specific status string is matched
               student.Active_Status = student.isActive ? 'Active' : 'Dropout';
             }
             return student;
@@ -1881,7 +1885,12 @@ onCancelEdit(): void {
     this.nextFollowUpDate = this.getCurrentDate();
     // Preservation of Active_Status from database
     if (!student_e['Active_Status']) {
-      student_e['Active_Status'] = student_e['isActive'] ? 'Active' : 'Dropout';
+      const status = (student_e['Status_Name'] || '').toLowerCase();
+      if (status === 'completed') {
+        student_e['Active_Status'] = 'Completed';
+      } else {
+        student_e['Active_Status'] = student_e['isActive'] ? 'Active' : 'Dropout';
+      }
     }
       // Fix Admission Date format
   if (student_e['Admission_Date']) {

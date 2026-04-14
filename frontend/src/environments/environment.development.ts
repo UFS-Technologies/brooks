@@ -13,6 +13,8 @@ const runtimeEnv = window.__env || {};
 
 export const environment = {
   BasePath:"http://localhost:3520/",
+  // BasePath:"https://brooksschool.ufstech.co.in/",
+
   // BasePath: 'https://igmapi.ufstech.co.in/',
   FilePath: 'https://ufsnabeelphotoalbum.s3.us-east-2.amazonaws.com/',
   s3Path: 'https://ufsnabeelphotoalbum.s3.amazonaws.com/',

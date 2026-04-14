@@ -106,6 +106,7 @@ interface InstallmentEntry {
   styleUrl: './student-lead.component.scss'
 })
 export class StudentLeadComponent implements OnInit {
+  loggedInUserId: number | null = null;
   preferredCountryCodes: string[] = ['in', 'ae'];
   followUpStatus: any = 'all'; // 'all' | 'active' | 'deactivated'
   followUpForm: FormGroup;
@@ -307,6 +308,8 @@ export class StudentLeadComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    const userId = localStorage.getItem('User_ID');
+    this.loggedInUserId = userId ? Number(userId) : null;
     this.pageLoad();
     this.initForm();
     const today = new Date();
@@ -1129,12 +1132,15 @@ onCancelEdit(): void {
   }
   clearFollowupForm() {
     this.Search_Branch = '';
-    this.Search_Department = '';
-    this.Search_staff = '';
-    this.Search_status =
-      this.followUpStatusData.find(
-        (status: any) => status.Status_Name?.toLowerCase() === 'pending'
-      ) || '';
+    const admissionDept = this.Search_Department_Data.find(d => d.Department_Name === "Admission");
+    this.Search_Department = admissionDept || '';
+    if (this.loggedInUserId) {
+        const currentUser = this.staffData.find(s => s.User_ID === this.loggedInUserId);
+        this.Search_staff = currentUser || '';
+    } else {
+        this.Search_staff = '';
+    }
+    this.Search_status = this.followUpStatusData.find(s => s.Status_Name?.toLowerCase() === 'pending') || '';
     this.nextFollowUpDate = this.getCurrentDate();
     this.remark = '';
     this.followupPriority = '';
@@ -1274,6 +1280,8 @@ onCancelEdit(): void {
         };
         this.Search_Department_Data.unshift(defaultOption);
         this.Search_Department = defaultOption;
+        const admissionDept = this.Search_Department_Data.find(d => d.Department_Name === "Admission");
+        if (admissionDept) this.Search_Department = admissionDept;
       },
       (err) => {
         console.error('Failed to fetch branch data:', err);
@@ -1302,6 +1310,10 @@ onCancelEdit(): void {
         const defaultOption = { User_ID: 0, First_Name: 'Select Staff' };
         this.staffData.unshift(defaultOption);
         this.Search_staff = defaultOption;
+        if (this.loggedInUserId) {
+          const currentUser = this.staffData.find(s => s.User_ID === this.loggedInUserId);
+          if (currentUser) this.Search_staff = currentUser;
+        }
       },
       (err) => {
         console.error('Failed to fetch branch data:', err);
@@ -1708,15 +1720,7 @@ onCancelEdit(): void {
     this.student_Data = [];
 const followUpStatus = this.followUpStatus?.Status_Name || 'all';
     this.student_Service_
-      .Search_student_lead(
-        this.searchTerm,
-        this.currentPage,
-        this.pageSize,
-        this.selectedCourseId,
-        this.selectedBatchId,
-        this.enrollmentStatus,
-       followUpStatus
-      )
+      .Search_student_lead(this.searchTerm, this.currentPage, this.pageSize, this.selectedCourseId, this.selectedBatchId, this.enrollmentStatus, followUpStatus, this.loggedInUserId)
       .subscribe(
         (response: any) => {
           console.log('response: ', response);
