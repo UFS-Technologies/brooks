@@ -19,12 +19,28 @@ export class DashboardComponent implements OnInit {
     maintainAspectRatio: false,
     plugins: {
       legend: {
+        display: true,
+        position: 'top',
+        align: 'center',
         labels: {
+          usePointStyle: true,
+          pointStyle: 'rectRounded',
+          padding: 20,
           font: {
-            size: 10,
-            weight: 'bold'
-          }
+            size: 14,
+            family: "'Inter', sans-serif",
+            weight: '500'
+          },
+          color: '#1e293b'
         }
+      },
+      tooltip: {
+        backgroundColor: '#1e293b',
+        padding: 12,
+        titleFont: { size: 14, family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        cornerRadius: 8,
+        displayColors: false
       }
     }
   };
@@ -249,7 +265,7 @@ export class DashboardComponent implements OnInit {
           const leadCounts = new Array(12).fill(0);
           data[4].forEach((row: any) => {
             const idx = months.indexOf(row.Month);
-            if (idx !== -1) leadCounts[idx] = row.Lead_Count;
+            if (idx !== -1) leadCounts[idx] = Number(row.Lead_Count);
           });
 
           this.barChartData4 = {
@@ -271,28 +287,33 @@ export class DashboardComponent implements OnInit {
         }
 
         if (data[5]) {
-          const statuses = ['Active', 'Dropout', 'Completed'];
-          const counts = [0, 0, 0];
-          data[5].forEach((row: any) => {
-            const idx = statuses.indexOf(row.Status);
-            if (idx !== -1) counts[idx] = row.Count;
+          const desiredOrder = ['Active', 'Completed', 'Dropout'];
+          const statusColors: any = {
+            'Active': '#10B981',    // Emerald
+            'Completed': '#3B82F6', // Blue
+            'Dropout': '#EF4444'    // Red
+          };
+
+          const mappedData = desiredOrder.map(label => {
+            const found = data[5].find((row: any) => row.Status === label);
+            return {
+              label,
+              count: found ? Number(found.Count) : 0,
+              color: statusColors[label]
+            };
           });
+
+          const statuses = mappedData.map(d => d.label);
+          const counts = mappedData.map(d => d.count);
+          const backgroundColors = mappedData.map(d => d.color);
 
           this.pieChartData3 = {
             labels: statuses,
             datasets: [{
               data: counts,
               label: 'Student Status',
-              backgroundColor: [
-                '#10B981', // Emerald for Active
-                '#EF4444', // Red for Dropout
-                '#3B82F6'  // Blue for Completed
-              ],
-              hoverBackgroundColor: [
-                '#059669',
-                '#DC2626',
-                '#2563EB'
-              ],
+              backgroundColor: backgroundColors,
+              hoverBackgroundColor: backgroundColors.map((c: string) => c + 'CC'),
               borderWidth: 0
             }]
           };

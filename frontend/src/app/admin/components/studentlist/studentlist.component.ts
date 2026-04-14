@@ -2684,7 +2684,12 @@ doc.text(
     // isActive
     // Preservation of Active_Status from database
     if (!student_e['Active_Status']) {
-      student_e['Active_Status'] = student_e['isActive'] ? 'Active' : 'Dropout';
+      const status = (student_e['Status_Name'] || '').toLowerCase();
+      if (status === 'completed') {
+        student_e['Active_Status'] = 'Completed';
+      } else {
+        student_e['Active_Status'] = student_e['isActive'] ? 'Active' : 'Dropout';
+      }
     }
     if (student_e['Roll_No'] || (this.followUps && this.followUps['Roll_No'])) {
       this.registration_Status = true;
@@ -2757,10 +2762,10 @@ doc.text(
           Guardian_Phone: followUpData.Guardian_Phone || '',
           Guardian_Alt_Phone: followUpData.Guardian_Alt_Phone,
           Active_Status:
-            followUpData.isActive === 0
-              ? 'Deactivated'
-              : followUpData.isActive === 1
-              ? 'Active'
+            (followUpData.Status_Name || '').toLowerCase() === 'completed'
+              ? 'Completed'
+              : followUpData.isActive === 0
+              ? 'Dropout'
               : 'Active',
 
           Height_cm: followUpData.Height_cm || '',
