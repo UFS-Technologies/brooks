@@ -2,18 +2,18 @@
   <section class="filter-card" *ngIf="!isDetailView">
     <div class="filters filters-summary">
       <label class="checkbox-line">
-        <input type="checkbox" [(ngModel)]="useCreatedDate" />
+        <input type="checkbox" [(ngModel)]="useCreatedDate" (change)="loadSummary()" />
         <span>Created On</span>
       </label>
 
-      <label class="field">
+      <label class="field" [class.disabled]="!useCreatedDate">
         <span>From Date</span>
-        <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" />
+        <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
       </label>
 
-      <label class="field">
+      <label class="field" [class.disabled]="!useCreatedDate">
         <span>To Date</span>
-        <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" />
+        <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useCreatedDate" />
       </label>
 
       <button class="primary-btn" (click)="applySummaryFilters()">Search</button>
@@ -92,18 +92,18 @@
         </label>
 
         <label class="checkbox-line">
-          <input type="checkbox" [(ngModel)]="useEntryDate" />
+          <input type="checkbox" [(ngModel)]="useEntryDate" (change)="loadDetails()" />
           <span>Entry Date</span>
         </label>
 
-        <label class="field">
+        <label class="field" [class.disabled]="!useEntryDate">
           <span>From</span>
-          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" />
+          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useEntryDate" />
         </label>
 
-        <label class="field">
+        <label class="field" [class.disabled]="!useEntryDate">
           <span>To</span>
-          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" />
+          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useEntryDate" />
         </label>
 
         <button class="primary-btn" (click)="applyDetailFilters()">Search</button>

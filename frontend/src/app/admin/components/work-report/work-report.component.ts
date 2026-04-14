@@ -59,8 +59,8 @@ export class WorkReportComponent implements OnInit {
     this.isLoadingSummary = true;
     this.userService
       .Get_Work_Report_Summary({
-        fromDate: this.fromDate,
-        toDate: this.toDate,
+        fromDate: this.useCreatedDate ? this.fromDate : '',
+        toDate: this.useCreatedDate ? this.toDate : '',
         useCreatedDate: this.useCreatedDate,
       })
       .subscribe({
@@ -95,8 +95,8 @@ export class WorkReportComponent implements OnInit {
     this.userService
       .Get_Work_Report_Details({
         staffId: this.selectedStaff.User_ID,
-        fromDate: this.fromDate,
-        toDate: this.toDate,
+        fromDate: this.useEntryDate ? this.fromDate : '',
+        toDate: this.useEntryDate ? this.toDate : '',
         useCreatedDate: this.useEntryDate,
         departmentId: this.selectedDepartmentId,
         searchBy: this.searchBy,
@@ -137,6 +137,12 @@ export class WorkReportComponent implements OnInit {
   onDateRangeChanged(): void {
     if (this.toDate && this.fromDate && this.toDate < this.fromDate) {
       this.toDate = this.fromDate;
+    }
+
+    if (this.isDetailView) {
+      this.loadDetails();
+    } else {
+      this.loadSummary();
     }
   }
 

@@ -36,6 +36,12 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: opacity 0.2s ease;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .field span,
