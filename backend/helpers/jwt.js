@@ -84,10 +84,12 @@ function jwtMiddleware() {
                         tokenCache.set(token, {
                             userId,
                             isStudent,
+                            userTypeId: userStatus.user_type_id,
                             expiry: Date.now() + TOKEN_CACHE_DURATION
                         });
                         req.userId = userId;
                         req.isStudent = isStudent;
+                        req.userTypeId = userStatus.user_type_id;
                         return next();
                  
                     case USER_STATUS.DELETED:

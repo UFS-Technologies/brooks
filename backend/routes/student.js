@@ -354,7 +354,7 @@ router.get('/Search_student_lead/', async (req, res, next) => {
     try {
         console.log("req.query",req.query);
         
-        const rows = await student.Search_student_lead(req.query.student_Name,req.query.page,req.query.pageSize,req.query.courseId,req.query.batchId,req.query.enrollment_status,req.query.activeStatus);
+        const rows = await student.Search_student_lead(req.query.student_Name,req.query.page,req.query.pageSize,req.query.courseId,req.query.batchId,req.query.enrollment_status,req.query.activeStatus,req.userId,req.userTypeId);
         res.json(rows);
     }
     catch (e) {

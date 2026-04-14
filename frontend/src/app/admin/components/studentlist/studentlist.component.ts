@@ -1737,11 +1737,11 @@ doc.text(
           }
         });
 
-        const pendingStatus = this.followUpStatusData.find(
-          (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        const initialStatus = this.followUpStatusData.find(
+          (status: any) => status.Status_Name?.toLowerCase() === 'initial'
         );
 
-        this.Search_status = pendingStatus || defaultOption;
+        this.Search_status = initialStatus || defaultOption;
 
         console.log('Follow-up statuses loaded from DB (StudentList Dynamic):', this.followUpStatusData);
       },
@@ -1771,7 +1771,13 @@ doc.text(
 
         const defaultOption = { User_ID: 0, First_Name: 'Select Staff' };
         this.staffData.unshift(defaultOption);
-        this.Search_staff = defaultOption;
+
+        // Auto-select the logged-in user when adding a new lead
+        const loggedInName = localStorage.getItem('Name');
+        const loggedInUser = loggedInName
+          ? this.staffData.find((s: any) => s.First_Name === loggedInName)
+          : null;
+        this.Search_staff = loggedInUser || defaultOption;
       },
       (err) => {
         console.error('Failed to fetch branch data:', err);
@@ -1800,7 +1806,12 @@ doc.text(
           Department_Name: 'Select Department',
         };
         this.Search_Department_Data.unshift(defaultOption);
-        this.Search_Department = defaultOption;
+
+        // Default to 'Admission' department when adding a new lead
+        const admissionDept = this.Search_Department_Data.find(
+          (d: any) => d.Department_Name?.toLowerCase() === 'admission'
+        );
+        this.Search_Department = admissionDept || defaultOption;
       },
       (err) => {
         console.error('Failed to fetch branch data:', err);

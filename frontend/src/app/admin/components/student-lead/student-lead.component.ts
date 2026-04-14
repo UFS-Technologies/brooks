@@ -1133,7 +1133,7 @@ onCancelEdit(): void {
     this.Search_staff = '';
     this.Search_status =
       this.followUpStatusData.find(
-        (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        (status: any) => status.Status_Name?.toLowerCase() === 'initial'
       ) || '';
     this.nextFollowUpDate = this.getCurrentDate();
     this.remark = '';
@@ -1209,15 +1209,15 @@ onCancelEdit(): void {
           }
         });
 
-        const pendingStatus = this.followUpStatusData.find(
-          (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        const initialStatus = this.followUpStatusData.find(
+          (status: any) => status.Status_Name?.toLowerCase() === 'initial'
         );
 
         if (this.view === 'list') {
           // In list view, Search_status is often 'all'
           // but we should ensure it's initialized
         } else {
-          this.Search_status = pendingStatus || defaultOption;
+          this.Search_status = initialStatus || defaultOption;
         }
 
         console.log('Follow-up statuses loaded from DB (Dynamic):', this.followUpStatusData);
@@ -3314,7 +3314,7 @@ private getStudentStatusValue(student: any): string {
     this.Search_staff = null;
     this.Search_status =
       this.followUpStatusData.find(
-        (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        (status: any) => status.Status_Name?.toLowerCase() === 'initial'
       ) || null;
     this.nextFollowUpDate = this.getCurrentDate();
     this.remark = '';
@@ -3367,12 +3367,12 @@ private getStudentStatusValue(student: any): string {
     ) || this.staffData[0];
 
     const studentStatusId = student.Status_Id || student.Follow_Up_Status_ID || student.Followup_Status || student.Status_ID;
-    const pendingStatus = this.followUpStatusData.find(
-      (s) => s.Status_Name?.toLowerCase() === 'pending'
+    const initialStatus = this.followUpStatusData.find(
+      (s) => s.Status_Name?.toLowerCase() === 'initial'
     );
     this.Search_status = this.followUpStatusData.find(
       (s) => (s.Status_Id || s.Status_ID) == studentStatusId
-    ) || pendingStatus || this.followUpStatusData[0];
+    ) || initialStatus || this.followUpStatusData[0];
 
     // Priority: Follow_Up_Date (from student table) -> Next_Follow_Up_Date (from followup table) -> today
     this.nextFollowUpDate = student.Follow_Up_Date

@@ -279,7 +279,9 @@ if (student.Registered_On) {
     course_Id,
     Batch_ID,
     enrollment_status = "all",
-    activeStatus
+    activeStatus,
+    p_user_id,
+    p_user_type_id
   ) {
     const toIntOrNull = (val) => {
       if (val === undefined || val === "undefined" || val === null || val === "")
@@ -301,6 +303,8 @@ if (student.Registered_On) {
       toIntOrNull(Batch_ID),
       enrollment_status || "all",
       activeStatus,
+      toIntOrNull(p_user_id),
+      toIntOrNull(p_user_type_id),
     ]);
 
     if (Array.isArray(results) && Array.isArray(results[1])) {
