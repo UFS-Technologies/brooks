@@ -1,5 +1,88 @@
 var fs = require("fs");
 const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
+const db = require("../config/dbconnection");
+
+async function getLatestAssignedStaff(studentId) {
+  if (!studentId) {
+    return { Assigned_Staff_ID: null, Assigned_Staff_Name: "" };
+  }
+
+  const sql = `
+    SELECT
+      COALESCE(sf.Assigned_Staff_ID, s.To_User_Id) AS Assigned_Staff_ID,
+      COALESCE(NULLIF(sf.Assigned_Staff_Name, ''), NULLIF(s.To_User_Name, ''), '') AS Assigned_Staff_Name
+    FROM student s
+    LEFT JOIN student_followup sf
+      ON sf.Follow_Up_ID = (
+        SELECT sf2.Follow_Up_ID
+        FROM student_followup sf2
+        WHERE sf2.Student_ID = s.Student_ID
+          AND IFNULL(sf2.Delete_Status, 0) = 0
+        ORDER BY COALESCE(sf2.Updated_Date, sf2.Created_Date) DESC, sf2.Follow_Up_ID DESC
+        LIMIT 1
+      )
+    WHERE s.Student_ID = ?
+    LIMIT 1
+  `;
+
+  const [rows] = await db.promise().query(sql, [studentId]);
+  return rows[0] || { Assigned_Staff_ID: null, Assigned_Staff_Name: "" };
+}
+
+async function enrichLeadRowsWithAssignedStaff(rows = []) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return rows;
+  }
+
+  const studentIds = rows
+    .map((row) => row?.Student_ID)
+    .filter((id) => Number.isInteger(Number(id)))
+    .map((id) => Number(id));
+
+  if (!studentIds.length) {
+    return rows;
+  }
+
+  const placeholders = studentIds.map(() => "?").join(",");
+  const sql = `
+    SELECT
+      s.Student_ID,
+      COALESCE(sf.Assigned_Staff_ID, s.To_User_Id) AS Assigned_Staff_ID,
+      COALESCE(NULLIF(sf.Assigned_Staff_Name, ''), NULLIF(s.To_User_Name, ''), '') AS Assigned_Staff_Name
+    FROM student s
+    LEFT JOIN student_followup sf
+      ON sf.Follow_Up_ID = (
+        SELECT sf2.Follow_Up_ID
+        FROM student_followup sf2
+        WHERE sf2.Student_ID = s.Student_ID
+          AND IFNULL(sf2.Delete_Status, 0) = 0
+        ORDER BY COALESCE(sf2.Updated_Date, sf2.Created_Date) DESC, sf2.Follow_Up_ID DESC
+        LIMIT 1
+      )
+    WHERE s.Student_ID IN (${placeholders})
+  `;
+
+  const [staffRows] = await db.promise().query(sql, studentIds);
+  const staffByStudentId = new Map(
+    staffRows.map((row) => [Number(row.Student_ID), row])
+  );
+
+  return rows.map((row) => {
+    const latestStaff = staffByStudentId.get(Number(row.Student_ID));
+    if (!latestStaff) {
+      return row;
+    }
+
+    return {
+      ...row,
+      Assigned_Staff_ID:
+        latestStaff.Assigned_Staff_ID ?? row.Assigned_Staff_ID ?? null,
+      Assigned_Staff_Name:
+        latestStaff.Assigned_Staff_Name || row.Assigned_Staff_Name || "",
+    };
+  });
+}
+
 var student = {
   Registration_Using_Student_Branch: async function (student) {
     console.log("student: ", student);
@@ -52,6 +135,25 @@ if (student.Registered_On) {
     const Branch_Id_=student.Branch_Id !== '' && student.Branch_Id != null
   ? parseInt(student.Branch_Id)
   : null
+
+    const hasAssignedStaffId =
+      student.Assigned_Staff_ID !== "" &&
+      student.Assigned_Staff_ID != null &&
+      !Number.isNaN(parseInt(student.Assigned_Staff_ID));
+    const hasAssignedStaffName =
+      student.Assigned_Staff_Name !== "" && student.Assigned_Staff_Name != null;
+
+    if (student.Student_ID > 0 && (!hasAssignedStaffId || !hasAssignedStaffName)) {
+      const existingAssignedStaff = await getLatestAssignedStaff(student.Student_ID);
+
+      if (!hasAssignedStaffId) {
+        student.Assigned_Staff_ID = existingAssignedStaff.Assigned_Staff_ID;
+      }
+
+      if (!hasAssignedStaffName) {
+        student.Assigned_Staff_Name = existingAssignedStaff.Assigned_Staff_Name;
+      }
+    }
 
 
     return executeTransaction("Save_student", [
@@ -191,7 +293,7 @@ if (student.Registered_On) {
     if (student_Name_ === undefined || student_Name_ === "undefined")
       student_Name_ = "";
 
-    return getmultipleSP("Search_student_lead", [
+    const results = await getmultipleSP("Search_student_lead", [
       student_Name_,
       toIntOrNull(page) || 1,
       toIntOrNull(pageSize) || 10,
@@ -200,6 +302,12 @@ if (student.Registered_On) {
       enrollment_status || "all",
       activeStatus,
     ]);
+
+    if (Array.isArray(results) && Array.isArray(results[1])) {
+      results[1] = await enrichLeadRowsWithAssignedStaff(results[1]);
+    }
+
+    return results;
   },
   Get_All_Students: async function (student_Name_) {
     if (student_Name_ === undefined || student_Name_ === "undefined")
