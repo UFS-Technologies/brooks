@@ -1,0 +1,236 @@
+.lead-import-page {
+  padding: 20px;
+  background-color: #fff;
+  min-height: calc(100vh - 100px);
+
+  .main-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 6px;
+  }
+
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-group {
+    .custom-select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      font-size: 14px;
+
+      &:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
+    }
+
+    .date-input-container {
+      display: flex;
+      align-items: center;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #fff;
+      height: 42px;
+      padding: 0 12px;
+
+      input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+        background: transparent;
+      }
+
+      mat-datepicker-toggle {
+        color: #6b7280;
+      }
+    }
+  }
+
+  .remarks-container {
+    textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+
+      &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
+    }
+  }
+
+  .template-preview-section {
+    .template-table {
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 400px; /* As seen in image */
+
+      .table-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        background-color: #f3f4f6;
+        border-bottom: 1px solid #e5e7eb;
+
+        > div {
+          padding: 8px 12px;
+          font-size: 12px;
+          color: #374151;
+          border-right: 1px solid #e5e7eb;
+          &:last-child { border-right: none; }
+        }
+      }
+
+      .table-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        height: 38px;
+        &:last-child { border-top: 1px solid #e5e7eb; }
+
+        > div {
+          padding: 8px 12px;
+          font-size: 13px;
+          color: #1f2937;
+          border-right: 1px solid #e5e7eb;
+          display: flex;
+          align-items: center;
+          &:last-child { border-right: none; }
+        }
+      }
+    }
+  }
+
+  .actions-row {
+    display: flex;
+    gap: 12px;
+
+    button {
+      height: 36px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+
+      &:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+    }
+
+    .btn-download {
+      background-color: #556270; /* Dark gray/blue from image */
+      color: #fff;
+    }
+
+    .btn-choose {
+      background-color: #00aced; /* Light blue from image */
+      color: #fff;
+    }
+  }
+
+  .results-container {
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+
+      th {
+        text-align: left;
+        padding: 12px 16px;
+        background-color: #f9fafb;
+        color: #4b5563;
+        font-size: 13px;
+        font-weight: 600;
+        border-bottom: 2px solid #f3f4f6;
+      }
+
+      td {
+        padding: 14px 16px;
+        font-size: 14px;
+        color: #374151;
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #9ca3af;
+        font-style: italic;
+      }
+    }
+  }
+
+  .btn-import {
+    height: 36px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    background-color: #7dd3fc; /* Very light blue as seen in original image's bottom button */
+    color: #fff;
+    text-transform: uppercase;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: #38bdf8;
+    }
+
+    &:disabled {
+      background-color: #e5e7eb;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Material Select Overrides */
+::ng-deep {
+  .custom-select {
+    .mat-mdc-select-trigger {
+      width: 100%;
+    }
+    .mat-mdc-select-value {
+      font-size: 14px;
+    }
+    .mat-mdc-select-arrow-wrapper {
+      transform: scale(0.8);
+    }
+  }
+}

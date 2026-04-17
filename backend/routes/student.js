@@ -36,27 +36,6 @@ router.get('/Get_All_Enquiry', async (req, res, next) => {
         res.status(500).json({ success: false, message: 'Failed to search student', error: e.message });
     }
 });
-
-router.post('/Save_Enquiry_Source/', async (req, res, next) => {
-    try {
-        const rows = await student.Save_Enquiry_Source(req.body);
-        res.json(rows[0]);
-    }
-    catch (e) {
-        res.status(500).json({ success: false, message: 'Failed to save enquiry source', error: e.message });
-    }
-});
-
-router.post('/Delete_Enquiry_Source/', async (req, res, next) => {
-    try {
-        const rows = await student.Delete_Enquiry_Source(req.body.Enquiry_Source_Id);
-        res.json(rows[0]);
-    }
-    catch (e) {
-        res.status(500).json({ success: false, message: 'Failed to delete enquiry source', error: e.message });
-    }
-});
-
 router.post('/Save_student/', async (req, res, next) => {
     try {
         
@@ -863,4 +842,3 @@ router.get('/Followup_status_Dropdown/', async (req, res, next) => {
     }
 });
 module.exports = router;
- 

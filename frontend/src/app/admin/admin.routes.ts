@@ -15,6 +15,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
 import { payment_installment_file_importComponent } from './components/payment_installment_file_import/payment_installment_file_import.component';
 import { Course_Enrollment_ImportComponent } from './components/Course Enrollment Import/Course_Enrollment_Import.component';
 import { ExamImportComponent } from './components/exam-import/exam-import.component';
+import { LeadImportComponent } from './components/lead-import/lead-import.component';
 import { ExpensesComponent } from './components/expenses/expenses.component';
 import { ExpenseTypeComponent } from './components/expense-type/expense-type.component';
 import { ReportsComponent } from './components/reports/reports.component';
@@ -31,7 +32,6 @@ import { WorkReportComponent } from './components/work-report/work-report.compon
 
 import { IncomeComponent } from './components/income/income.component';
 import { LeaveComponent } from './components/leave/leave.component';
-import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -130,14 +130,9 @@ export const ADMIN_ROUTES: Routes = [
     data: { breadcrumb: 'Expense Type'}
   },
     {
-    path: 'Expense_Type_list',
+    path: 'Expense_Category',
     component: ExpenseCategoryComponent,
-    data: { breadcrumb: 'Expense Type' }
-  },
-  {
-    path: 'Enquiry_Source',
-    component: EnquirySourceComponent,
-    data: { breadcrumb: 'Enquiry Source' }
+    data: { breadcrumb: 'Expense Category'}
   },
   {
     path: 'Income',
@@ -183,6 +178,11 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Student_Lead',
     component: StudentLeadComponent,
     data: { breadcrumb: 'Student Lead'}
+  },
+  {
+    path: 'Import',
+    component: LeadImportComponent,
+    data: { breadcrumb: 'Import'}
   },
   {
     path: 'Follow_up_Reports',
