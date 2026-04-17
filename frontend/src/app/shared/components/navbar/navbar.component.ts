@@ -36,7 +36,9 @@ export class NavbarComponent implements OnInit {
   userEmail: any = '';
   First_Name: any = '';
   constructor() {
-    this.getMenu();
+    if (localStorage.getItem('Access_Token')) {
+      this.getMenu();
+    }
   }
 
   isSidebarVisible: boolean = true;
@@ -68,6 +70,7 @@ export class NavbarComponent implements OnInit {
       'Expenses',
       'Income',
       'Staff',
+      'Enquiry Source',
       'Expense Category',
       'Expense Type',
       'Course',
@@ -151,7 +154,7 @@ export class NavbarComponent implements OnInit {
     }
     return { breadcrumb };
   }
-  n
+  
   getImageSource(label: string, isActive: boolean): string {
     switch (label) {
       case 'Dashboard':

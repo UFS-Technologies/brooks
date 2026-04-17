@@ -14,7 +14,7 @@ export class AppComponent {
   private activatedRoute = inject(ActivatedRoute);
 
   title = 'Briffni-Frontend';
-  showNavbar = true;
+  showNavbar = false;
 
   ngOnInit() {
     this.router.events

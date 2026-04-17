@@ -29,9 +29,9 @@ import { StudentLeadComponent } from './components/student-lead/student-lead.com
 import { FollowUpReportsComponent } from './components/follow-up-reports/follow-up-reports.component';
 import { FollowUpStatusComponent } from './components/follow-up-status/follow-up-status.component';
 import { WorkReportComponent } from './components/work-report/work-report.component';
-
 import { IncomeComponent } from './components/income/income.component';
 import { LeaveComponent } from './components/leave/leave.component';
+import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -203,5 +203,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Work_Report',
     component: WorkReportComponent,
     data: { breadcrumb: 'Work Report'}
+  },
+  {
+    path: 'Enquiry_Source',
+    component: EnquirySourceComponent,
+    data: { breadcrumb: 'Enquiry Source'}
   },
 ];
