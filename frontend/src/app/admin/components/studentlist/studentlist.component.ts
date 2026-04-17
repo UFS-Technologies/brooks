@@ -902,25 +902,20 @@ doc.text(
   // }
 
   Get_All_Enquiry() {
-    const sources = [
-      'Google',
-      'Whatsup enq',
-      'Facebook',
-      'Instagram',
-      'School Data',
-      'website',
-      'school Seminar',
-      'Student reference',
-      'other reference',
-      'Education Expo',
-      'Kiosk',
-      'say data',
-      'Direct walkin',
-    ];
-    this.enquirySources = sources.map((name, index) => ({
-      Enquiry_Source_Id: index + 1,
-      Enquiry_Source_Name: name,
-    }));
+    this.student_Service_.Get_All_Enquiry().subscribe(
+      (Rows) => {
+        if (Rows && Array.isArray(Rows[0])) {
+          this.enquirySources = Rows[0];
+        } else if (Array.isArray(Rows)) {
+          this.enquirySources = Rows;
+        } else {
+          this.enquirySources = [];
+        }
+      },
+      (err) => {
+        console.error('Failed to fetch enquiry sources:', err);
+      }
+    );
   }
 
   onRegistrationToggle(event: any) {

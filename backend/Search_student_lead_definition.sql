@@ -85,9 +85,9 @@ BEGIN
         s.Status_Name,
         s.To_User_Name,
         s.Qualification,
-        rf.Next_Follow_Up_Date,
-        rf.Remark,
-        fs.Status_Name AS Followup_Status,
+        MAX(rf.Next_Follow_Up_Date) AS Next_Follow_Up_Date,
+        MAX(rf.Remark) AS Remark,
+        MAX(fs.Status_Name) AS Followup_Status,
         s.isActive,
         s.Is_Registered,
         s.Roll_No,
@@ -99,7 +99,7 @@ BEGIN
         s.Guardian_Type,
         s.Guardian_Name,
         s.Address,
-        cb.Batch_Name,
+        MAX(cb.Batch_Name) AS Batch_Name,
         CASE 
             WHEN EXISTS (
                 SELECT 1 FROM student_course sc2

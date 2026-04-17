@@ -31,6 +31,7 @@ import { WorkReportComponent } from './components/work-report/work-report.compon
 
 import { IncomeComponent } from './components/income/income.component';
 import { LeaveComponent } from './components/leave/leave.component';
+import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -129,9 +130,14 @@ export const ADMIN_ROUTES: Routes = [
     data: { breadcrumb: 'Expense Type'}
   },
     {
-    path: 'Expense_Category',
+    path: 'Expense_Type_list',
     component: ExpenseCategoryComponent,
-    data: { breadcrumb: 'Expense Category'}
+    data: { breadcrumb: 'Expense Type' }
+  },
+  {
+    path: 'Enquiry_Source',
+    component: EnquirySourceComponent,
+    data: { breadcrumb: 'Enquiry Source' }
   },
   {
     path: 'Income',

@@ -402,6 +402,15 @@ if (student.Registered_On) {
   Delete_Followup_Status: async function (id) {
     return executeTransaction("Delete_Followup_Status", [id]);
   },
+  Save_Enquiry_Source: async function(data) {
+    return executeTransaction('Save_Enquiry_Source', [
+      data.Enquiry_Source_Id || 0,
+      data.Enquiry_Source_Name
+    ]);
+  },
+  Delete_Enquiry_Source: async function(id) {
+    return executeTransaction('Delete_Enquiry_Source', [id]);
+  },
   Delete_Student_Account: async function (userId) {
     return executeTransaction("Delete_Student_Account", [userId]);
   },

@@ -51,6 +51,18 @@ Get_All_Enquiry(): Observable<any> {
       environment.BasePath + 'student/Get_All_Enquiry/'
     );
   }
+  Save_Enquiry_Source(data: any): Observable<any> {
+    return this.http.post(
+      environment.BasePath + 'student/Save_Enquiry_Source/',
+      data
+    );
+  }
+  Delete_Enquiry_Source(Enquiry_Source_Id: number): Observable<any> {
+    return this.http.post(
+      environment.BasePath + 'student/Delete_Enquiry_Source/',
+      { Enquiry_Source_Id: Enquiry_Source_Id }
+    );
+  }
   enroleCourse(course) {
     return this.http.post(
       environment.BasePath + 'student/enroleCourseFromAdmin/',

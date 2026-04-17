@@ -78,6 +78,7 @@ export class NavbarComponent implements OnInit {
       'Due Instalment',
       'Reports',
       'Work Report',
+      'Enquiry Source',
       'Status',
       'Leave',
     ];
@@ -193,6 +194,10 @@ export class NavbarComponent implements OnInit {
         return isActive
           ? 'assets/images/navbar/questions-active.png'
           : 'assets/images/navbar/questions.svg';
+      case 'Enquiry Source':
+        return isActive
+          ? 'assets/images/navbar/eligibility-active.png'
+          : 'assets/images/navbar/eligibility.png';
       case 'Income':
         return isActive
           ? 'assets/images/navbar/income-active.png'
