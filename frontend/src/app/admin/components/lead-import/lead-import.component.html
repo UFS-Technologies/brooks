@@ -54,16 +54,19 @@
           <div class="col-a"><strong>A</strong><br>Name</div>
           <div class="col-b"><strong>B</strong><br>Phone Number</div>
           <div class="col-c"><strong>C</strong><br>Email</div>
+          <div class="col-d"><strong>D</strong><br>Remarks</div>
         </div>
         <div class="table-row">
           <div class="col-a">John Doe</div>
           <div class="col-b">9876543210</div>
           <div class="col-c">john&#64;example.com</div>
+          <div class="col-d">Follow up next week</div>
         </div>
         <div class="table-row">
           <div class="col-a"></div>
           <div class="col-b"></div>
           <div class="col-c"></div>
+          <div class="col-d"></div>
         </div>
       </div>
     </div>
@@ -86,6 +89,7 @@
             <th>Name</th>
             <th>Phone Number</th>
             <th>Email</th>
+            <th>Remarks</th>
           </tr>
         </thead>
         <tbody>
@@ -95,11 +99,12 @@
               <td>{{ lead.Name }}</td>
               <td>{{ lead.Phone_Number }}</td>
               <td>{{ lead.Email }}</td>
+              <td>{{ lead.Remarks }}</td>
             </tr>
           }
           @if (importedLeads.length === 0) {
             <tr>
-              <td colspan="4" class="no-data">No data imported yet.</td>
+              <td colspan="5" class="no-data">No data imported yet.</td>
             </tr>
           }
         </tbody>

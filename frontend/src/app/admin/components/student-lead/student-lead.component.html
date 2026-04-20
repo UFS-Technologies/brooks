@@ -153,7 +153,7 @@
           <!-- <th class="px-4 py-1 whitespace-nowrap">Batch Name</th> -->
           <th class="px-4 py-1 whitespace-nowrap">Contact</th>
           <th class="px-4 py-1 whitespace-nowrap">Follow-up Date</th>
-          <th class="px-4 py-1 whitespace-nowrap">Enquiry Source</th>
+          <!-- <th class="px-4 py-1 whitespace-nowrap">Enquiry Source</th> -->
           <th class="px-4 py-1 whitespace-nowrap">Status</th>
           <th class="px-4 py-1 whitespace-nowrap">Assigned To Staff</th>
           <!-- <th class="px-4 py-1 whitespace-nowrap">Branch</th> -->
@@ -179,7 +179,7 @@
           <td class="px-4 py-1 whitespace-nowrap">
             {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : (item['Next_Follow_Up_Date'] ? (item['Next_Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-') }}
           </td>
-          <td class="px-4 py-1 whitespace-nowrap">{{ item['Enquiry_Source_Name'] || item['Enquiry_Source'] || item['Enquiry_Source_Id'] || '-' }}</td>
+          <!-- <td class="px-4 py-1 whitespace-nowrap">{{ item['Enquiry_Source_Name'] || item['Enquiry_Source'] || item['Enquiry_Source_Id'] || '-' }}</td> -->
           <td class="px-4 py-1 whitespace-nowrap">{{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}</td>
           <td class="px-4 py-1 whitespace-nowrap">{{ item['Assigned_Staff_Name'] || item['studentResponse']?.Assigned_Staff_Name || '-' }}</td>
           <!-- <td class="px-4 py-2 whitespace-nowrap">{{ item['Branch_Name'] || '-' }}</td> -->
@@ -301,7 +301,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
       <!-- Branch Selection -->
-      <div class="space-y-2">
+      <!-- <div class="space-y-2">
         <label for="Branch" class="block text-sm font-medium text-gray-700">
           Branch
         </label>
@@ -312,7 +312,7 @@
             {{ branch.Branch_Name }}
           </option>
         </select>
-      </div>
+      </div> -->
 
       <!-- Department Selection -->
       <div class="space-y-2">

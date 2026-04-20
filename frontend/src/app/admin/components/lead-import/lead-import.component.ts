@@ -21,6 +21,7 @@ interface ImportData {
   Name: string;
   Phone_Number: string;
   Email: string;
+  Remarks?: string;
 }
 
 @Component({
@@ -101,6 +102,8 @@ export class LeadImportComponent implements OnInit {
       this.file = selectedFile;
       this.parseExcel();
     }
+    // Clear the input value so the same file can be selected again
+    event.target.value = '';
   }
 
   parseExcel() {
@@ -112,21 +115,61 @@ export class LeadImportComponent implements OnInit {
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      const rawData: any[] = XLSX.utils.sheet_to_json(worksheet);
+      const rawArray: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const visibleRows = rawArray.filter((row, index) => {
+        return !(worksheet['!rows'] && worksheet['!rows'][index] && worksheet['!rows'][index].hidden);
+      });
 
-      this.importedLeads = rawData.map((row, index) => ({
-        SNo: index + 1,
-        Name: row['Name'] || '',
-        Phone_Number: row['Phone Number'] || row['Phone_Number'] || '',
-        Email: row['Email'] || ''
-      })).filter(lead => lead.Name || lead.Phone_Number);
+      if (visibleRows.length < 2) {
+        this.importedLeads = [];
+        return;
+      }
+
+      const headers = visibleRows[0] as string[];
+      const rawData = visibleRows.slice(1).map(rowArray => {
+        const rowObj: any = {};
+        headers.forEach((header, i) => {
+          if (header) {
+            rowObj[header] = rowArray[i];
+          }
+        });
+        return rowObj;
+      });
+
+      this.importedLeads = rawData.map((row: any, index: number) => {
+        const getVal = (possibleKeys: string[]) => {
+          for (const pk of possibleKeys) {
+            const normalizedPk = pk.toLowerCase().replace(/[^a-z0-9]/g, '');
+            for (const key of Object.keys(row)) {
+              const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+              if (normalizedKey === normalizedPk) {
+                return row[key];
+              }
+            }
+          }
+          return '';
+        };
+
+        const name = getVal(['Name', 'StudentName', 'FirstName', 'FullName']) || '';
+        const phone = getVal(['Phone', 'PhoneNumber', 'Mobile', 'MobileNumber', 'Contact', 'ContactNumber', 'WhatsApp', 'WhatsAppNumber', 'Number']) || '';
+        const email = getVal(['Email', 'EmailAddress', 'EmailId', 'Mail']) || '';
+        const remarks = getVal(['Remarks', 'Remark', 'Note', 'Notes', 'Comment', 'Comments', 'FollowUpDetails']) || '';
+
+        return {
+          SNo: index + 1,
+          Name: name !== undefined && name !== null ? String(name).trim() : '',
+          Phone_Number: phone !== undefined && phone !== null ? String(phone).trim() : '',
+          Email: email !== undefined && email !== null ? String(email).trim() : '',
+          Remarks: remarks !== undefined && remarks !== null ? String(remarks).trim() : ''
+        };
+      }).filter(lead => lead.Name || lead.Phone_Number);
     };
     reader.readAsArrayBuffer(this.file);
   }
 
   downloadTemplate() {
     const template = [
-      { 'Name': 'John Doe', 'Phone Number': '9876543210', 'Email': 'john@example.com' }
+      { 'Name': 'John Doe', 'Phone Number': '9876543210', 'Email': 'john@example.com', 'Remarks': 'Follow up next week' }
     ];
     const worksheet = XLSX.utils.json_to_sheet(template);
     const workbook = { Sheets: { 'Template': worksheet }, SheetNames: ['Template'] };
@@ -174,7 +217,7 @@ export class LeadImportComponent implements OnInit {
         Follow_Up_Status_ID: formValues.FollowUpStatus?.Status_Id || formValues.FollowUpStatus?.Status_ID,
         Follow_Up_Status_Name: formValues.FollowUpStatus?.Status_Name,
         Next_Follow_Up_Date: formValues.NextFollowUpDate,
-        Remark: formValues.Remarks,
+        Remark: lead.Remarks || formValues.Remarks,
         Created_By: currentUserId,
         Followup_Status: true
       };

@@ -1887,7 +1887,7 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
       return {};
     }
 
-    return {
+    const result: any = {
       Follow_Up_Date:
         followUpData.Next_Follow_Up_Date ||
         followUpData.Follow_Up_Date ||
@@ -1900,7 +1900,20 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
       Remark: followUpData.Remark || null,
       Assigned_Staff_Name: followUpData.Assigned_Staff_Name || followUpData.To_User_Name || null,
       Assigned_Staff_ID: followUpData.Assigned_Staff_ID || followUpData.To_User_Id || null,
+      Branch_Id: followUpData.Branch_Id || followUpData.Branch_ID || null,
+      Branch_Name: followUpData.Branch_Name || null,
+      Department_Id: followUpData.Department_Id || followUpData.Department_ID || null,
+      Department_Name: followUpData.Department_Name || null,
     };
+
+    // Remove null/undefined properties so they don't overwrite valid ones during merging
+    Object.keys(result).forEach(key => {
+      if (result[key] === null || result[key] === undefined) {
+        delete result[key];
+      }
+    });
+
+    return result;
   }
 
   private normalizeStudentDetails(response: any): any {
@@ -1920,7 +1933,7 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
       return {};
     }
 
-    return {
+    const result: any = {
       Enquiry_Source_Id:
         studentData.Enquiry_Source_Id ??
         studentData.Enquiry_Source_ID ??
@@ -1937,14 +1950,27 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
         studentData.Assigned_Staff_ID ??
         studentData.To_User_Id ??
         null,
-         Active_Status:
+      Active_Status:
         studentData.Active_Status ??
         (studentData.isActive === true || studentData.isActive === 1 || studentData.isActive === '1'
           ? 'Active'
           : studentData.isActive === false || studentData.isActive === 0 || studentData.isActive === '0'
           ? 'Dropout'
           : null),
+      Branch_Id: studentData.Branch_Id || studentData.Branch_ID || null,
+      Branch_Name: studentData.Branch_Name || null,
+      Department_Id: studentData.Department_Id || studentData.Department_ID || null,
+      Department_Name: studentData.Department_Name || null,
     };
+
+    // Remove null/undefined properties
+    Object.keys(result).forEach(key => {
+      if (result[key] === null || result[key] === undefined) {
+        delete result[key];
+      }
+    });
+
+    return result;
   }
 private getStudentStatusValue(student: any): string {
     const rawStatus =
