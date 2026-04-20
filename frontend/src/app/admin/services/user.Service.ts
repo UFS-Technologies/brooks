@@ -311,5 +311,29 @@ export class user_Service {
      Save_User_Permission(payload) {
         return this.http.post(environment.BasePath + 'student/Save_User_Permission/', payload);
     }
+
+    Get_Enquiry_Conversion_Summary(filters: {
+        fromDate?: string;
+        toDate?: string;
+    }): Observable<any> {
+        let params = new HttpParams();
+        if (filters.fromDate) params = params.set('fromDate', filters.fromDate);
+        if (filters.toDate) params = params.set('toDate', filters.toDate);
+
+        return this.http.get(environment.BasePath + 'user/Get_Enquiry_Conversion_Summary', { params });
+    }
+
+    Get_Enquiry_Conversion_Details(filters: {
+        sourceId: number;
+        fromDate?: string;
+        toDate?: string;
+    }): Observable<any> {
+        let params = new HttpParams();
+        params = params.set('sourceId', filters.sourceId.toString());
+        if (filters.fromDate) params = params.set('fromDate', filters.fromDate);
+        if (filters.toDate) params = params.set('toDate', filters.toDate);
+
+        return this.http.get(environment.BasePath + 'user/Get_Enquiry_Conversion_Details', { params });
+    }
     
 }

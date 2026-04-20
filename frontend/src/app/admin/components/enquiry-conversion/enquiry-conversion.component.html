@@ -1,0 +1,116 @@
+<div class="enquiry-conversion-page">
+  <!-- ✅ Filter Section -->
+  <div class="filter-card">
+    <div class="filters" [class.filters-summary]="!isDetailView" [class.filters-detail]="isDetailView">
+      
+      <!-- Created On Checkbox -->
+      <label class="checkbox-line">
+        <input type="checkbox" [(ngModel)]="useCreatedDate" (change)="applyFilters()" />
+        <span>Created On</span>
+      </label>
+
+      <!-- Date Range -->
+      <div class="field" [class.disabled]="!useCreatedDate">
+        <span>From Date</span>
+        <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
+      </div>
+
+      <div class="field" [class.disabled]="!useCreatedDate">
+        <span>To Date</span>
+        <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button class="primary-btn" (click)="applyFilters()">
+          Search
+        </button>
+        <button *ngIf="isDetailView" class="ghost-btn" (click)="backToSummary()">
+          Back to Summary
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Summary View -->
+  <div class="table-card" *ngIf="!isDetailView">
+    <!-- <div class="table-header">
+      <h2>Enquiry Conversion Summary</h2>
+      <p>Overview of conversions per enquiry source</p>
+    </div> -->
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Enquiry Source</th>
+            <th>Conversion Count</th>
+            <th class="action-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of summaryRows">
+            <td>{{ row.rowNo }}</td>
+            <td class="source-cell">{{ row.Enquiry_Source_Name }}</td>
+            <td>
+              <span class="count-pill">{{ row.Conversion_Count }}</span>
+            </td>
+            <td class="action-col">
+              <button class="ghost-btn small" (click)="openDetails(row)">
+                View Details
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!isLoadingSummary && summaryRows.length === 0">
+            <td colspan="5" class="empty-state">No conversion data found for the selected range.</td>
+          </tr>
+          <tr *ngIf="isLoadingSummary">
+            <td colspan="5" class="empty-state">Loading data...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ✅ Detail View -->
+  <div class="table-card" *ngIf="isDetailView">
+    <div class="table-header">
+      <div class="header-main">
+        <h2>{{ selectedSource?.Enquiry_Source_Name }} Details</h2>
+        <p>List of students converted via this source</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Student Name</th>
+            <th>Roll No</th>
+            <th>Mobile</th>
+            <th>Registration Date</th>
+            <th>Admission Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of detailRows">
+            <td>{{ row.rowNo }}</td>
+            <td class="name-cell">{{ row.Student_Name }}</td>
+            <td><span class="tag">{{ row.Roll_No || '-' }}</span></td>
+            <td>{{ row.Mobile }}</td>
+            <td>{{ formatDate(row.Registered_On) }}</td>
+            <td>{{ formatDate(row.Admission_Date) }}</td>
+          </tr>
+          <tr *ngIf="!isLoadingDetails && detailRows.length === 0">
+            <td colspan="6" class="empty-state">No students found for this source in the selected range.</td>
+          </tr>
+          <tr *ngIf="isLoadingDetails">
+            <td colspan="6" class="empty-state">Loading details...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

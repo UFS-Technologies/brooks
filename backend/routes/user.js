@@ -713,4 +713,31 @@ router.get('/Delete_Leave/:leave_Id', async (req, res, next) => {
   }
 });
 
-module.exports = router;  
+router.get('/Get_Enquiry_Conversion_Summary', async (req, res, next) => {
+  try {
+    const rows = await user.Get_Enquiry_Conversion_Summary({
+      fromDate: req.query.fromDate,
+      toDate: req.query.toDate
+    });
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to get summary', error: error.message });
+  }
+});
+
+router.get('/Get_Enquiry_Conversion_Details', async (req, res, next) => {
+  try {
+    const rows = await user.Get_Enquiry_Conversion_Details({
+      sourceId: req.query.sourceId ? Number(req.query.sourceId) : null,
+      fromDate: req.query.fromDate,
+      toDate: req.query.toDate
+    });
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to get details', error: error.message });
+  }
+});
+
+module.exports = router;

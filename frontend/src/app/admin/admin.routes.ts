@@ -32,7 +32,7 @@ import { WorkReportComponent } from './components/work-report/work-report.compon
 import { IncomeComponent } from './components/income/income.component';
 import { LeaveComponent } from './components/leave/leave.component';
 import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
-
+import { EnquiryConversionComponent } from './components/enquiry-conversion/enquiry-conversion.component';
 export const ADMIN_ROUTES: Routes = [
   {
     path: "",
@@ -208,6 +208,11 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Enquiry_Source',
     component: EnquirySourceComponent,
     data: { breadcrumb: 'Enquiry Source'}
+  },
+    {
+    path: 'Enquiry_Conversion',
+    component: EnquiryConversionComponent,
+    data: { breadcrumb: 'Enquiry Conversion' }
   },
   {
     path: 'Enquiry_Summary',

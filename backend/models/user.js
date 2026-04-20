@@ -532,6 +532,19 @@ var user = {
             blocker_id,
             blocked_user_id
         ]);
+    },
+    Get_Enquiry_Conversion_Summary: async function ({ fromDate, toDate }) {
+        return getmultipleSP('Get_Enquiry_Conversion_Summary', [
+            fromDate || '',
+            toDate || ''
+        ]);
+    },
+    Get_Enquiry_Conversion_Details: async function ({ sourceId, fromDate, toDate }) {
+        return getmultipleSP('Get_Enquiry_Conversion_Details', [
+            sourceId,
+            fromDate || '',
+            toDate || ''
+        ]);
     }
     // get_chat_call_history: async function (student_Id_,teacher_Id_) {
     //     return executeTransaction('get_chat_call_history', [student_Id_,teacher_Id_]);

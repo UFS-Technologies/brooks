@@ -1,0 +1,251 @@
+.enquiry-conversion-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 6px 0 24px;
+}
+
+.filter-card,
+.table-card {
+  background: #ffffff;
+  border: 1px solid #e8edf3;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  transition: all 0.3s ease;
+}
+
+.filter-card {
+  padding: 22px 24px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.checkbox-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding-bottom: 12px;
+
+  input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #7c3aed;
+  }
+
+  span {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+
+  span {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  input {
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #d6dde8;
+    border-radius: 14px;
+    background: #fff;
+    color: #0f172a;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s;
+
+    &:focus {
+      border-color: #7c3aed; // Violet focus
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.primary-btn {
+  height: 48px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9); // Premium Violet
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.ghost-btn {
+  height: 48px;
+  padding: 0 20px;
+  border: 1px solid #d6dde8;
+  border-radius: 14px;
+  background: #fff;
+  color: #4b5563;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #7c3aed;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.04);
+  }
+
+  &.small {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+}
+
+.table-header {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid #f1f5f9;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead th {
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #64748b;
+    background: #f8fafc;
+  }
+
+  tbody td {
+    padding: 20px 24px;
+    border-top: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 15px;
+    vertical-align: middle;
+  }
+}
+
+.source-cell {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.name-cell {
+  color: #7c3aed;
+  font-weight: 700;
+}
+
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.tag {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.action-col {
+  text-align: right;
+  width: 160px;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .filter-card {
+    padding: 16px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .field {
+    min-width: 100%;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
