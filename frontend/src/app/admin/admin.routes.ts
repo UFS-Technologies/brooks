@@ -209,4 +209,9 @@ export const ADMIN_ROUTES: Routes = [
     component: EnquirySourceComponent,
     data: { breadcrumb: 'Enquiry Source'}
   },
+  {
+    path: 'Enquiry_Summary',
+    loadComponent: () => import('./components/enquiry-summary/enquiry-summary.component').then(c => c.EnquirySummaryComponent),
+    data: { breadcrumb: 'Enquiry Summary'}
+  },
 ];

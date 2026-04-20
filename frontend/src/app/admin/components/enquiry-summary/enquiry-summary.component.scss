@@ -1,0 +1,64 @@
+.summary-container {
+    min-height: calc(100vh - 100px);
+    background: #F7F9FB;
+
+    .refresh-btn {
+        &:active {
+            transform: scale(0.95);
+        }
+        &:hover:not(:disabled) {
+            border-color: #3B82F6;
+            color: #2563EB;
+        }
+    }
+
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #F3F4F6;
+        border-bottom-color: #3B82F6;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    table {
+        border-spacing: 0;
+        
+        .header-row th {
+            font-size: 0.8125rem;
+        }
+
+        .count-bubble {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .footer-row td {
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+        }
+    }
+
+    // Custom Scrollbar for the table container
+    .overflow-x-auto {
+        &::-webkit-scrollbar {
+            height: 8px;
+        }
+        &::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+            &:hover {
+                background: #94A3B8;
+            }
+        }
+    }
+}

@@ -313,4 +313,8 @@ Delete_StudentDocument(student_Id) {
       { Status_Id: Status_Id }
     );
   }
+
+  Get_Enquiry_Summary(): Observable<any> {
+    return this.http.get(environment.BasePath + 'student/Get_Enquiry_Summary/');
+  }
 }

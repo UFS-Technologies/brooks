@@ -71,6 +71,7 @@ export class NavbarComponent implements OnInit {
       'Income',
       'Staff',
       'Enquiry Source',
+      'Enquiry Summary',
       'Expense Category',
       'Expense Type',
       'Course',
@@ -207,6 +208,10 @@ export class NavbarComponent implements OnInit {
         return isActive
           ? 'assets/images/navbar/ppt-active.png'
           : 'assets/images/navbar/ppt.svg';
+      case 'Enquiry Summary':
+        return isActive
+          ? 'assets/images/navbar/dashboard-active.png'
+          : 'assets/images/navbar/dashboard.png';
       default:
         return ''; 
     }

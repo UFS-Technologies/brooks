@@ -667,5 +667,8 @@ enroleCourseFromAdmin: async function (course) {
     console.log(is_Student, id);
     return getmultipleSP("Get_AppInfo", [is_Student, id]);
   },
+  Get_Enquiry_Summary: async function () {
+    return getmultipleSP("Get_Enquiry_Summary", []);
+  },
 };
 module.exports = student;

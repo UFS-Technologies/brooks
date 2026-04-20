@@ -861,4 +861,14 @@ router.get('/Followup_status_Dropdown/', async (req, res, next) => {
         res.status(500).json({ success: false, message: 'Failed to get courses', error: e.message });
     }
 });
+
+router.get('/Get_Enquiry_Summary/', async (req, res, next) => {
+    try {
+        const rows = await student.Get_Enquiry_Summary();
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get enquiry summary', error: e.message });
+    }
+});
+
 module.exports = router;
