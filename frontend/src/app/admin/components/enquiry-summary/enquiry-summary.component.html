@@ -1,7 +1,7 @@
-<div class="summary-container p-4">
+<div class="summary-container p-0">
   <!-- Date Filter Section -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 transition-all duration-300 hover:shadow-md">
-    <div class="flex flex-wrap items-center gap-6">
+  <div class="bg-white rounded shadow-sm border border-gray-100 p-0.5 mb-0.5 transition-all duration-300 hover:shadow-md">
+    <div class="flex flex-wrap items-center gap-3">
       <!-- Checkbox -->
       <div class="flex items-center gap-2 group cursor-pointer">
         <input type="checkbox" id="createdOn" [(ngModel)]="isDateFilterEnabled"
@@ -27,7 +27,7 @@
 
       <!-- Search Button -->
       <button (click)="onSearchClick()" 
-              class="flex items-center gap-2 px-6 py-2 bg-blue hover:bg-blue-hover text-white rounded-lg text-sm font-semibold shadow-sm shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none">
+              class="flex items-center gap-1 px-3 py-1 bg-blue hover:bg-blue-hover text-white rounded-lg text-sm font-semibold shadow-sm shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none">
         <span class="material-symbols-outlined text-lg">search</span>
         Search
       </button>
@@ -41,27 +41,27 @@
     </div>
   } @else {
     <!-- Table Card -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-md">
-      <div class="overflow-x-auto">
+    <div class="bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden transition-all duration-500">
+      <div class="overflow-auto max-h-[calc(100vh-140px)]">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="header-row bg-gray-50/50">
-              <th class="p-3 font-bold text-gray-700 border-b border-gray-100 sticky left-0 bg-gray-50 z-10 w-48">
+            <tr class="header-row">
+              <th class="p-1.5 font-bold text-gray-700 border-b-2 border-gray-200 sticky top-0 left-0 bg-gray-100 z-30 w-48 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
                 <div class="flex items-center gap-2">
                   <button (click)="loadData()" 
                           [disabled]="isLoading" 
-                          class="p-1 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none flex items-center justify-center"
+                          class="p-0.5 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none flex items-center justify-center bg-white/50 shadow-sm"
                           title="Refresh Data">
-                    <span class="material-symbols-outlined text-gray-400 hover:text-blue-600 transition-all duration-300"
+                    <span class="material-symbols-outlined text-gray-500 hover:text-blue-600 transition-all duration-300 text-xl"
                           [class.animate-spin]="isLoading">
                       sync
                     </span>
                   </button>
-                  Enquiry Source
+                  <span class="uppercase tracking-wider text-xs">Enquiry Source</span>
                 </div>
               </th>
               @for (status of statuses; track status.Status_Id) {
-                <th class="p-3 font-bold text-gray-600 border-b border-gray-100 text-center min-w-[100px] text-sm whitespace-nowrap">
+                <th class="p-1.5 font-bold text-gray-600 border-b-2 border-gray-200 text-center min-w-[120px] text-[10px] uppercase tracking-wider sticky top-0 bg-gray-100 z-20">
                   {{ status.Status_Name }}
                 </th>
               }
@@ -69,15 +69,15 @@
           </thead>
           <tbody>
             @for (row of tableData; track row.id) {
-              <tr class="data-row hover:bg-gray-50/40 transition-colors duration-200 group">
-                <td class="p-3 text-gray-700 font-semibold border-b border-gray-50 sticky left-0 bg-white z-10 transition-colors group-hover:bg-gray-50">
+              <tr class="data-row hover:bg-blue-50/30 transition-colors duration-200 group">
+                <td class="p-1.5 text-gray-700 font-medium border-b border-gray-100 sticky left-0 bg-white z-10 transition-colors group-hover:bg-blue-50/50 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
                   <div class="flex items-center gap-3">
-                    <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                    <div class="w-2 h-2 rounded-full bg-blue-400/60"></div>
                     {{ row.name }}
                   </div>
                 </td>
                 @for (status of statuses; track status.Status_Id) {
-                  <td class="p-3 text-center border-b border-gray-50 text-gray-700">
+                  <td class="p-1.5 text-center border-b border-gray-100 text-gray-600 font-medium text-xs">
                     {{ row.counts[status.Status_Id] || 0 }}
                   </td>
                 }
@@ -86,10 +86,12 @@
           </tbody>
           <!-- Summary Footer -->
           <tfoot>
-            <tr class="footer-row bg-gray-50/80">
-              <td class="p-3 font-bold text-gray-800 border-t-2 border-gray-100 sticky left-0 bg-gray-50 z-10 transition-colors">GRAND TOTAL</td>
+            <tr class="footer-row">
+              <td class="p-1.5 font-bold text-gray-800 border-t-2 border-gray-200 sticky bottom-0 left-0 bg-gray-100 z-30 transition-colors shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
+                <span class="uppercase tracking-wider text-xs">Grand Total</span>
+              </td>
               @for (status of statuses; track status.Status_Id) {
-                <td class="p-3 text-center font-bold text-gray-800 border-t-2 border-gray-100">
+                <td class="p-1.5 text-center font-bold text-blue-700 border-t-2 border-gray-200 sticky bottom-0 bg-gray-100 z-20 text-xs">
                   {{ getTotalForStatus(status.Status_Id) }}
                 </td>
               }

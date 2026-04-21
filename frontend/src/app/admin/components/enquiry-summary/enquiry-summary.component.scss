@@ -1,5 +1,5 @@
 .summary-container {
-    min-height: calc(100vh - 100px);
+    min-height: auto;
     background: #F7F9FB;
 
     .refresh-btn {
@@ -30,32 +30,47 @@
 
     table {
         border-spacing: 0;
+        width: 100%;
         
         .header-row th {
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
         }
 
-        .count-bubble {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        .data-row {
+            td {
+                font-size: 0.875rem;
+                white-space: nowrap;
+            }
         }
 
         .footer-row td {
             font-size: 0.875rem;
             letter-spacing: 0.025em;
         }
+
+        // Add a subtle border between columns for better readability
+        th, td {
+            &:not(:last-child) {
+                border-right: 1px solid rgba(229, 231, 235, 0.5);
+            }
+        }
     }
 
     // Custom Scrollbar for the table container
-    .overflow-x-auto {
+    .overflow-auto {
         &::-webkit-scrollbar {
+            width: 8px;
             height: 8px;
         }
         &::-webkit-scrollbar-track {
             background: #F1F5F9;
+            border-radius: 4px;
         }
         &::-webkit-scrollbar-thumb {
             background: #CBD5E1;
             border-radius: 4px;
+            border: 2px solid #F1F5F9;
             &:hover {
                 background: #94A3B8;
             }
