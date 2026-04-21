@@ -1,26 +1,22 @@
 <div class="enquiry-conversion-page">
-  <!-- ✅ Filter Section -->
   <div class="filter-card">
     <div class="filters" [class.filters-summary]="!isDetailView" [class.filters-detail]="isDetailView">
-      
-      <!-- Created On Checkbox -->
       <label class="checkbox-line">
         <input type="checkbox" [(ngModel)]="useCreatedDate" (change)="applyFilters()" />
         <span>Created On</span>
       </label>
 
-      <!-- Date Range -->
-      <div class="field" [class.disabled]="!useCreatedDate">
-        <span>From Date</span>
-        <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
+      <div class="date-range" [class.disabled]="!useCreatedDate">
+        <div class="field">
+          <span>From Date</span>
+          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
+        </div>
+        <div class="field">
+          <span>To Date</span>
+          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
+        </div>
       </div>
 
-      <div class="field" [class.disabled]="!useCreatedDate">
-        <span>To Date</span>
-        <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
-      </div>
-
-      <!-- Action Buttons -->
       <div class="actions">
         <button class="primary-btn" (click)="applyFilters()">
           Search
@@ -29,23 +25,28 @@
           Back to Summary
         </button>
       </div>
+
+      <div class="view-toggle" *ngIf="!isDetailView">
+        <button class="ghost-btn toggle-btn table-btn" [class.active]="selectedView === 'table'" (click)="selectedView = 'table'">
+          Table
+        </button>
+        <button class="ghost-btn toggle-btn graph-btn" [class.active]="selectedView === 'graph'" (click)="selectedView = 'graph'">
+          Graph
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- ✅ Summary View -->
-  <div class="table-card" *ngIf="!isDetailView">
-    <!-- <div class="table-header">
-      <h2>Enquiry Conversion Summary</h2>
-      <p>Overview of conversions per enquiry source</p>
-    </div> -->
-
+  <div class="table-card" *ngIf="!isDetailView && selectedView === 'table'">
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>No</th>
             <th>Enquiry Source</th>
+            <th>Total Lead</th>
             <th>Conversion Count</th>
+            <th>Conversion Percentage</th>
             <th class="action-col">Actions</th>
           </tr>
         </thead>
@@ -54,7 +55,13 @@
             <td>{{ row.rowNo }}</td>
             <td class="source-cell">{{ row.Enquiry_Source_Name }}</td>
             <td>
+              <span class="count-pill total">{{ row.Total_Leads_Count }}</span>
+            </td>
+            <td>
               <span class="count-pill">{{ row.Conversion_Count }}</span>
+            </td>
+            <td>
+              <span class="count-pill percent">{{ row.Conversion_Percentage }}%</span>
             </td>
             <td class="action-col">
               <button class="ghost-btn small" (click)="openDetails(row)">
@@ -63,17 +70,50 @@
             </td>
           </tr>
           <tr *ngIf="!isLoadingSummary && summaryRows.length === 0">
-            <td colspan="5" class="empty-state">No conversion data found for the selected range.</td>
+            <td colspan="6" class="empty-state">No conversion data found for the selected range.</td>
           </tr>
           <tr *ngIf="isLoadingSummary">
-            <td colspan="5" class="empty-state">Loading data...</td>
+            <td colspan="6" class="empty-state">Loading data...</td>
           </tr>
         </tbody>
+        <tfoot *ngIf="!isLoadingSummary && summaryRows.length > 0">
+          <tr class="total-row">
+            <td colspan="2" class="source-cell total-label">Grand Total</td>
+            <td>
+              <span class="count-pill total">{{ totalLeadCount }}</span>
+            </td>
+            <td>
+              <span class="count-pill">{{ totalConversionCount }}</span>
+            </td>
+            <td>
+              <span class="count-pill percent">{{ totalConversionPercentage }}%</span>
+            </td>
+            <td class="action-col"></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
 
-  <!-- ✅ Detail View -->
+  <div class="table-card graph-card" *ngIf="!isDetailView && selectedView === 'graph'">
+    <div class="table-header">
+      <h2>Total Leads vs Converted Count</h2>
+      <p>Comparison of leads and conversions by enquiry source</p>
+    </div>
+    <div class="graph-wrap" *ngIf="!isLoadingSummary && summaryRows.length > 0">
+      <canvas
+        baseChart
+        [data]="conversionChartData"
+        [options]="conversionChartOptions"
+        [type]="conversionChartType">
+      </canvas>
+    </div>
+    <div class="empty-state" *ngIf="isLoadingSummary">Loading graph...</div>
+    <div class="empty-state" *ngIf="!isLoadingSummary && summaryRows.length === 0">
+      No conversion data available to display the graph.
+    </div>
+  </div>
+
   <div class="table-card" *ngIf="isDetailView">
     <div class="table-header">
       <div class="header-main">
