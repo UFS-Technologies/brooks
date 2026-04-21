@@ -1,17 +1,21 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { student_Service } from '../../services/student.Service';
 import { finalize } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
 
 @Component({
   selector: 'app-enquiry-summary',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './enquiry-summary.component.html',
   styleUrl: './enquiry-summary.component.scss'
 })
 export class EnquirySummaryComponent implements OnInit {
   private studentService = inject(student_Service);
+  private dialogBox = inject(MatDialog);
 
   sources: any[] = [];
   statuses: any[] = [];
@@ -19,13 +23,23 @@ export class EnquirySummaryComponent implements OnInit {
   tableData: any[] = [];
   isLoading = true;
 
+  // Date Filter Properties
+  isDateFilterEnabled = false;
+  fromDateFilter = '';
+  toDateFilter = '';
+
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData() {
     this.isLoading = true;
-    this.studentService.Get_Enquiry_Summary()
+    
+    // Only pass dates if filter is enabled
+    const fromDate = this.isDateFilterEnabled ? this.fromDateFilter : undefined;
+    const toDate = this.isDateFilterEnabled ? this.toDateFilter : undefined;
+
+    this.studentService.Get_Enquiry_Summary(fromDate, toDate)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (res: any) => {
@@ -36,6 +50,27 @@ export class EnquirySummaryComponent implements OnInit {
         },
         error: (err) => console.error('Error fetching summary:', err)
       });
+  }
+
+  onSearchClick() {
+    if (this.isDateFilterEnabled) {
+      if (!this.fromDateFilter || !this.toDateFilter) {
+        this.dialogBox.open(DialogBox_Component, {
+          panelClass: 'Dialogbox-Class',
+          data: { Message: 'Please select both From and To dates', Type: '3' },
+        });
+        return;
+      }
+
+      if (new Date(this.fromDateFilter) > new Date(this.toDateFilter)) {
+        this.dialogBox.open(DialogBox_Component, {
+          panelClass: 'Dialogbox-Class',
+          data: { Message: 'From Date should not be greater than To Date', Type: '3' },
+        });
+        return;
+      }
+    }
+    this.loadData();
   }
 
   processTableData() {

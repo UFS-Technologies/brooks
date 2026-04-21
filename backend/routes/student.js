@@ -864,7 +864,8 @@ router.get('/Followup_status_Dropdown/', async (req, res, next) => {
 
 router.get('/Get_Enquiry_Summary/', async (req, res, next) => {
     try {
-        const rows = await student.Get_Enquiry_Summary();
+        const { fromDate, toDate } = req.query;
+        const rows = await student.Get_Enquiry_Summary(fromDate, toDate);
         res.json(rows);
     } catch (e) {
         res.status(500).json({ success: false, message: 'Failed to get enquiry summary', error: e.message });
