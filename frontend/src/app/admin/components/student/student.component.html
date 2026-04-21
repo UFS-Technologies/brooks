@@ -121,7 +121,7 @@
     <table class="min-w-[1024px] w-full text-sm text-gray-800 table-auto border-collapse">
       <thead class="bg-gray-100 text-left sticky top-0 z-10">
         <tr>
-          <th class="px-4 py-1 text-center whitespace-nowrap">Actions</th>
+          <!-- <th class="px-4 py-1 text-center whitespace-nowrap">Actions</th> -->
           <th class="px-4 py-1 whitespace-nowrap">Name</th>
           <th class="px-4 py-1 whitespace-nowrap">Roll Number</th>
           <th class="px-4 py-1 whitespace-nowrap">Batch Name</th>
@@ -143,12 +143,12 @@
       <tbody>
         <tr *ngFor="let item of student_Data; let i = index" class="border-b hover:bg-gray-50 transition cursor-pointer"
           (click)="student_List_Update(item)">
- <td class="px-4 py-2 text-center whitespace-nowrap">
+ <!-- <td class="px-4 py-2 text-center whitespace-nowrap">
             <button (click)="openFollowUp(item); $event.stopPropagation()"
               class="bg-green-100 text-green-700 px-3 py-1 rounded-md text-xs hover:bg-green-200">
               Follow-up
             </button>
-          </td>
+          </td> -->
           <td class="px-4 py-2 whitespace-nowrap">{{ item.First_Name }} {{ item.Last_Name }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Roll_No'] || '-' }}</td>
           <td class="px-4 py-2 whitespace-nowrap">{{ item['Batch_Name'] || '-' }}</td>
