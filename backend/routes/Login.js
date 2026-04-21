@@ -19,9 +19,9 @@ const senderName = process.env.BREVO_SENDER_NAME || "IGM Academy";
 router.post("/Login_Check", async (req, res, next) => {
   try {
     console.log("req.body: ", req.body);
-    let { email, password, Device_ID } = req.body;
-    email = String(email || "").trim();
-    password = String(password || "").trim();
+    let { email, Email, password, Password, Device_ID } = req.body;
+    email = String(email || Email || "").trim();
+    password = String(password || Password || "").trim();
     Device_ID = Device_ID ?? 0;
     console.log("Device_ID: ", Device_ID);
     const rows = await Login.Login_Check(email, password, Device_ID);
@@ -84,10 +84,12 @@ router.post("/Check_User_Exist", async (req, res, next) => {
   try {
     const Register_Whatsapp_ = {};
 
-    const { email, mobile, Device_ID, Country_Code, Country_Code_Name } =
+    const { email, Email, mobile, Mobile, Device_ID, Country_Code, Country_Code_Name } =
       req.body;
+    const finalEmail = email || Email;
+    const finalMobile = mobile || Mobile;
     console.log(" req.body: ", req.body);
-    console.log("email: ", email);
+    console.log("email: ", finalEmail);
 
     const countryCode = Country_Code || "+91"; // Default country code is +91
     const countryCodeName = Country_Code_Name || "IN"; // Default country code name is 'IN'
@@ -108,7 +110,7 @@ router.post("/Check_User_Exist", async (req, res, next) => {
       Device_ID
     );
 
-    if (email) {
+    if (finalEmail) {
       try {
         const processedBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                                 <h2 style="color: #333;">Login Verification</h2>
@@ -131,7 +133,7 @@ router.post("/Check_User_Exist", async (req, res, next) => {
           },
           to: [
             {
-              email: email,
+              email: finalEmail,
             },
           ],
           subject: "OTP for IGM Login",
@@ -151,7 +153,7 @@ router.post("/Check_User_Exist", async (req, res, next) => {
           }
         );
 
-        console.log(`Email sent successfully to (${email})!`);
+        console.log(`Email sent successfully to (${finalEmail})!`);
 
         console.log("Email sent successfully via API:", emailResponse.data);
         res.json({ ...rows, otp });
@@ -166,13 +168,13 @@ router.post("/Check_User_Exist", async (req, res, next) => {
         };
       }
     }
-    if (mobile) {
-      console.log("mobile: ", mobile);
+    if (finalMobile) {
+      console.log("mobile: ", finalMobile);
 
       try {
         data = {
           messaging_product: "whatsapp",
-          to: countryCode + mobile,
+          to: countryCode + finalMobile,
           type: "template",
           template: {
             name: "send_otp",
@@ -253,7 +255,7 @@ router.post("/Check_User_Exist", async (req, res, next) => {
 router.post("/Google_SignIn", async (req, res, next) => {
   try {
     const CheckResult = await Login.Check_User_Exist(
-      req.body.Email,
+      req.body.Email || req.body.email,
       "",
       "",
       "",
@@ -308,8 +310,11 @@ router.post("/Google_SignIn", async (req, res, next) => {
 router.post("/Check_OTP", async (req, res, next) => {
   try {
     console.log("req.body: ", req.body);
-    const { student_id, otp, isStudnet } = req.body;
-    const rows = await Login.Check_OTP(student_id, otp, isStudnet ?? 1);
+    const { student_id, Student_ID, otp, OTP, isStudent, isStudnet } = req.body;
+    const final_student_id = student_id || Student_ID;
+    const final_otp = otp || OTP;
+    const final_isStudent = isStudent ?? isStudnet ?? 1;
+    const rows = await Login.Check_OTP(final_student_id, final_otp, final_isStudent);
     const token = jwt.sign({ userId: student_id, isStudent: 1 }, jwtSecret);
 
     console.log("token: ", token);
@@ -318,7 +323,7 @@ router.post("/Check_OTP", async (req, res, next) => {
         rows[0]["otp_match"] = 1;
       }
       const [result] = await executeTransaction("Insert_Login_User", [
-        student_id,
+        final_student_id,
         1,
         0,
         token,
@@ -339,10 +344,11 @@ router.post("/Check_OTP", async (req, res, next) => {
 });
 router.post("/Generate-forget-Password", async (req, res) => {
   try {
-    const { Email } = req.body;
-    console.log("Email: ", Email);
+    const { Email, email } = req.body;
+    const finalEmail = Email || email;
+    console.log("Email: ", finalEmail);
 
-    if (!Email || !Email.trim()) {
+    if (!finalEmail || !finalEmail.trim()) {
       return res.status(400).json({
         success: false,
         message: "Email is required",
@@ -422,10 +428,13 @@ router.post("/Generate-forget-Password", async (req, res) => {
 
 router.post("/change_password", async (req, res, next) => {
   try {
-    const { password, token, user_id } = req.body;
-    console.log("password: ", password);
+    const { password, Password, token, Token, user_id, User_ID } = req.body;
+    const finalPassword = password || Password;
+    const finalToken = token || Token;
+    const finalUserId = user_id || User_ID;
+    console.log("password: ", finalPassword);
 
-    const rows = await Login.change_password(password, user_id, token);
+    const rows = await Login.change_password(finalPassword, finalUserId, finalToken);
     console.log("rows: ", rows);
 
     if (rows) {

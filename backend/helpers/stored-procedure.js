@@ -42,20 +42,36 @@ class StoredProcedure {
                     return param;
                 });
 
-                const dbCall = this.db1 ? this.db1 : db;
-                const promiseQuery = util.promisify(dbCall.query).bind(dbCall);
+                const dbCall = this.db ? this.db : db;
                 
                 const start = process.hrtime();
                 
-                const results = await Promise.race([
-                    promiseQuery(this.query, params),
-                    new Promise((_, reject) => 
-                        setTimeout(
-                            () => reject(new Error(`Database query timeout after ${currentTimeout}ms (attempt ${attempt + 1}/${this.retryAttempts})`)), 
-                            currentTimeout
+                let results;
+                if (typeof dbCall.promise === 'function') {
+                    // It's a callback-based pool/connection
+                    const promiseQuery = util.promisify(dbCall.query).bind(dbCall);
+                    results = await Promise.race([
+                        promiseQuery(this.query, params),
+                        new Promise((_, reject) => 
+                            setTimeout(
+                                () => reject(new Error(`Database query timeout after ${currentTimeout}ms (attempt ${attempt + 1}/${this.retryAttempts})`)), 
+                                currentTimeout
+                            )
                         )
-                    )
-                ]);
+                    ]);
+                } else {
+                    // It's likely already a promise-based connection
+                    const [queryResults] = await Promise.race([
+                        dbCall.query(this.query, params),
+                        new Promise((_, reject) => 
+                            setTimeout(
+                                () => reject(new Error(`Database query timeout after ${currentTimeout}ms (attempt ${attempt + 1}/${this.retryAttempts})`)), 
+                                currentTimeout
+                            )
+                        )
+                    ]);
+                    results = queryResults;
+                }
 
                 const duration = process.hrtime(start);
                 const ms = duration[0] * 1000 + duration[1] / 1e6;

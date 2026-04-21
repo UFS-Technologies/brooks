@@ -85,11 +85,13 @@ export class NavbarComponent implements OnInit {
       'Work Report',
       'Enquiry Conversion',
       'Status',
-      'Leave',
+      // 'Leave',
     ];
 
     this.user_Service.Get_user_Menus(User_Id).subscribe((res) => {
       let items = res[0] || [];
+
+      items = items.filter((item: any) => item.Menu_Name !== 'Leave');
 
       items.sort((a: any, b: any) => {
         const indexA = menuOrder.indexOf(a.Menu_Name);
@@ -148,9 +150,9 @@ export class NavbarComponent implements OnInit {
       if (routeData.breadcrumb == 'Student') {
         breadcrumb = `Student`;
       }
-      if (routeData.breadcrumb == 'Leave') {
+      /* if (routeData.breadcrumb == 'Leave') {
         breadcrumb = `Leave`;
-      }
+      } */
     } else {
       breadcrumb = '';
     }
@@ -205,10 +207,10 @@ export class NavbarComponent implements OnInit {
           : 'assets/images/navbar/income.png';
       case 'Status':
         return '';
-      case 'Leave':
+      /* case 'Leave':
         return isActive
           ? 'assets/images/navbar/ppt-active.png'
-          : 'assets/images/navbar/ppt.svg';
+          : 'assets/images/navbar/ppt.svg'; */
       case 'Enquiry Summary':
         return isActive
           ? 'assets/images/navbar/dashboard-active.png'
