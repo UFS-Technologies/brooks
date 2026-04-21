@@ -55,6 +55,10 @@ export class LeadImportComponent implements OnInit {
   file: File | null = null;
   isLoading: boolean = false;
   isImporting: boolean = false;
+  
+  sheetNames: string[] = [];
+  selectedSheetName: string = '';
+  workbook: XLSX.WorkBook | null = null;
 
   constructor() {
     this.importForm = this.fb.group({
@@ -100,71 +104,125 @@ export class LeadImportComponent implements OnInit {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       this.file = selectedFile;
-      this.parseExcel();
+      this.readFile();
     }
     // Clear the input value so the same file can be selected again
     event.target.value = '';
   }
 
-  parseExcel() {
+  readFile() {
     if (!this.file) return;
-
     const reader = new FileReader();
     reader.onload = (e: any) => {
       const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const rawArray: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      const visibleRows = rawArray.filter((row, index) => {
-        return !(worksheet['!rows'] && worksheet['!rows'][index] && worksheet['!rows'][index].hidden);
-      });
-
-      if (visibleRows.length < 2) {
-        this.importedLeads = [];
-        return;
+      this.workbook = XLSX.read(data, { type: 'array' });
+      this.sheetNames = this.workbook.SheetNames;
+      if (this.sheetNames.length > 0) {
+        this.selectedSheetName = this.sheetNames[0];
+        this.parseExcel();
       }
-
-      const headers = visibleRows[0] as string[];
-      const rawData = visibleRows.slice(1).map(rowArray => {
-        const rowObj: any = {};
-        headers.forEach((header, i) => {
-          if (header) {
-            rowObj[header] = rowArray[i];
-          }
-        });
-        return rowObj;
-      });
-
-      this.importedLeads = rawData.map((row: any, index: number) => {
-        const getVal = (possibleKeys: string[]) => {
-          for (const pk of possibleKeys) {
-            const normalizedPk = pk.toLowerCase().replace(/[^a-z0-9]/g, '');
-            for (const key of Object.keys(row)) {
-              const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-              if (normalizedKey === normalizedPk) {
-                return row[key];
-              }
-            }
-          }
-          return '';
-        };
-
-        const name = getVal(['Name', 'StudentName', 'FirstName', 'FullName']) || '';
-        const phone = getVal(['Phone', 'PhoneNumber', 'Mobile', 'MobileNumber', 'Contact', 'ContactNumber', 'WhatsApp', 'WhatsAppNumber', 'Number']) || '';
-        const email = getVal(['Email', 'EmailAddress', 'EmailId', 'Mail']) || '';
-        const remarks = getVal(['Remarks', 'Remark', 'Note', 'Notes', 'Comment', 'Comments', 'FollowUpDetails']) || '';
-
-        return {
-          SNo: index + 1,
-          Name: name !== undefined && name !== null ? String(name).trim() : '',
-          Phone_Number: phone !== undefined && phone !== null ? String(phone).trim() : '',
-          Email: email !== undefined && email !== null ? String(email).trim() : '',
-          Remarks: remarks !== undefined && remarks !== null ? String(remarks).trim() : ''
-        };
-      }).filter(lead => lead.Name || lead.Phone_Number);
     };
     reader.readAsArrayBuffer(this.file);
+  }
+
+  onSheetChange(sheetName: string) {
+    this.selectedSheetName = sheetName;
+    this.parseExcel();
+  }
+
+  parseExcel() {
+    if (!this.workbook || !this.selectedSheetName) return;
+
+    const worksheet = this.workbook.Sheets[this.selectedSheetName];
+    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+    const allRows: any[][] = [];
+
+    // Iterate through all rows in the range to respect hidden status accurately
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      // Check if row is hidden or has zero height (common in some Excel versions for filtered rows)
+      const rowProps = worksheet['!rows'] ? worksheet['!rows'][R] : null;
+      const isHidden = rowProps && (rowProps.hidden || rowProps.hpt === 0 || rowProps.hpx === 0);
+      
+      if (isHidden) {
+        continue;
+      }
+
+      const row: any[] = [];
+      let hasData = false;
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = worksheet[cellAddress];
+        // Use formatted value if available, else raw value
+        const val = cell ? (cell.w || cell.v) : '';
+        row.push(val);
+        if (val !== null && val !== undefined && String(val).trim() !== '') {
+          hasData = true;
+        }
+      }
+
+      // Only add rows that have at least some data
+      if (hasData) {
+        allRows.push(row);
+      }
+    }
+
+    if (allRows.length < 1) {
+      this.importedLeads = [];
+      return;
+    }
+
+    // Smart header detection: Find the first row that looks like a header row
+    let headerIndex = 0;
+    for (let i = 0; i < Math.min(allRows.length, 10); i++) {
+      const row = allRows[i];
+      const hasName = row.some(cell => /name|student|first|full/i.test(String(cell)));
+      const hasPhone = row.some(cell => /phone|mobile|contact|number/i.test(String(cell)));
+      if (hasName || hasPhone) {
+        headerIndex = i;
+        break;
+      }
+    }
+
+    const headers = (allRows[headerIndex] || []).map(h => String(h).trim());
+    const dataRows = allRows.slice(headerIndex + 1);
+
+    const rawData = dataRows.map(rowArray => {
+      const rowObj: any = {};
+      headers.forEach((header, i) => {
+        if (header) {
+          rowObj[header] = rowArray[i];
+        }
+      });
+      return rowObj;
+    });
+
+    this.importedLeads = rawData.map((row: any, index: number) => {
+      const getVal = (possibleKeys: string[]) => {
+        for (const pk of possibleKeys) {
+          const normalizedPk = pk.toLowerCase().replace(/[^a-z0-9]/g, '');
+          for (const key of Object.keys(row)) {
+            const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (normalizedKey === normalizedPk) {
+              return row[key];
+            }
+          }
+        }
+        return '';
+      };
+
+      const name = getVal(['Name', 'StudentName', 'FirstName', 'FullName']) || '';
+      const phone = getVal(['Phone', 'PhoneNumber', 'Mobile', 'MobileNumber', 'Contact', 'ContactNumber', 'WhatsApp', 'WhatsAppNumber', 'Number']) || '';
+      const email = getVal(['Email', 'EmailAddress', 'EmailId', 'Mail']) || '';
+      const remarks = getVal(['Remarks', 'Remark', 'Note', 'Notes', 'Comment', 'Comments', 'FollowUpDetails']) || '';
+
+      return {
+        SNo: index + 1,
+        Name: name !== undefined && name !== null ? String(name).trim() : '',
+        Phone_Number: phone !== undefined && phone !== null ? String(phone).trim() : '',
+        Email: email !== undefined && email !== null ? String(email).trim() : '',
+        Remarks: remarks !== undefined && remarks !== null ? String(remarks).trim() : ''
+      };
+    }).filter(lead => lead.Name || lead.Phone_Number);
   }
 
   downloadTemplate() {

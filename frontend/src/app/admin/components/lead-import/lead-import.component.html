@@ -44,7 +44,7 @@
       <div class="remarks-container mt-4">
         <label>Remarks</label>
         <textarea formControlName="Remarks" placeholder="Enter follow-up details..." rows="3"></textarea>
-      </div>
+      </div>---------------
     </form>
 
     <!-- Template Preview Section -->
@@ -78,6 +78,17 @@
         <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" hidden>
         <button class="btn-choose" (click)="fileInput.click()">{{ file ? file.name : 'CHOOSE FILE' }}</button>
       </div>
+      
+      @if (sheetNames.length > 1) {
+        <div class="sheet-selector ml-4">
+          <label class="mr-2 text-sm font-medium">Select Sheet:</label>
+          <select [ngModel]="selectedSheetName" (ngModelChange)="onSheetChange($event)" class="custom-select-small">
+            @for (name of sheetNames; track name) {
+              <option [value]="name">{{ name }}</option>
+            }
+          </select>
+        </div>
+      }
     </div>
 
     <!-- Results Table -->
