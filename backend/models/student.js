@@ -117,13 +117,25 @@ Remove_Student_Registration: async function (student) {
         .slice(0, 10);
     }
 
-    // Convert Registered_On from ISO string to MySQL DATETIME format
-if (student.Registered_On) {
-    student.Registered_On = new Date(student.Registered_On)
+    if (student.Follow_Up_Date) {
+      student.Follow_Up_Date = new Date(student.Follow_Up_Date)
         .toISOString()
-        .slice(0, 19)       // "2026-02-12T08:39:17"
-        .replace('T', ' '); // "2026-02-12 08:39:17"
-}
+        .slice(0, 10);
+    }
+
+    if (student.Next_Follow_Up_Date) {
+      student.Next_Follow_Up_Date = new Date(student.Next_Follow_Up_Date)
+        .toISOString()
+        .slice(0, 10);
+    }
+
+    // Convert Registered_On from ISO string to MySQL DATETIME format
+    if (student.Registered_On) {
+      student.Registered_On = new Date(student.Registered_On)
+          .toISOString()
+          .slice(0, 19)       // "2026-02-12T08:39:17"
+          .replace('T', ' '); // "2026-02-12 08:39:17"
+    }
 
  const toInt = (val) => {
     if (val === '' || val == null) return null;

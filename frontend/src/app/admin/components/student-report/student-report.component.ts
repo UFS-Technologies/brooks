@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { StudentlistComponent } from "../studentlist/studentlist.component";
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
+import { course_Service } from '../../services/course.Service';
 import jsPDF from 'jspdf';
 // import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
@@ -45,7 +47,7 @@ export const MY_DATE_FORMATS = {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatInputModule,
     MatDatepickerModule, MatButtonModule, MatIconModule, StudentlistComponent,
-  MatCheckboxModule, MatNativeDateModule,],
+  MatCheckboxModule, MatNativeDateModule, MatSelectModule],
   providers: [provideNativeDateAdapter(), { provide: LOCALE_ID, useValue: 'en-GB' }, // for dd-MM-yyyy support
       { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
       { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }],
@@ -59,6 +61,10 @@ export class StudentReportComponent implements OnInit {
   fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   toDate = new FormControl(new Date());
   private user = inject(user_Service);
+  private courseService = inject(course_Service);
+
+  courseList: any[] = [];
+  batchList: any[] = [];
 
  displayedColumns = [
   'Action',
@@ -90,7 +96,41 @@ showMoreOptions: boolean = false;
   }
 
   loadInitialData() {
+    this.loadCourses();
     this.fetchReportData();
+  }
+
+  loadCourses() {
+    this.courseService.get_course_names().subscribe({
+      next: (res: any) => {
+        this.courseList = res?.[0] || [];
+      },
+      error: (err) => console.error('Error loading courses', err)
+    });
+  }
+
+  onCourseSelectionChange() {
+    const selectedCourseName = this.selectedCourse.value;
+    const selectedCourseObj = this.courseList.find(c => 
+      c.Course_Name?.trim().toLowerCase() === selectedCourseName?.trim().toLowerCase()
+    );
+    
+    console.log('Course Selection Changed:', selectedCourseName, 'Found:', selectedCourseObj);
+
+    if (selectedCourseObj) {
+      this.courseService.get_course_Batches(selectedCourseObj.Course_ID).subscribe({
+        next: (res: any) => {
+          this.batchList = res || [];
+          this.selectedBatch.setValue(''); // Reset batch selection
+          this.fetchReportData();
+        },
+        error: (err) => console.error('Error loading batches', err)
+      });
+    } else {
+      this.batchList = [];
+      this.selectedBatch.setValue('');
+      this.fetchReportData();
+    }
   }
 
   fetchReportData() {
@@ -163,6 +203,7 @@ console.log("params", params,this.currentPage,
 
   clearFilters() {
     [this.selectedCourse, this.selectedStudent, this.selectedBatch].forEach(control => control.reset());
+    this.batchList = [];
     this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     this.toDate.setValue(new Date());
     this.showMoreOptions = false;
