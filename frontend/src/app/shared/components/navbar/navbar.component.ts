@@ -213,6 +213,10 @@ export class NavbarComponent implements OnInit {
         return isActive
           ? 'assets/images/navbar/dashboard-active.png'
           : 'assets/images/navbar/dashboard.png';
+      case 'Enquiry Conversion':
+        return isActive
+          ? 'assets/images/navbar/dashboard-active.png'
+          : 'assets/images/navbar/dashboard.png';
       default:
         return ''; 
     }
