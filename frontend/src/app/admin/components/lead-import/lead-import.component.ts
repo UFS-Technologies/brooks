@@ -20,6 +20,7 @@ interface ImportData {
   SNo: number;
   Name: string;
   Phone_Number: string;
+  Alternative_Number?: string;
   Email: string;
   Remarks?: string;
 }
@@ -212,6 +213,7 @@ export class LeadImportComponent implements OnInit {
 
       const name = getVal(['Name', 'StudentName', 'FirstName', 'FullName']) || '';
       const phone = getVal(['Phone', 'PhoneNumber', 'Mobile', 'MobileNumber', 'Contact', 'ContactNumber', 'WhatsApp', 'WhatsAppNumber', 'Number']) || '';
+      const altPhone = getVal(['AlternativeNumber', 'AlternateNumber', 'AltNumber', 'AltPhone', 'AlternativeMobile', 'AlternateMobile', 'AltMobile', 'AltContact', 'AlternativeContact']) || '';
       const email = getVal(['Email', 'EmailAddress', 'EmailId', 'Mail']) || '';
       const remarks = getVal(['Remarks', 'Remark', 'Note', 'Notes', 'Comment', 'Comments', 'FollowUpDetails']) || '';
 
@@ -219,6 +221,7 @@ export class LeadImportComponent implements OnInit {
         SNo: index + 1,
         Name: name !== undefined && name !== null ? String(name).trim() : '',
         Phone_Number: phone !== undefined && phone !== null ? String(phone).trim() : '',
+        Alternative_Number: altPhone !== undefined && altPhone !== null ? String(altPhone).trim() : '',
         Email: email !== undefined && email !== null ? String(email).trim() : '',
         Remarks: remarks !== undefined && remarks !== null ? String(remarks).trim() : ''
       };
@@ -227,7 +230,7 @@ export class LeadImportComponent implements OnInit {
 
   downloadTemplate() {
     const template = [
-      { 'Name': 'John Doe', 'Phone Number': '9876543210', 'Email': 'john@example.com', 'Remarks': 'Follow up next week' }
+      { 'Name': 'John Doe', 'Phone Number': '9876543210', 'Alternative Number': '', 'Email': 'john@example.com', 'Remarks': 'Follow up next week' }
     ];
     const worksheet = XLSX.utils.json_to_sheet(template);
     const workbook = { Sheets: { 'Template': worksheet }, SheetNames: ['Template'] };
@@ -264,6 +267,7 @@ export class LeadImportComponent implements OnInit {
         Last_Name: lastName,
         Email: lead.Email,
         Phone_Number: lead.Phone_Number,
+        Alternative_Number: lead.Alternative_Number || '',
         Country_Code: '+91',
         Country_Code_Name: 'in',
         Delete_Status: 0,

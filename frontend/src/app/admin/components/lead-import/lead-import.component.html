@@ -44,31 +44,38 @@
       <div class="remarks-container mt-4">
         <label>Remarks</label>
         <textarea formControlName="Remarks" placeholder="Enter follow-up details..." rows="3"></textarea>
-      </div>---------------
+      </div>
     </form>
 
     <!-- Template Preview Section -->
     <div class="template-preview-section mt-6">
-      <div class="template-table">
-        <div class="table-header">
-          <div class="col-a"><strong>A</strong><br>Name</div>
-          <div class="col-b"><strong>B</strong><br>Phone Number</div>
-          <div class="col-c"><strong>C</strong><br>Email</div>
-          <div class="col-d"><strong>D</strong><br>Remarks</div>
-        </div>
-        <div class="table-row">
-          <div class="col-a">John Doe</div>
-          <div class="col-b">9876543210</div>
-          <div class="col-c">john&#64;example.com</div>
-          <div class="col-d">Follow up next week</div>
-        </div>
-        <div class="table-row">
-          <div class="col-a"></div>
-          <div class="col-b"></div>
-          <div class="col-c"></div>
-          <div class="col-d"></div>
-        </div>
-      </div>
+      <table class="template-table">
+        <thead>
+          <tr>
+            <th><strong>A</strong><br>Name</th>
+            <th><strong>B</strong><br>Phone Number</th>
+            <th><strong>C</strong><br>Alternative Number</th>
+            <th><strong>D</strong><br>Email</th>
+            <th><strong>E</strong><br>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>John Doe</td>
+            <td>9876543210</td>
+            <td>8756945264</td>
+            <td>john&#64;example.com</td>
+            <td>Follow up next week</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Actions Row -->
@@ -99,6 +106,7 @@
             <th>S.No</th>
             <th>Name</th>
             <th>Phone Number</th>
+            <th>Alternative Number</th>
             <th>Email</th>
             <th>Remarks</th>
           </tr>
@@ -109,13 +117,14 @@
               <td>{{ lead.SNo }}</td>
               <td>{{ lead.Name }}</td>
               <td>{{ lead.Phone_Number }}</td>
+              <td>{{ lead.Alternative_Number }}</td>
               <td>{{ lead.Email }}</td>
               <td>{{ lead.Remarks }}</td>
             </tr>
           }
           @if (importedLeads.length === 0) {
             <tr>
-              <td colspan="5" class="no-data">No data imported yet.</td>
+              <td colspan="6" class="no-data">No data imported yet.</td>
             </tr>
           }
         </tbody>
