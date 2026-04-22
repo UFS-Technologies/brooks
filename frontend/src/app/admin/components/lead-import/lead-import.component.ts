@@ -49,6 +49,7 @@ export class LeadImportComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   importForm: FormGroup;
+  branchData: any[] = [];
   departmentData: any[] = [];
   staffData: any[] = [];
   followUpStatusData: any[] = [];
@@ -63,6 +64,7 @@ export class LeadImportComponent implements OnInit {
 
   constructor() {
     this.importForm = this.fb.group({
+      Branch: [null, Validators.required],
       Department: [null, Validators.required],
       AssignToStaff: [null, Validators.required],
       NextFollowUpDate: [this.getCurrentDate(), Validators.required],
@@ -76,6 +78,10 @@ export class LeadImportComponent implements OnInit {
   }
 
   loadMetadata() {
+    this.studentService.Branch_Dropdown().subscribe((res: any) => {
+      this.branchData = Array.isArray(res[0]) ? res[0] : (Array.isArray(res) ? res : []);
+    });
+
     this.studentService.Department_Dropdown().subscribe((res: any) => {
       this.departmentData = Array.isArray(res[0]) ? res[0] : (Array.isArray(res) ? res : []);
       const admissionDept = this.departmentData.find(d => d.Department_Name === "Admission");
@@ -272,6 +278,9 @@ export class LeadImportComponent implements OnInit {
         Country_Code_Name: 'in',
         Delete_Status: 0,
         Active_Status: 'Active',
+        Branch_Id: formValues.Branch?.Branch_Id || formValues.Branch?.Branch_ID,
+        Branch_ID: formValues.Branch?.Branch_Id || formValues.Branch?.Branch_ID,
+        Branch_Name: formValues.Branch?.Branch_Name,
         Department_Id: formValues.Department?.Department_Id || formValues.Department?.Department_ID,
         Department_Name: formValues.Department?.Department_Name,
         Assigned_Staff_ID: formValues.AssignToStaff?.User_ID,
@@ -304,7 +313,9 @@ export class LeadImportComponent implements OnInit {
 
   compareObjects(o1: any, o2: any): boolean {
     if (o1 && o2) {
-      return (o1.Department_ID === o2.Department_ID) || 
+      return (o1.Branch_ID === o2.Branch_ID) ||
+             (o1.Branch_Id === o2.Branch_Id) ||
+             (o1.Department_ID === o2.Department_ID) || 
              (o1.Department_Id === o2.Department_Id) ||
              (o1.User_ID === o2.User_ID) ||
              (o1.Status_ID === o2.Status_ID) ||

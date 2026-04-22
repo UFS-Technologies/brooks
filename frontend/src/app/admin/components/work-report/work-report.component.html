@@ -16,7 +16,7 @@
         <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useCreatedDate" />
       </label>
 
-      <button class="primary-btn" (click)="applySummaryFilters()">Search</button>
+      <button class="primary-btn" (click)="applySummaryFilters()" style="background-color: blue !important; color: white !important;">Search</button>
     </div>
   </section>
 
@@ -106,7 +106,7 @@
           <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useEntryDate" />
         </label>
 
-        <button class="primary-btn" (click)="applyDetailFilters()">Search</button>
+        <button class="primary-btn" (click)="applyDetailFilters()" style="background-color: blue !important; color: white !important;">Search</button>
       </div>
     </section>
 

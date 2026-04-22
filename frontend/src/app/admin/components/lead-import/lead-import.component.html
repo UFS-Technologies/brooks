@@ -4,6 +4,15 @@
       <!-- Metadata Row -->
       <div class="metadata-grid">
         <div class="form-group">
+          <label>Branch</label>
+          <mat-select formControlName="Branch" [compareWith]="compareObjects" class="custom-select">
+            @for (branch of branchData; track branch) {
+              <mat-option [value]="branch">{{ branch.Branch_Name }}</mat-option>
+            }
+          </mat-select>
+        </div>
+
+        <div class="form-group">
           <label>Department</label>
           <mat-select formControlName="Department" [compareWith]="compareObjects" class="custom-select">
             @for (dept of departmentData; track dept) {
@@ -83,7 +92,7 @@
       <button class="btn-download" (click)="downloadTemplate()">DOWNLOAD EXCEL FORMAT</button>
       <div class="file-uploader">
         <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" hidden>
-        <button class="btn-choose" (click)="fileInput.click()">{{ file ? file.name : 'CHOOSE FILE' }}</button>
+        <button class="btn-choose" (click)="fileInput.click()" style="background-color: blue !important; color: white !important;">{{ file ? file.name : 'CHOOSE FILE' }}</button>
       </div>
       
       @if (sheetNames.length > 1) {

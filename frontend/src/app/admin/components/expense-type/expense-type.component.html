@@ -45,7 +45,7 @@
       [disabled]="expenseInput.invalid"
       type="submit"
       class="bg-green-700 text-white rounded-lg hover:bg-green-900 transition-colors h-10 disabled:opacity-50 disabled:cursor-not-allowed mt-5"
-      style="width: 80px;"
+      style="background-color: blue !important; color: white !important; width: 80px;"
     >
       {{ selectedExpenseID ? 'Update' : 'Save' }}
     </button>
@@ -73,10 +73,10 @@
         </svg>
       </div>
          <!-- <button class="bg-lightBlue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors"
-          (click)="searchExpense()"> Search </button> -->
+          (click)="searchExpense()" style="background-color: blue !important; color: white !important;"> Search </button> -->
       <!-- Add Expense Type -->
       <button *ngIf="isSave" class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-900 transition-colors"
-        (click)="addexpense()">
+        (click)="addexpense()" style="background-color: blue !important; color: white !important;">
         + Add Expense type
       </button>
     </div>
