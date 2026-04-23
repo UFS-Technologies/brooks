@@ -292,6 +292,7 @@ Remove_Student_Registration: async function (student) {
     Batch_ID,
     enrollment_status = "all",
     activeStatus,
+    branchId,
     p_user_id,
     p_user_type_id
   ) {
@@ -315,6 +316,7 @@ Remove_Student_Registration: async function (student) {
       toIntOrNull(Batch_ID),
       enrollment_status || "all",
       activeStatus,
+      toIntOrNull(branchId),
       toIntOrNull(p_user_id),
       toIntOrNull(p_user_type_id),
     ]);

@@ -135,6 +135,7 @@ export class StudentLeadComponent implements OnInit {
   enrollmentStatus: string = 'enrolled';
   selectedStaffFilter: string = 'all';
   selectedStudentStatusFilter: string = 'all';
+  selectedBranchFilter: number | null = null;
 
   Student_Exam_Name: string = '';
   currentStudent: any = null;
@@ -1724,7 +1725,7 @@ onCancelEdit(): void {
     this.student_Data = [];
 const followUpStatus = this.followUpStatus?.Status_Name || 'all';
     this.student_Service_
-      .Search_student_lead(this.searchTerm, this.currentPage, this.pageSize, this.selectedCourseId, this.selectedBatchId, this.enrollmentStatus, followUpStatus)
+      .Search_student_lead(this.searchTerm, this.currentPage, this.pageSize, this.selectedCourseId, this.selectedBatchId, this.enrollmentStatus, followUpStatus, this.selectedBranchFilter)
       .subscribe(
         (response: any) => {
           console.log('response: ', response);
@@ -3386,10 +3387,17 @@ private getStudentStatusValue(student: any): string {
     this.resetFollowUpForm();
 
     // 🔽 Populate follow-up form fields if data is present
-    const studentBranchId = student.Branch_Id || student.Branch_ID;
-    this.Search_Branch = this.Search_Branch_Data.find(
-      (b) => (b.Branch_Id || b.Branch_ID) == studentBranchId
-    ) || this.Search_Branch_Data[0];
+    const studentBranchId = student.Branch_Id || student.Branch_ID || student.Branch_id;
+    console.log('Branch matching - studentBranchId:', studentBranchId, 'student keys:', Object.keys(student).filter(k => k.toLowerCase().includes('branch')));
+    console.log('Search_Branch_Data:', this.Search_Branch_Data);
+    const matchedBranch = this.Search_Branch_Data.find(
+      (b) => {
+        const branchId = b.Branch_Id || b.Branch_ID;
+        return branchId && studentBranchId && String(branchId) === String(studentBranchId);
+      }
+    );
+    console.log('Matched branch:', matchedBranch);
+    this.Search_Branch = matchedBranch || this.Search_Branch_Data[0];
 
     const studentDeptId = student.Department_Id || student.Department_ID;
     this.Search_Department = this.Search_Department_Data.find(
@@ -3413,7 +3421,7 @@ private getStudentStatusValue(student: any): string {
       ? this.formatDateForInput(student.Follow_Up_Date)
       : (student.Next_Follow_Up_Date ? this.formatDateForInput(student.Next_Follow_Up_Date) : this.getCurrentDate());
 
-    this.remark = student.Remark || student.Followup_Remark || '';
+    this.remark = '';
 
     // Load history
     this.loadFollowupHistoryList();
@@ -3486,18 +3494,36 @@ private getStudentStatusValue(student: any): string {
         );
         const history = this.followupHistoryList[0];
         if (history) {
-          this.Search_Branch = this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) === (history.Branch_Id || history.Branch_ID)) || this.Search_Branch;
-          this.Search_Department = this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) === (history.Department_Id || history.Department_ID)) || this.Search_Department;
+          const histBranchId = history.Branch_Id || history.Branch_ID || history.Branch_id;
+          console.log('History branch matching - histBranchId:', histBranchId, 'history keys:', Object.keys(history).filter(k => k.toLowerCase().includes('branch')));
+          const histBranch = this.Search_Branch_Data.find(b => {
+            const bId = b.Branch_Id || b.Branch_ID;
+            return bId && histBranchId && String(bId) === String(histBranchId);
+          });
+          console.log('History matched branch:', histBranch);
+          if (histBranch) this.Search_Branch = histBranch;
+          
+          const histDeptId = history.Department_Id || history.Department_ID;
+          const histDept = this.Search_Department_Data.find(d => {
+            const dId = d.Department_Id || d.Department_ID;
+            return dId && histDeptId && String(dId) === String(histDeptId);
+          });
+          if (histDept) this.Search_Department = histDept;
+          
           this.Search_staff = this.staffData.find(s => s.First_Name === (history.Assigned_Staff_Name || history.To_User_Name)) || this.Search_staff;
-          this.Search_status = this.followUpStatusData.find(s => (s.Status_Id || s.Status_ID) === (history.Follow_Up_Status_ID || history.Followup_Status || history.Status_Id)) || this.Search_status;
+          
+          const histStatusId = history.Follow_Up_Status_ID || history.Followup_Status || history.Status_Id;
+          const histStatus = this.followUpStatusData.find(s => {
+            const sId = s.Status_Id || s.Status_ID;
+            return sId && histStatusId && String(sId) === String(histStatusId);
+          });
+          if (histStatus) this.Search_status = histStatus;
 
           // Sync date and remark from the most recent history record
           if (history.Next_Follow_Up_Date) {
             this.nextFollowUpDate = this.formatDateForInput(history.Next_Follow_Up_Date);
           }
-          if (history.Remark) {
-            this.remark = history.Remark;
-          }
+          // Previous remarks should NOT be pre-filled; keep remark field empty for new input
         }
 
       },
