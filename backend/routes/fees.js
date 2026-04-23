@@ -12,7 +12,7 @@ router.get('/Get_All_installment_information/:Course_ID', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch installments', error: e.message });
   }
 });
 
@@ -44,7 +44,7 @@ router.get('/Get_FeesByStudentCourse/:studentId/:courseId', async (req, res) => 
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch fees by student course', error: e.message });
   }
 });
 
@@ -58,7 +58,7 @@ router.get('/Get_FeesByStudentId/:studentId', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch fees by student id', error: e.message });
   }
 });
 
@@ -72,7 +72,7 @@ router.get('/Get_Accounts/', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch accounts', error: e.message });
   }
 });
 // Get_All_PaymentMode
@@ -85,7 +85,7 @@ router.get('/Get_All_PaymentMode/', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch payment modes', error: e.message });
   }
 });
 
@@ -98,7 +98,7 @@ router.get('/gstalltaxtypes/', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch tax types', error: e.message });
   }
 });
 
@@ -113,7 +113,7 @@ router.get('/Get_FeesByStudent_Fees_ID/:Student_Fees_ID', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch fees by fee id', error: e.message });
   }
 });
 
@@ -126,7 +126,7 @@ router.get('/Edit_FeesByReceipt_ID/:Receipt_Id', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to edit fees by receipt id', error: e.message });
   }
 });
 
@@ -139,7 +139,7 @@ router.get('/Delete_FeesByReceipt_ID/:Receipt_Id', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to delete fees by receipt id', error: e.message });
   }
 });
 
@@ -153,7 +153,7 @@ router.get('/Get_FeesByReceipt_ID/:Receipt_Id', async (req, res) => {
     res.json(result[0]); // Return the first result set
   } catch (e) {
     console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    res.status(500).json({ success: false, message: 'Failed to fetch fees by receipt id', error: e.message });
   }
 });
 // Get_Tax_Reports
@@ -198,16 +198,21 @@ router.get('/Get_Tax_Reports', async (req, res, next) => {
 // Update_Fee[]
 router.post('/Update_FeesByReceipt_ID', async (req, res) => {
   try {
-    console.log("req.body", req.body);
+    console.log("Update_FeesByReceipt_ID - req.body:", JSON.stringify(req.body, null, 2));
     
     const { updatedData } = req.body;
-    const result = await Fees.Update_FeesByReceipt_ID(updatedData);
-    console.log("result[0]", result);
+    const result = await Fees.Update_FeesByReceipt_ID(updatedData, req.userId);
+    console.log("Update_FeesByReceipt_ID - Result:", result);
 
     res.json(result[0]); // Return the first result set
   } catch (e) {
-    console.error('Get Exams Error:', e);
-    res.status(500).json({ success: false, message: 'Failed to fetch exams', error: e.message });
+    console.error('Update Fee Error Detail:', e);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update fee', 
+      error: e.message,
+      detail: e.sqlMessage || e.code // Include SQL error if available
+    });
   }
 });
 

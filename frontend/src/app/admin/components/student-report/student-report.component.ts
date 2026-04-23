@@ -80,7 +80,7 @@ showMoreOptions: boolean = false;
   totalEntries = '';
   tableData: any[] = [];
   // Pagination
-  pageSize = 10;
+  pageSize = 12;
   currentPage = 1;
   totalRecords = 0;
   Math = Math;

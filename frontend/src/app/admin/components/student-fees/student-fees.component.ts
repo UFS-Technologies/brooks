@@ -152,57 +152,53 @@ export class StudentFeesComponent {
   }
 
   loadReceiptFeesList(): void {
-    this.Get_All_PaymentMode();
     const Receipt_id = this.feesDetails?.get('Receipt_Id')?.value;
-    if (Receipt_id) {
+    if (!Receipt_id) {
+      console.warn('Receipt_Id not available in feesDetails');
+      return;
+    }
+
+    // Fetch payment modes first to ensure we can map them
+    this.feesService.Get_All_PaymentMode().subscribe((paymentModes) => {
+      this.allPaymentMode = paymentModes;
+      
       this.feesService.Get_FeesByReceipt_ID(Receipt_id).subscribe(
         (res) => {
           console.log('Fees list response:', res);
-          console.log('allPaymentMode:', this.allPaymentMode);
-
-          const selectedPaymentmode = res[0].Payment_mode;
-
-          const paymentMode = this.allPaymentMode.find(
-            (pm: any) =>
-              pm.Payment_Name.toUpperCase() ===
-              selectedPaymentmode.toUpperCase()
-          );
-
-          console.log('paymentMode', paymentMode);
-          if (paymentMode && paymentMode.Payment_Id) {
-            this.getAccounts(paymentMode.Payment_Id);
-          } else {
-            console.warn('Payment mode not found. Skipping getAccounts.');
-          }
-
-          // Transform raw response into editable structure
-          this.feesList = res.map((fee: any) => {
-            const rawDate = fee.Payment_Date; // Raw date from response
-            const date = new Date(rawDate); // Create a Date object from it
-
-            // Adjust the date to local timezone
-            const localDate = new Date(
-              date.getTime() - date.getTimezoneOffset() * 60000
+          
+          if (res.length > 0) {
+            const selectedPaymentmode = res[0].Payment_mode;
+            const paymentMode = this.allPaymentMode.find(
+              (pm: any) =>
+                pm.Payment_Name.toUpperCase() === (selectedPaymentmode || '').toUpperCase()
             );
-            return {
-              ...fee,
-              tempPaidAmount: parseFloat(fee.Amount),
-              Payment_Date: localDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-              Payment_Mode: fee.Payment_mode || '',
-              Transaction_ID: fee.Transaction_ID || '',
-              Account_Id: Number(fee.Account_Id) || null,
-              Tax_Type_Id: Number(fee.Tax_Type_Id) || null,
-              Payment_Id: paymentMode?.Payment_Id || null,
-            };
-          });
+
+            if (paymentMode && paymentMode.Payment_Id) {
+              this.getAccounts(paymentMode.Payment_Id);
+            }
+
+            this.feesList = res.map((fee: any) => {
+              const date = new Date(fee.Payment_Date);
+              const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+              
+              return {
+                ...fee,
+                tempPaidAmount: parseFloat(fee.Amount),
+                Payment_Date: localDate.toISOString().split('T')[0],
+                Payment_Mode: fee.Payment_mode || '',
+                Transaction_ID: fee.Transaction_ID || '',
+                Account_Id: Number(fee.Account_Id) || null,
+                Tax_Type_Id: Number(fee.Tax_Type_Id) || null,
+                Payment_Id: paymentMode?.Payment_Id || null,
+              };
+            });
+          }
         },
         (err) => {
           console.error('Error loading fee list:', err);
         }
       );
-    } else {
-      console.warn('Receipt_Id not available in feesDetails');
-    }
+    });
   }
   updateFee() {
     if (this.feesList.length > 0 && this.feesList[0].Receipt_Id > 0) {
@@ -227,19 +223,23 @@ export class StudentFeesComponent {
         sgst = gst / 2;
       }
 
+      const feeData = this.feesList[0];
+      const selectedPaymentId = feeData.Payment_Id;
+      const paymentMode = this.allPaymentMode.find(
+        (pm: any) => +pm.Payment_Id === +selectedPaymentId
+      );
+
       const updatedFee = {
-        
-        Student_Id: this.feesList[0].Student_Id,
-        Amount: this.feesList[0].tempPaidAmount,
-        Entry_Date: this.feesList[0].Entry_Date,
-        User_Id: this.feesList[0].User_Id,
-        Branch: this.feesList[0].Branch,
-        Account_Id: this.feesList[0].Account_Id,
-        Payment_mode: this.feesList[0].Payment_Mode || '', // mapped correctly
-        Transaction_ID: this.feesList[0].Transaction_ID,
-        //Voucher_Number: this.feesList[0].Voucher_Number,
-        // DeleteStatus: this.feesList[0].DeleteStatus,
-        Tax_Type_Id: this.feesList[0].Tax_Type_Id, //Tax_Type_Id:this.selectedtaxtypes?.Tax_Type_Id,
+        Receipt_Id: feeData.Receipt_Id,
+        Student_Id: feeData.Student_Id,
+        Amount: feeData.tempPaidAmount,
+        Entry_Date: feeData.Entry_Date || feeData.entry_date || feeData.entry_Date,
+        User_Id: feeData.User_Id || feeData.user_id || feeData.User_id,
+        Branch: feeData.Branch || feeData.branch || 0,
+        Account_Id: feeData.Account_Id,
+        Payment_mode: paymentMode ? paymentMode.Payment_Name : (feeData.Payment_Mode || feeData.Payment_mode || ''),
+        Transaction_ID: feeData.Transaction_ID,
+        Tax_Type_Id: feeData.Tax_Type_Id,
         Netvalue: netValue,
         Gstpers: gstpers,
         Cgstpers: cgstpers,
@@ -247,8 +247,8 @@ export class StudentFeesComponent {
         Gst: gst,
         Cgst: cgst,
         Sgst: sgst,
-        Payment_Date: this.feesList[0].Payment_Date,
-        Fine_Amount: this.calculateFine(this.feesList[0])
+        Payment_Date: feeData.Payment_Date,
+        Fine_Amount: this.calculateFine(feeData)
       };
       this.feesService.Update_FeesByReceipt_ID(updatedFee).subscribe(
         (res) => {

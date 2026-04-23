@@ -93,8 +93,8 @@ const Fees = {
       throw err;
     }
   },
-   Update_FeesByReceipt_ID: async function (updatedData) {
-    console.log("Update_FeesByReceipt_ID called with data:", updatedData);
+  Update_FeesByReceipt_ID: async function (updatedData, userId) {
+    console.log("Update_FeesByReceipt_ID called with data:", JSON.stringify(updatedData, null, 2), "and userId:", userId);
 
     const {
       Receipt_Id,
@@ -106,8 +106,6 @@ const Fees = {
       Account_Id,
       Payment_mode,
       Transaction_ID,
-      //Voucher_Number,
-      //DeleteStatus
       Tax_Type_Id,
       Netvalue,
       Gstpers,
@@ -120,12 +118,23 @@ const Fees = {
       Fine_Amount
     } = updatedData;
 
-    return executeTransaction("Update_FeesByReceipt_ID", [
+    function toMySQLDateTime(dateStr) {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      const pad = (n) => (n < 10 ? '0' + n : n);
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    const formattedEntryDate = toMySQLDateTime(Entry_Date);
+    const formattedPaymentDate = toMySQLDateTime(Payment_Date);
+
+    const params = [
       Receipt_Id,
       Student_Id,
       Amount,
-      Entry_Date,
-      User_Id,
+      formattedEntryDate,
+      User_Id || userId,
       Branch,
       Account_Id,
       Payment_mode,
@@ -138,12 +147,13 @@ const Fees = {
       Gst,
       Cgst,
       Sgst,
-      Payment_Date,
+      formattedPaymentDate,
       Fine_Amount || 0
-      // Voucher_Number,
-      // DeleteStatus
+    ];
 
-    ]);
+    console.log("Update_FeesByReceipt_ID - Final Parameters:", params);
+
+    return executeTransaction("Update_FeesByReceipt_ID", params);
   },
   Get_FeesByStudentCourse: async function (studentId, courseId) {
     return getmultipleSP("Get_FeesByStudentCourse", [studentId, courseId]);
