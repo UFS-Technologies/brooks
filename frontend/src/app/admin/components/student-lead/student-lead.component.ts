@@ -173,7 +173,7 @@ export class StudentLeadComponent implements OnInit {
 
   Total_Entries: number = 0;
   currentPage: number = 1;
-  pageSize: number = 10;
+  pageSize: number = 20;
   view = 'list';
   searchTerm: string = '';
   searchTimeout: any;
