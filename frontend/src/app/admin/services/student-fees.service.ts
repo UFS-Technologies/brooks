@@ -134,10 +134,8 @@ export class StudentFeesService {
        { updatedData: fees }
     );
   }
-  //  Update_FeesByReceipt_ID(fees: any): Observable<any> {
-  //   return this.http.post<any>(
-  //      environment.BasePath + 'Fees/Save_Student_Fees_Details/',
-  //     fees
-  //   );
-  // }
+
+  Get_Late_Fee_Amount(): Observable<any> {
+    return this.http.get<any>(`${environment.BasePath}LateFee/Get_Late_Fee_Amount`);
+  }
 }

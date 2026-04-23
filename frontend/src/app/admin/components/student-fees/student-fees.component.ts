@@ -109,8 +109,9 @@ export class StudentFeesComponent {
   payFeeStatus: boolean = false;
   selectedAccount: any = {};
   selectedtaxtypes: any = {};
-  finePerDay: number = 0; // Set a default fine amount, e.g., flat fine or per day. Let's use 500 flat fine for simplicity.
-  defaultFine: number = 350;
+  finePerDay: number = 0;
+  defaultFine: number = 0; // Will be set from DB
+
 
   Tax_type_Id: number = 1; // default value
   Tax_type_name: string = 'With Tax'; // default value
@@ -130,7 +131,23 @@ export class StudentFeesComponent {
     } else {
       this.loadReceiptFeesList();
     }
+    this.fetchFineAmount();
   }
+
+  fetchFineAmount() {
+    this.feesService.Get_Late_Fee_Amount().subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.defaultFine = res.amount;
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching fine amount:', err);
+        this.defaultFine = 200; // Fallback to ₹200 if DB call fails
+      }
+    });
+  }
+
 
   initForm(): void {
     this.feesForm = this.fb.group({
@@ -631,36 +648,35 @@ export class StudentFeesComponent {
   }
 
   onCancel(): void {
-    const studentId = this.feesList[0].Student_ID || this.feesList[0].Student_Id;
+    const studentId = this.feesList[0]?.Student_ID || this.feesList[0]?.Student_Id;
     if (studentId) {
       this.cancel.emit(studentId);
     } else {
-      this.cancel.emit(0); // Emit a fallback/default number to avoid type error
+      this.cancel.emit(0);
     }
   }
 
   onUpdateCancel(): void {
-    console.log('Canceling fee payment', this.feesList[0].Student_Id);
-
-    const studentId = this.feesList[0].Student_Id;
+    const studentId = this.feesList[0]?.Student_ID || this.feesList[0]?.Student_Id;
     if (studentId) {
       this.cancel.emit(studentId);
     } else {
-      this.cancel.emit(0); // Emit a fallback/default number to avoid type error
+      this.cancel.emit(0);
     }
   }
 
   calculateFine(fee: any): number {
-    if (!fee.Due_Date || !fee.Payment_Date) return 0;
+    if (!fee.Due_Date) return 0;
     
     const dueDate = new Date(fee.Due_Date);
-    const paymentDate = new Date(fee.Payment_Date);
+    const today = new Date();
     
     // Reset time components for accurate date comparison
     dueDate.setHours(0, 0, 0, 0);
-    paymentDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-    if (paymentDate > dueDate) {
+    // If today is after the due date, apply fine
+    if (today > dueDate) {
       return this.defaultFine;
     }
     return 0;

@@ -32,6 +32,8 @@ const FeesRouter = require('./routes/fees');
 const ExpenseRouter = require('./routes/Expense');
 const ReportsRouter = require('./routes/Reports');
 const IncomeRouter = require('./routes/Income');
+const LateFeeRouter = require('./routes/LateFee');
+
 // Import cron jobs
 require('./helpers/croneJobs'); 
 
@@ -93,6 +95,8 @@ app.use('/Fees', FeesRouter)
 app.use('/Expense', ExpenseRouter);
 app.use('/Reports', ReportsRouter);
 app.use('/Income', IncomeRouter);
+app.use('/LateFee', LateFeeRouter);
+
 // 404 Error handler
 app.use((req, res, next) => {
   next(createError(404));
