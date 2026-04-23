@@ -7,31 +7,31 @@
             <h1 class="text-xl font-bold text-gray-800">Student : {{followUps.First_Name}} </h1>
             
             @if (mode === 'list') {
-            <div class="flex flex-wrap gap-1">
+            <nav class="student-action-tabs">
                 <button (click)="openStudentDocuments(followUps)" title="View Documents"
-                    class="flex items-center h-10 px-3 py-2 bg-transparent text-yellow-700 rounded-md hover:bg-yellow-50 transition-all duration-300 transform hover:scale-105">
-                    <span class="material-symbols-outlined mr-2">folder</span>
-                    <span class="font-medium text-sm">Documents</span>
+                    class="student-tab" [class.student-tab--active]="view === 'Student_Documents'">
+                    <span class="material-symbols-outlined student-tab__icon">folder</span>
+                    <span class="student-tab__label">Documents</span>
                 </button>
 
                 <button (click)="openAddExpense(followUps)" title="Expense"
-                    class="flex items-center h-10 px-3 py-2 bg-transparent text-indigo-700 rounded-md hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105">
-                    <span class="material-symbols-outlined mr-2">receipt_long</span>
-                    <span class="font-medium text-sm">Expense </span>
+                    class="student-tab" [class.student-tab--active]="view === 'Student_Expense'">
+                    <span class="material-symbols-outlined student-tab__icon">receipt_long</span>
+                    <span class="student-tab__label">Expense</span>
                 </button>
 
                 <button (click)="Student_Fees(followUps)" title="Student Fees"
-                    class="flex items-center h-10 px-3 py-2 bg-transparent text-orange-700 rounded-md hover:bg-orange-50 transition-all duration-300 transform hover:scale-105">
-                    <span class="material-symbols-outlined mr-2">payments</span>
-                    <span class="font-medium text-sm">Fees</span>
+                    class="student-tab" [class.student-tab--active]="view === 'Student_Fees'">
+                    <span class="material-symbols-outlined student-tab__icon">payments</span>
+                    <span class="student-tab__label">Fees</span>
                 </button>
 
                 <button *ngIf="isDelete" (click)="Delete_student(followUps)" title="Delete Student"
-                    class="flex items-center h-10 px-3 py-2 bg-transparent text-red-700 rounded-md hover:bg-red-50 transition-all duration-300 transform hover:scale-105">
-                    <span class="material-symbols-outlined mr-2">delete</span>
-                    <span class="font-medium text-sm">Delete</span>
+                    class="student-tab student-tab--delete">
+                    <span class="material-symbols-outlined student-tab__icon">delete</span>
+                    <span class="student-tab__label">Delete</span>
                 </button>
-            </div>
+            </nav>
             }
             }
         </div>
