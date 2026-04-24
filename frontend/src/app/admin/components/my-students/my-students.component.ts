@@ -64,15 +64,17 @@ export class MyStudentsComponent implements OnInit {
   courseList: any[] = [];
   batchList: any[] = [];
 
- displayedColumns = [
-  'Action',
-  'Student_ID',
-  'Name', 
-  'Email',
-  'Contact',
-  'Branch_Name',
-  'Entry_Date'
-];
+  displayedColumns = [
+    'Action',
+    'Student_ID',
+    'Name',
+    'Course',
+    'Batch',
+    'Email',
+    'Contact',
+    'Branch_Name',
+    'Entry_Date'
+  ];
 showMoreOptions: boolean = false;
 
   totalEntries = '';
@@ -166,6 +168,8 @@ const params = {
           ...item,
           Name: `${item.First_Name} ${item.Last_Name}`,
           Contact: item.Phone_Number,
+          Course: item.Course_Name,
+          Batch: item.Batch_Name,
         })) || [];
       },
       complete: () => (this.IsLoaded = true),
@@ -260,9 +264,10 @@ private generateStudentPDF(fullData: any[], base64Image?: string): void {
     index + 1,
     item.Student_ID,
     `${item.First_Name} ${item.Last_Name}`,
+    item.Course_Name,
+    item.Batch_Name,
     item.Email,
     item.Phone_Number,
-    item.Batch_Name,
     new Date(item.Entry_Date).toLocaleDateString('en-GB'),
   ]);
 
@@ -296,7 +301,7 @@ private generateStudentPDF(fullData: any[], base64Image?: string): void {
   doc.text(`Total Entries: ${totalEntries}`, pageCenter - 70, currentY);
   currentY += 5;
   autoTable(doc, {
-    head: [['#', 'Student ID', 'Name', 'Email', 'Contact', 'Batch', 'Entry Date']],
+    head: [['#', 'Student ID', 'Name', 'Course', 'Batch', 'Email', 'Contact', 'Entry Date']],
     body: formattedData,
     startY: currentY,
     styles: { fontSize: 8 },
@@ -360,9 +365,10 @@ exportToExcel(): void {
       const exportData = fullData.map((item: any) => ({
         'Student ID': item.Student_ID,
         Name: `${item.First_Name} ${item.Last_Name}`,
+        Course: item.Course_Name,
+        Batch: item.Batch_Name,
         Email: item.Email,
         Contact: item.Phone_Number,
-        Batch: item.Batch_Name,
         'Entry Date': new Date(item.Entry_Date).toLocaleDateString('en-GB')
       }));
 

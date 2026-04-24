@@ -1402,6 +1402,17 @@ console.log('this.feesForm', this.batch_Data);
           : true;
         console.log('this.course_Form: ', this.course_Form);
         let payload = { course: this.course_Form.getRawValue() };
+
+        // Sanitize payload — convert string booleans to integers and fix nulls
+        const c = payload.course;
+        c.Disable_Status = c.Disable_Status === true || c.Disable_Status === 'true' ? 1 : 0;
+        c.Live_Class_Enabled = c.Live_Class_Enabled === true || c.Live_Class_Enabled === 'true' ? 1 : 0;
+        c.Sections = Array.isArray(c.Sections) ? c.Sections : (c.Sections ? [c.Sections] : []);
+        c.Thumbnail_Name = (c.Thumbnail_Name === 'null' || c.Thumbnail_Name == null) ? '' : c.Thumbnail_Name;
+        c.Thumbnail_Path = (c.Thumbnail_Path === 'null' || c.Thumbnail_Path == null) ? '' : c.Thumbnail_Path;
+        c.ThumbnailVideo_Path = (c.ThumbnailVideo_Path === 'null' || c.ThumbnailVideo_Path == null) ? '' : c.ThumbnailVideo_Path;
+        c.ThumbnailVideo_Name = (c.ThumbnailVideo_Name === 'null' || c.ThumbnailVideo_Name == null) ? '' : c.ThumbnailVideo_Name;
+
         console.log('payload: ', payload);
 
         let totalFilesCount = 0;
