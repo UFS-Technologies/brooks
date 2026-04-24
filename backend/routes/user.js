@@ -454,6 +454,29 @@ router.get('/Get_Report_Student', async (req, res, next) => {
     res.status(500).json({ errors: { message: 'An error occurred while processing your request.' } });
   }
 });
+
+// Get_My_Students_Report
+router.get('/Get_My_Students_Report', async (req, res, next) => {
+  try {
+    const { Student_Search, Batch_Search, Course_Search, Start_Date, End_Date, PageNumber = 1, PageSize = 12, Staff_ID } = req.query;
+
+    const rows = await user.Get_My_Students_Report(
+      Student_Search,
+      Batch_Search,
+      Course_Search,
+      Start_Date,
+      End_Date,
+      parseInt(PageNumber),
+      parseInt(PageSize),
+      parseInt(Staff_ID)
+    );
+    res.json(rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: { message: 'An error occurred while processing your request.' } });
+  }
+});
 router.get('/Get_Outstanding_Student', async (req, res, next) => {
   try {
     const { Student_ID, Batch_ID, Course_ID, Start_Date, End_Date, PageNumber = 1, PageSize = 25 } = req.query;

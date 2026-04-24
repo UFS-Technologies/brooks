@@ -55,6 +55,7 @@ export class AuthComponent implements OnInit {
         if (success) {
           localStorage.setItem("Email", success[0].Email);
           localStorage.setItem("Name", success[0].First_Name);
+          localStorage.setItem("User_Id", success[0].Id);
           this.observable.setData('NavTitle', 'Student');
           this.observable.setData('Email', localStorage.getItem('Email'));
           this.observable.setData('Name', localStorage.getItem('Name'));

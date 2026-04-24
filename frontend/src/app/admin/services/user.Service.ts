@@ -143,6 +143,30 @@ export class user_Service {
             }
         });
     }
+
+    Get_My_Students_Report(
+        studentSearch: string,
+        batchSearch: string,
+        courseSearch: string,
+        fromDate: string,
+        toDate: string,
+        pageNumber: number,
+        pageSize: number,
+        staffId: number
+    ) {
+        return this.http.get(environment.BasePath + 'user/Get_My_Students_Report/', {
+            params: {
+                Student_Search: studentSearch || '',
+                Batch_Search: batchSearch || '',
+                Course_Search: courseSearch || '',
+                Start_Date: fromDate || '',
+                End_Date: toDate || '',
+                PageNumber: pageNumber.toString(),
+                PageSize: pageSize.toString(),
+                Staff_ID: staffId.toString()
+            }
+        });
+    }
     Get_Outstanding_Student(
         Student_ID: number,
         Batch_ID: number,

@@ -67,6 +67,7 @@ export class NavbarComponent implements OnInit {
       'Lead',
       'Import',
       'Student',
+      'My Students',
       'Expenses',
       'Income',
       'Staff',
@@ -178,6 +179,10 @@ export class NavbarComponent implements OnInit {
           ? 'assets/images/navbar/onlineTest-active.png'
           : 'assets/images/navbar/onlineTest.png';
       case 'Student':
+        return isActive
+          ? 'assets/images/navbar/student-active.png'
+          : 'assets/images/navbar/student.svg';
+      case 'My Students':
         return isActive
           ? 'assets/images/navbar/student-active.png'
           : 'assets/images/navbar/student.svg';

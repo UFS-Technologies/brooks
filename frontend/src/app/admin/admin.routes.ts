@@ -33,6 +33,7 @@ import { IncomeComponent } from './components/income/income.component';
 import { LeaveComponent } from './components/leave/leave.component';
 import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
 import { EnquiryConversionComponent } from './components/enquiry-conversion/enquiry-conversion.component';
+import { MyStudentsComponent } from './components/my-students/my-students.component';
 export const ADMIN_ROUTES: Routes = [
   {
     path: "",
@@ -213,6 +214,11 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Enquiry_Conversion',
     component: EnquiryConversionComponent,
     data: { breadcrumb: 'Enquiry Conversion' }
+  },
+  {
+    path: 'My_Students',
+    component: MyStudentsComponent,
+    data: { breadcrumb: 'My Students'}
   },
   {
     path: 'Enquiry_Summary',
