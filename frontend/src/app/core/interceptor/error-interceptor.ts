@@ -26,9 +26,12 @@ export class ErrorInterceptor implements HttpInterceptor {
             if ([401, 403].includes(err.status)) {
                 let user = localStorage.getItem('User_Type')
                 localStorage.clear();
-                if (user == '2') {
+                const userType = Number(user);
+                if (userType === 1 || userType === 2 || userType === 3) {
+                    this.router.navigateByUrl('auth');
+                } else if (userType === 4) { // Assuming 4 or something else for students if they ever use this
                     this.router.navigateByUrl('auth/user');
-                } else  {
+                } else {
                     this.router.navigateByUrl('auth');
                 }
             }

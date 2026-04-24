@@ -261,9 +261,12 @@ export class NavbarComponent implements OnInit {
         localStorage.clear();
         this.dataService.clearData();
 
-        if (this.user === '2') {
+        const userType = Number(this.user);
+        if (userType === 1 || userType === 2 || userType === 3) {
+          this.router.navigateByUrl('auth');
+        } else if (userType === 4) {
           this.router.navigateByUrl('auth/user');
-        } else if (this.user === '1') {
+        } else {
           this.router.navigateByUrl('auth');
         }
       }

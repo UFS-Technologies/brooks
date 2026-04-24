@@ -18,14 +18,13 @@ class PermissionsService {
       return true; 
     }
     if (localStorage['Access_Token']) {
-      if ( localStorage['User_Type']==1 ) {
-        this.router.navigateByUrl('/admin')
-
+      const userType = Number(localStorage['User_Type']);
+      if (userType === 1 || userType === 2 || userType === 3) {
+        this.router.navigateByUrl('/admin');
         return false;
-      }else{
-        this.router.navigateByUrl('/auth')
+      } else {
+        this.router.navigateByUrl('/auth');
         return false;
-
       }
     }
       

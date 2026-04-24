@@ -565,15 +565,19 @@ var user = {
         pageSize = pageSize || 12;
         const offset = (page - 1) * pageSize;
 
-        const baseQuery = `
-            FROM student s
-            INNER JOIN student_course sc ON s.Student_ID = sc.Student_ID
-            LEFT JOIN course_batch cb ON sc.Batch_ID = cb.Batch_ID
-            LEFT JOIN course c ON sc.Course_ID = c.Course_ID
-            WHERE s.Delete_Status = 0
-              AND IFNULL(sc.Delete_Status, 0) = 0
+        // Fetch user type to determine filtering logic
+        const [userRows] = await db.promise().query('SELECT User_Type_Id FROM users WHERE User_ID = ?', [staffId]);
+        const userTypeId = userRows?.[0]?.User_Type_Id;
+
+        let staffFilter = '';
+        let staffParams = [];
+
+        // Apply restriction ONLY if the user is a teacher (User_Type_Id = 2)
+        if (userTypeId === 2) {
+            staffFilter = `
               AND (
-                  sc.Batch_ID IN (
+                  s.To_User_Id = ?
+                  OR sc.Batch_ID IN (
                       SELECT tts.batch_id 
                       FROM teacher_time_slot tts 
                       JOIN course_teacher ct ON tts.CourseTeacher_ID = ct.CourseTeacher_ID 
@@ -598,6 +602,18 @@ var user = {
                       WHERE ct.Teacher_ID = ? AND IFNULL(tts.Delete_Status, 0) = 0 AND IFNULL(ct.Delete_Status, 0) = 0
                   )
               )
+            `;
+            staffParams = [staffId, staffId, staffId, staffId];
+        }
+
+        const baseQuery = `
+            FROM student s
+            INNER JOIN student_course sc ON s.Student_ID = sc.Student_ID
+            LEFT JOIN course_batch cb ON sc.Batch_ID = cb.Batch_ID
+            LEFT JOIN course c ON sc.Course_ID = c.Course_ID
+            WHERE s.Delete_Status = 0
+              AND IFNULL(sc.Delete_Status, 0) = 0
+              ${staffFilter}
               AND (? = '' OR s.First_Name LIKE CONCAT('%', ?, '%') OR s.Last_Name LIKE CONCAT('%', ?, '%') OR s.Email LIKE CONCAT('%', ?, '%') OR s.Phone_Number LIKE CONCAT('%', ?, '%'))
               AND (? = '' OR cb.Batch_Name LIKE CONCAT('%', ?, '%'))
               AND (? = '' OR c.Course_Name LIKE CONCAT('%', ?, '%'))
@@ -606,7 +622,7 @@ var user = {
         `;
 
         const params = [
-            staffId, staffId, staffId,
+            ...staffParams,
             studentSearch, studentSearch, studentSearch, studentSearch, studentSearch,
             batchSearch, batchSearch,
             courseSearch, courseSearch,

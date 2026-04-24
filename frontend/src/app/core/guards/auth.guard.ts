@@ -9,8 +9,8 @@ class PermissionsService {
 
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    console.log('ocalSt ', localStorage['Access_Token'] &&  localStorage['User_Type']);
-    if (localStorage['Access_Token'] &&  localStorage['User_Type']==1 ) {
+    const userType = Number(localStorage['User_Type']);
+    if (localStorage['Access_Token'] && (userType === 1 || userType === 2 || userType === 3)) {
       return true;
     }
     else {

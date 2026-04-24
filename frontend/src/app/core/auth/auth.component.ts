@@ -60,7 +60,7 @@ export class AuthComponent implements OnInit {
           this.observable.setData('Email', localStorage.getItem('Email'));
           this.observable.setData('Name', localStorage.getItem('Name'));
           localStorage.setItem("Access_Token", success['token']);
-          localStorage.setItem("User_Type", "1");
+          localStorage.setItem("User_Type", success[0].User_Type_Id);
           this.router.navigateByUrl("/admin");
         } else {
           this.showErrorDialog('Login failed. Please check your credentials.');
