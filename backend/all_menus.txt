@@ -1,0 +1,172 @@
+[
+  {
+    "Menu_ID": 1,
+    "Menu_Name": "Dashboard",
+    "Route": "/admin/dash"
+  },
+  {
+    "Menu_ID": 2,
+    "Menu_Name": "Course",
+    "Route": "/admin/course"
+  },
+  {
+    "Menu_ID": 3,
+    "Menu_Name": "Category",
+    "Route": "/admin/category"
+  },
+  {
+    "Menu_ID": 4,
+    "Menu_Name": "Staff",
+    "Route": "/admin/Faculty"
+  },
+  {
+    "Menu_ID": 5,
+    "Menu_Name": "Lead",
+    "Route": "/admin/Student_Lead"
+  },
+  {
+    "Menu_ID": 6,
+    "Menu_Name": "Student",
+    "Route": "/admin/student"
+  },
+  {
+    "Menu_ID": 7,
+    "Menu_Name": "Teacher Report",
+    "Route": "/admin/teacher_Report"
+  },
+  {
+    "Menu_ID": 8,
+    "Menu_Name": "Student attendance",
+    "Route": "/admin/student_Report"
+  },
+  {
+    "Menu_ID": 9,
+    "Menu_Name": "Levels",
+    "Route": "/admin/course_module"
+  },
+  {
+    "Menu_ID": 10,
+    "Menu_Name": "FeedBack",
+    "Route": "/admin/reviews"
+  },
+  {
+    "Menu_ID": 11,
+    "Menu_Name": "Student AppInfo",
+    "Route": "/admin/student_appInfo"
+  },
+  {
+    "Menu_ID": 12,
+    "Menu_Name": "Teacher attendance",
+    "Route": "/admin/Teacher_attendance"
+  },
+  {
+    "Menu_ID": 14,
+    "Menu_Name": "Upload Installment Data",
+    "Route": "/admin/payment_installment_file_import"
+  },
+  {
+    "Menu_ID": 15,
+    "Menu_Name": "Enrollment Upload",
+    "Route": "/admin/Course_Enrollment_Import"
+  },
+  {
+    "Menu_ID": 16,
+    "Menu_Name": "Expense Category",
+    "Route": "/admin/Expense_Category"
+  },
+  {
+    "Menu_ID": 17,
+    "Menu_Name": "Expense Type",
+    "Route": "/admin/Expense_Type"
+  },
+  {
+    "Menu_ID": 18,
+    "Menu_Name": "Expenses",
+    "Route": "/admin/Expenses"
+  },
+  {
+    "Menu_ID": 19,
+    "Menu_Name": "Income",
+    "Route": "/admin/Income"
+  },
+  {
+    "Menu_ID": 20,
+    "Menu_Name": "Student Reports",
+    "Route": "/admin/Student_Reports"
+  },
+  {
+    "Menu_ID": 21,
+    "Menu_Name": "Tax Reports",
+    "Route": "/admin/Tax_Reports"
+  },
+  {
+    "Menu_ID": 22,
+    "Menu_Name": "Exam Upload",
+    "Route": "/admin/Exam_Import"
+  },
+  {
+    "Menu_ID": 23,
+    "Menu_Name": "Studentfile upload",
+    "Route": "/admin/file-upload"
+  },
+  {
+    "Menu_ID": 24,
+    "Menu_Name": "Fees Total Outstanding",
+    "Route": "/admin/Fees_Total_Outstanding"
+  },
+  {
+    "Menu_ID": 25,
+    "Menu_Name": "Upcoming Installment",
+    "Route": "/admin/Upcoming_Installment"
+  },
+  {
+    "Menu_ID": 26,
+    "Menu_Name": "Due Instalment",
+    "Route": "/admin/Due_Instalment"
+  },
+  {
+    "Menu_ID": 61,
+    "Menu_Name": "Reports",
+    "Route": "/admin/Reports"
+  },
+  {
+    "Menu_ID": 1000,
+    "Menu_Name": "Status",
+    "Route": "/admin/Follow_up_Status"
+  },
+  {
+    "Menu_ID": 1001,
+    "Menu_Name": "Leave",
+    "Route": "/admin/Leave"
+  },
+  {
+    "Menu_ID": 1002,
+    "Menu_Name": "Work Report",
+    "Route": "/admin/Work_Report"
+  },
+  {
+    "Menu_ID": 1003,
+    "Menu_Name": "Import",
+    "Route": "/admin/Lead_Import"
+  },
+  {
+    "Menu_ID": 1004,
+    "Menu_Name": "Import",
+    "Route": "/admin/Import"
+  },
+  {
+    "Menu_ID": 1005,
+    "Menu_Name": "Enquiry Source",
+    "Route": "/admin/Enquiry_Source"
+  },
+  {
+    "Menu_ID": 1006,
+    "Menu_Name": "Enquiry Conversion",
+    "Route": "/admin/Enquiry_Conversion"
+  },
+  {
+    "Menu_ID": 1007,
+    "Menu_Name": "Enquiry Summary",
+    "Route": "/admin/Enquiry_Summary"
+  }
+]

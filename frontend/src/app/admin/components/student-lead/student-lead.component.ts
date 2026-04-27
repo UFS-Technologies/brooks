@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { student_Service } from '../../services/student.Service';
+import { EmailTemplateService } from '../../services/email-template.service';
 import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
 import { MatDialog } from '@angular/material/dialog';
 import { student } from '../../../core/models/student';
@@ -114,6 +115,7 @@ export class StudentLeadComponent implements OnInit {
   student_Service_ = inject(student_Service);
   StudentFees_Service_ = inject(StudentFeesService);
   private fb = inject(FormBuilder);
+  private emailTemplateService = inject(EmailTemplateService);
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
   dialogBox = inject(MatDialog);
@@ -150,6 +152,8 @@ export class StudentLeadComponent implements OnInit {
   showHistoryBox: boolean = false;
   followUpHistory: any[] = [];
   isLoadingHistory: boolean = false;
+  emailTemplates: any[] = [];
+  selectedTemplateId: number | null = null;
 
   nextFollowUpDate: string = '';
   remark: string = '';
@@ -313,6 +317,7 @@ export class StudentLeadComponent implements OnInit {
     this.loggedInUserId = userId ? Number(userId) : null;
     this.pageLoad();
     this.initForm();
+    this.loadEmailTemplates();
     const today = new Date();
     this.todayString = today.toISOString().split('T')[0];
     this.feesForm.get('Total_Amount')?.valueChanges.subscribe((total) => {
@@ -506,6 +511,40 @@ export class StudentLeadComponent implements OnInit {
     this.receiptForm.reset();
     this.selectedReceipt = null;
     this.isEditingReceipt = false;
+  }
+
+  loadEmailTemplates() {
+    this.emailTemplateService.searchTemplates('').subscribe((res) => {
+      this.emailTemplates = res || [];
+    });
+  }
+
+  sendSelectedEmail(email: string, studentName: string) {
+    console.log('Attempting to send email:', { email, templateId: this.selectedTemplateId });
+    if (this.selectedTemplateId && email) {
+      const placeholders = {
+        'Student Name': studentName,
+        'Lead Name': studentName
+      };
+      this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId, email, placeholders).subscribe({
+        next: (res) => {
+          console.log('Email sent successfully response:', res);
+          this.dialogBox.open(DialogBox_Component, {
+            panelClass: 'Dialogbox-Class',
+            data: { Message: 'Email sent successfully', Type: 'false' },
+          });
+        },
+        error: (err) => {
+          console.error('Error sending email:', err);
+          this.dialogBox.open(DialogBox_Component, {
+            panelClass: 'Dialogbox-Class',
+            data: { Message: 'Failed to send email', Type: 'false' },
+          });
+        }
+      });
+    } else {
+      console.warn('Skipping email send: missing email or template ID');
+    }
   }
 
   onSaveStudent(event: any): void {
@@ -3170,11 +3209,15 @@ private getStudentStatusValue(student: any): string {
           tap((res) => {
             studentPayload.Profile_Photo_Path = res.key;
           }),
-          switchMap(() => saveStudentAndFollowUp$(studentPayload))
+          switchMap(() => saveStudentAndFollowUp$(studentPayload).pipe(
+            tap(() => this.sendSelectedEmail(studentPayload.Email, studentPayload.First_Name))
+          ))
         )
         .subscribe();
     } else {
-      saveStudentAndFollowUp$(studentPayload).subscribe();
+      saveStudentAndFollowUp$(studentPayload).subscribe(() => {
+        this.sendSelectedEmail(studentPayload.Email, studentPayload.First_Name);
+      });
     }
   }
 
@@ -3243,6 +3286,13 @@ private getStudentStatusValue(student: any): string {
             panelClass: 'Dialogbox-Class',
             data: { Message: 'Follow-up saved successfully!', Type: 'false' },
           });
+
+          if (this.selectedStudentForFollowup) {
+            this.sendSelectedEmail(
+              this.selectedStudentForFollowup.Email,
+              this.selectedStudentForFollowup.First_Name
+            );
+          }
 
           // Reset form and go back to list
           this.resetFollowUpForm();

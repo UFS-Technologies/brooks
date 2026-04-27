@@ -385,7 +385,21 @@
         </label>
         <input type="date" id="next-followup-date" [(ngModel)]="nextFollowUpDate" name="nextFollowUpDate"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          [min]="getCurrentDate()">
+          [min]="todayString">
+      </div>
+
+      <!-- Email Template Selection -->
+      <div class="space-y-2">
+        <label for="email-template-lead" class="block text-sm font-medium text-gray-700">
+          Email Template
+        </label>
+        <select id="email-template-lead" [(ngModel)]="selectedTemplateId" name="selectedTemplateId"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option [ngValue]="null">-- Select Template To Send --</option>
+          <option *ngFor="let template of emailTemplates" [value]="template.Template_ID">
+            {{ template.Template_Name }}
+          </option>
+        </select>
       </div>
     </div>
 

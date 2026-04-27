@@ -26,6 +26,7 @@ import {
 import { student } from '../../../core/models/student';
 import { StudentFeesComponent } from '../student-fees/student-fees.component';
 import { student_Service } from '../../services/student.Service';
+import { EmailTemplateService } from '../../services/email-template.service';
 import { IConfig, ICountry } from 'ngx-countries-dropdown';
 import { environment } from '../../../../environments/environment';
 import {
@@ -139,6 +140,8 @@ export class StudentlistComponent {
   isLoadingHistory: boolean = false;
   feeTypes = ['OneTime', 'TwoTime', 'ThreeTime', 'FourTime'];
   form: FormGroup;
+  emailTemplates: any[] = [];
+  selectedTemplateId: number | null = null;
   feeAmount: number | null = null;
   enquirySources: any[] = [];
   newBatchId: any = 0;
@@ -161,6 +164,7 @@ export class StudentlistComponent {
   private courseSubscription?: Subscription;
   StudentFees_Service_ = inject(StudentFeesService);
   student_Service_ = inject(student_Service);
+  private emailTemplateService = inject(EmailTemplateService);
   private fb = inject(FormBuilder);
   private url = inject(ActivatedRoute);
   totals: any;
@@ -376,6 +380,34 @@ export class StudentlistComponent {
         console.log('Permissions:', this.isEdit, this.isSave, this.isDelete);
       }
     });
+
+    this.loadEmailTemplates();
+  }
+
+  loadEmailTemplates() {
+    this.emailTemplateService.searchTemplates('').subscribe((res) => {
+      this.emailTemplates = res || [];
+    });
+  }
+
+  sendSelectedEmail(email: string, studentName: string, courseName: string = '') {
+    if (this.selectedTemplateId && email) {
+      const placeholders = {
+        'Student Name': studentName,
+        'Lead Name': studentName,
+        'Course Name': courseName
+      };
+      this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId, email, placeholders).subscribe({
+        next: (res) => {
+          console.log('Email sent successfully', res);
+          this.dialogBox.open(DialogBox_Component, {
+            panelClass: 'Dialogbox-Class',
+            data: { Message: 'Email sent successfully', Type: 'false' },
+          });
+        },
+        error: (err) => console.error('Error sending email', err)
+      });
+    }
   }
 
   loadImageAsBase64(url: string): Promise<string> {
@@ -1336,6 +1368,13 @@ doc.text(
             data: { Message: 'Follow-up saved successfully!', Type: 'false' },
           });
 
+          if (this.selectedStudentForFollowup) {
+            this.sendSelectedEmail(
+              this.selectedStudentForFollowup.Email,
+              this.selectedStudentForFollowup.First_Name
+            );
+          }
+
           // Reset form and go back to list
           this.resetFollowUpForm();
           this.view = 'list';
@@ -1620,7 +1659,11 @@ doc.text(
           }),
           switchMap(() =>
             saveStudentAndFollowUp$(studentPayload).pipe(
-              tap((res) => this.save.emit(res)) // emit here
+              tap((res) => {
+                this.save.emit(res);
+                const courseName = this.allCourse.find(c => c.Course_ID === this.student_Course.get('Course_ID')?.value)?.Course_Name || '';
+                this.sendSelectedEmail(studentPayload.Email, studentPayload.First_Name, courseName);
+              }) // emit here
             )
           )
         )
@@ -1628,6 +1671,8 @@ doc.text(
     } else {
       saveStudentAndFollowUp$(studentPayload).subscribe((res) => {
         this.save.emit(res);
+        const courseName = this.allCourse.find(c => c.Course_ID === this.student_Course.get('Course_ID')?.value)?.Course_Name || '';
+        this.sendSelectedEmail(studentPayload.Email, studentPayload.First_Name, courseName);
       });
     }
   }

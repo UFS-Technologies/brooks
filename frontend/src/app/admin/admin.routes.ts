@@ -34,7 +34,9 @@ import { LeaveComponent } from './components/leave/leave.component';
 import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
 import { EnquiryConversionComponent } from './components/enquiry-conversion/enquiry-conversion.component';
 import { MyStudentsComponent } from './components/my-students/my-students.component';
+import { EmailTemplateComponent } from './components/email-template/email-template.component';
 export const ADMIN_ROUTES: Routes = [
+
   {
     path: "",
     pathMatch: "full",
@@ -225,4 +227,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('./components/enquiry-summary/enquiry-summary.component').then(c => c.EnquirySummaryComponent),
     data: { breadcrumb: 'Enquiry Summary'}
   },
+  {
+    path: 'email-templates',
+    component: EmailTemplateComponent,
+    data: { breadcrumb: 'Email Templates' }
+  },
 ];
+

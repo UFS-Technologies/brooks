@@ -11,8 +11,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `Search_student_lead`(
 )
 BEGIN
     DECLARE offset_value INT;
+    DECLARE v_is_special_admin INT DEFAULT 0;
+    
     SET search_term = CONCAT('%', search_term, '%');
     SET offset_value = (page_number - 1) * page_size;
+
+    SELECT 1 INTO v_is_special_admin 
+    FROM users 
+    WHERE User_ID = p_user_id AND Email = 'admin_user@G.COM' LIMIT 1;
 
     IF enrollment_status IS NULL THEN SET enrollment_status = 'all'; END IF;
     IF followUpStatus IS NULL THEN SET followUpStatus = 'all'; END IF;
@@ -68,7 +74,7 @@ BEGIN
             OR fs.Status_Name = CONVERT(followUpStatus USING utf8mb4) COLLATE utf8mb4_unicode_ci
         )
         AND (
-            s.To_User_Id IN (SELECT staff_id FROM allowed_staff)
+            v_is_special_admin = 1 OR s.To_User_Id IN (SELECT staff_id FROM allowed_staff)
         );
 
     SELECT
@@ -132,7 +138,7 @@ BEGIN
             OR fs.Status_Name = CONVERT(followUpStatus USING utf8mb4) COLLATE utf8mb4_unicode_ci
         )
         AND (
-            s.To_User_Id IN (SELECT staff_id FROM allowed_staff)
+            v_is_special_admin = 1 OR s.To_User_Id IN (SELECT staff_id FROM allowed_staff)
         )
     GROUP BY s.Student_ID
     ORDER BY s.Roll_No DESC

@@ -33,6 +33,8 @@ const ExpenseRouter = require('./routes/Expense');
 const ReportsRouter = require('./routes/Reports');
 const IncomeRouter = require('./routes/Income');
 const LateFeeRouter = require('./routes/LateFee');
+const EmailTemplateRouter = require('./routes/email_template');
+
 
 // Import cron jobs
 require('./helpers/croneJobs'); 
@@ -96,6 +98,8 @@ app.use('/Expense', ExpenseRouter);
 app.use('/Reports', ReportsRouter);
 app.use('/Income', IncomeRouter);
 app.use('/LateFee', LateFeeRouter);
+app.use('/EmailTemplate', EmailTemplateRouter);
+
 
 // 404 Error handler
 app.use((req, res, next) => {

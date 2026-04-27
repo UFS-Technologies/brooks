@@ -45,6 +45,26 @@
             class="w-full border border-gray-300 p-2 rounded" />
         </div>
 
+        <!-- Recipient Email (Required if template selected) -->
+        <div *ngIf="selectedTemplateId">
+          <label for="recipientEmail" class="block font-medium mb-1 text-blue-600">Recipient Email:</label>
+          <input type="email" id="recipientEmail" [(ngModel)]="recipientEmail" name="recipientEmail" required
+            placeholder="Enter email to send template" 
+            class="w-full border border-blue-300 p-2 rounded bg-blue-50" />
+        </div>
+
+        <!-- Email Template -->
+        <div>
+          <label for="emailTemplateIncome" class="block font-medium mb-1">Email Template:</label>
+          <select id="emailTemplateIncome" [(ngModel)]="selectedTemplateId" name="selectedTemplateId"
+            class="w-full border border-gray-300 p-2 rounded">
+            <option [ngValue]="null">-- Select Template To Send --</option>
+            <option *ngFor="let template of emailTemplates" [value]="template.Template_ID">
+              {{ template.Template_Name }}
+            </option>
+          </select>
+        </div>
+
         <div class="space-y-2">
           <label for="Branch" class="block text-sm font-medium text-gray-700">
             Account

@@ -27,6 +27,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { log } from 'node:console';
 import { SharedModule } from '../../../shared/shared.module';
+import { student_Service } from '../../services/student.Service';
+import { EmailTemplateService } from '../../services/email-template.service';
 interface InstallmentEntry {
   Student_Fees_ID: any;
   Student_ID: any;
@@ -111,6 +113,10 @@ export class StudentFeesComponent {
   selectedtaxtypes: any = {};
   finePerDay: number = 0;
   defaultFine: number = 0; // Will be set from DB
+  emailTemplates: any[] = [];
+  selectedTemplateId: number | null = null;
+  studentService = inject(student_Service);
+  emailTemplateService = inject(EmailTemplateService);
 
 
   Tax_type_Id: number = 1; // default value
@@ -132,6 +138,39 @@ export class StudentFeesComponent {
       this.loadReceiptFeesList();
     }
     this.fetchFineAmount();
+    this.loadEmailTemplates();
+  }
+
+  loadEmailTemplates() {
+    this.emailTemplateService.searchTemplates('').subscribe((res) => {
+      this.emailTemplates = res || [];
+    });
+  }
+
+  sendSelectedEmail(studentId: number, studentName: string = '', courseName: string = '') {
+    if (this.selectedTemplateId && studentId) {
+      // We might need to fetch the student's email first if it's not available
+      this.studentService.Get_student(studentId).subscribe((studentData: any) => {
+        const student = studentData?.[0]?.[0];
+        if (student && student.Email) {
+          const placeholders = {
+            'Student Name': student.First_Name || studentName,
+            'Lead Name': student.First_Name || studentName,
+            'Course Name': courseName
+          };
+          this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId!, student.Email, placeholders).subscribe({
+            next: (res) => {
+              console.log('Email sent successfully', res);
+              this.dialogBox.open(DialogBox_Component, {
+                panelClass: 'Dialogbox-Class',
+                data: { Message: 'Email sent successfully', Type: 'false' },
+              });
+            },
+            error: (err) => console.error('Error sending email', err)
+          });
+        }
+      });
+    }
   }
 
   fetchFineAmount() {
@@ -265,7 +304,8 @@ export class StudentFeesComponent {
         Cgst: cgst,
         Sgst: sgst,
         Payment_Date: feeData.Payment_Date,
-        Fine_Amount: this.calculateFine(feeData)
+        Fine_Amount: this.calculateFine(feeData),
+        Course_Name: feeData.Course_Name || feeData.course_Name || feeData.course_Name_ || ''
       };
       this.feesService.Update_FeesByReceipt_ID(updatedFee).subscribe(
         (res) => {
@@ -278,6 +318,7 @@ export class StudentFeesComponent {
               Heading: 'UPDATED',
             },
           });
+          this.sendSelectedEmail(updatedFee.Student_Id, '', updatedFee.Course_Name);
           this.onUpdateCancel();
           this.selectedTabIndex = 1;
         },
@@ -545,6 +586,8 @@ export class StudentFeesComponent {
                 Heading: 'UPDATED',
               },
             });
+            const studentId = this.feesList[0]?.Student_ID || this.feesList[0]?.Student_Id;
+            this.sendSelectedEmail(studentId, '', this.feesList[0]?.Course_Name);
             this.onCancel();
             this.selectedTabIndex = 0;
           });
@@ -637,6 +680,8 @@ export class StudentFeesComponent {
             });
 
            this.onCancel();
+           const studentId = this.feesList[0]?.Student_ID || this.feesList[0]?.Student_Id;
+           this.sendSelectedEmail(studentId, '', this.feesList[0]?.Course_Name);
           });
         console.log(installmentEntries);
       }

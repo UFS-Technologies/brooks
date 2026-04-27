@@ -1,0 +1,17 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Get_user_Menus`(IN User_Id_ INT)
+BEGIN
+  SELECT 
+    m.Menu_ID,
+    m.Menu_Name,
+    m.Route,
+    m.Parent_Menu_ID,
+    m.Delete_Status,
+    coalesce(ums.IsView,0) as IsView,
+    coalesce(ums.IsSave,0) as IsSave,
+    coalesce(ums.IsEdit,0) as IsEdit,
+   coalesce(ums.IsDelete,0) as IsDelete
+  FROM menu m
+  inner JOIN user_menu_selection ums 
+    ON ums.Menu_ID = m.Menu_ID AND ums.User_Id = User_Id_
+  WHERE m.Delete_Status = FALSE and IsView=1 order by Menu_ID;
+END

@@ -6,6 +6,7 @@ import { DialogBox_Component } from '../../../shared/components/DialogBox/Dialog
 import { CommonModule } from '@angular/common';
 import { StudentFeesService } from '../../services/student-fees.service';
 import { ExpenseTypeService } from '../../services/expense-type.service';
+import { EmailTemplateService } from '../../services/email-template.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -22,6 +23,7 @@ export class IncomeComponent implements OnInit {
   selectedExpenseType: any = '';
   amount: number = 0;
   description: string = '';
+  recipientEmail: string = '';
   dialogBox = inject(MatDialog);
   Expense_Type: any[] = [];
   incomeId: number = 0;
@@ -30,12 +32,15 @@ export class IncomeComponent implements OnInit {
   isEdit: boolean = false;
   isSave: boolean = false;
   isDelete: boolean = false;
+  emailTemplates: any[] = [];
+  selectedTemplateId: number | null = null;
   url = inject(ActivatedRoute);
 
   constructor(
     private incomeApi: IncomeService,
     private feesService: StudentFeesService,
-    private expenseTypeService: ExpenseTypeService
+    private expenseTypeService: ExpenseTypeService,
+    private emailTemplateService: EmailTemplateService
   ) {}
 
   ngOnInit() {
@@ -51,6 +56,33 @@ export class IncomeComponent implements OnInit {
         this.isDelete = receivedItem?.IsDelete || false;
       }
     });
+
+    this.loadEmailTemplates();
+  }
+
+  loadEmailTemplates() {
+    this.emailTemplateService.searchTemplates('').subscribe((res) => {
+      this.emailTemplates = res || [];
+    });
+  }
+
+  sendSelectedEmail(email: string, studentName: string = '') {
+    if (this.selectedTemplateId && email) {
+      const placeholders = {
+        'Student Name': studentName,
+        'Lead Name': studentName
+      };
+      this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId, email, placeholders).subscribe({
+        next: (res) => {
+          console.log('Email sent successfully', res);
+          this.dialogBox.open(DialogBox_Component, {
+            panelClass: 'Dialogbox-Class',
+            data: { Message: 'Email sent successfully', Type: 'false' },
+          });
+        },
+        error: (err) => console.error('Error sending email', err)
+      });
+    }
   }
 
   getAccounts(): void {
@@ -89,6 +121,7 @@ export class IncomeComponent implements OnInit {
           data: { Message: 'Income saved successfully!', Type: 'false' },
         });
 
+        this.sendSelectedEmail(this.recipientEmail);
         this.resetForm();
         this.Get_IncomeList();
       }
@@ -99,6 +132,7 @@ export class IncomeComponent implements OnInit {
     this.incomeId = 0;
     this.selectedExpenseType = '';
     this.description = '';
+    this.recipientEmail = '';
     this.amount = 0;
     this.showForm = false;
     this.isEditMode = false;
