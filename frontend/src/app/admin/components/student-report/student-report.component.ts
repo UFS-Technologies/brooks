@@ -292,7 +292,8 @@ console.log("params", params,this.currentPage,
     const payload = {
       students: Array.from(this.selectedStudents),
       subject: this.emailSubject,
-      body: this.emailBody
+      body: this.emailBody,
+      templateId: this.selectedTemplateId
     };
 
     this.user.Send_Bulk_Email(payload).subscribe({

@@ -367,11 +367,20 @@ export class user_Service {
         return this.http.get(environment.BasePath + 'user/Get_Enquiry_Conversion_Details', { params });
     }
     
-    Send_Bulk_Email(data: { students: any[], subject: string, body: string }): Observable<any> {
+    Send_Bulk_Email(data: { students: any[], subject: string, body: string, templateId?: number | null }): Observable<any> {
         return this.http.post(environment.BasePath + 'student/Send_Bulk_Email', data);
     }
 
     Get_Email_Logs_By_Student(student_Id: number): Observable<any> {
         return this.http.get(environment.BasePath + 'student/Get_Email_Logs_By_Student/' + student_Id);
+    }
+
+    Get_Mail_Report(filters: { fromDate?: string, toDate?: string, templateId?: number | null } = {}): Observable<any> {
+        let params = new HttpParams();
+        if (filters.fromDate) params = params.set('fromDate', filters.fromDate);
+        if (filters.toDate) params = params.set('toDate', filters.toDate);
+        if (filters.templateId) params = params.set('templateId', filters.templateId.toString());
+
+        return this.http.get(environment.BasePath + 'student/Get_Mail_Report', { params });
     }
 }

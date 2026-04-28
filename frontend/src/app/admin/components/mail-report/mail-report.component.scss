@@ -1,0 +1,120 @@
+.mail-report-container {
+  max-width: 100%;
+  margin: 0 auto;
+
+  .filter-section {
+    background: #fff;
+    padding: 12px 16px; // Slightly more compact padding
+
+    .filter-field {
+      width: 260px; // Increased width to accommodate label and content
+      
+      ::ng-deep {
+        .mat-mdc-form-field-flex {
+          height: 40px !important;
+          align-items: center;
+          padding: 0 !important; // Important for prefix to touch the edges
+        }
+        
+        .mat-mdc-form-field-infix {
+          padding: 0 12px !important; // Padding for the input area
+          min-height: 40px !important;
+          display: flex;
+          align-items: center;
+        }
+
+        .mat-mdc-text-field-wrapper {
+          background-color: #fff !important;
+          padding: 0 !important;
+        }
+
+        // Split Label Styling (Prefix)
+        .field-label-prefix {
+          background-color: #f3f4f6; // Gray background for label
+          border-right: 1px solid #d1d5db; // Divider line
+          height: 40px;
+          padding: 0 12px;
+          display: flex;
+          align-items: center;
+          color: #4b5563;
+          font-weight: 500;
+          font-size: 13px;
+          white-space: nowrap;
+          min-width: 100px;
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+        }
+
+        .mat-mdc-form-field-icon-suffix {
+          padding-right: 8px !important;
+          .mat-icon {
+            font-size: 20px;
+            color: #6b7280;
+          }
+        }
+
+        // Ensure label doesn't float (we are using prefix instead)
+        .mdc-notched-outline__legend {
+          display: none;
+        }
+      }
+    }
+    
+    .reset-btn {
+      height: 40px;
+      border-radius: 6px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      
+      .mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .refresh-btn {
+      height: 40px; // Match field height
+      border-radius: 6px;
+      background-color: #6366f1;
+      font-weight: 500;
+      padding: 0 16px;
+      
+      .mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .table-card {
+    border: 1px solid #e5e7eb;
+  }
+
+  .mat-column-date {
+    width: 150px;
+  }
+
+  .mat-column-status {
+    width: 100px;
+    text-align: center;
+  }
+
+  .status-badge {
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .mat-header-cell {
+    white-space: nowrap;
+  }
+}

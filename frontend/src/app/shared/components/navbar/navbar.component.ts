@@ -72,6 +72,7 @@ export class NavbarComponent implements OnInit {
       'Income',
       'Staff',
       'Email',
+      'Mail Report',
       'Enquiry Source',
       'Enquiry Summary',
       'Expense Category',

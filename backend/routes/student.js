@@ -9,7 +9,7 @@ const emailLog = require('../models/email_log');
 // Send_Bulk_Email
 router.post('/Send_Bulk_Email', async (req, res, next) => {
     try {
-        const { students, subject, body } = req.body;
+        const { students, subject, body, templateId } = req.body;
         console.log('Send_Bulk_Email received for', students?.length, 'students');
 
         if (!students || students.length === 0) {
@@ -21,13 +21,13 @@ router.post('/Send_Bulk_Email', async (req, res, next) => {
             if (student.Email) {
                 try {
                     await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'));
-                    await emailLog.Save_Email_Log(student.Student_ID, student.Email, subject, body, 'Success', null);
+                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, body, 'Success', null);
                 } catch (emailError) {
                     console.error('Error sending email to', student.Email, emailError);
-                    await emailLog.Save_Email_Log(student.Student_ID, student.Email, subject, body, 'Failed', emailError.message || String(emailError));
+                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, body, 'Failed', emailError.message || String(emailError));
                 }
             } else {
-                await emailLog.Save_Email_Log(student.Student_ID, null, subject, body, 'Failed', 'No email address');
+                await emailLog.Save_Email_Log(student.Student_ID, templateId || null, null, subject, body, 'Failed', 'No email address');
             }
         }
 
@@ -35,6 +35,24 @@ router.post('/Send_Bulk_Email', async (req, res, next) => {
     } catch (e) {
         console.error('Send_Bulk_Email error:', e);
         res.status(500).json({ success: false, message: 'Failed to send bulk emails', error: e.message });
+    }
+});
+
+// Get_Mail_Report
+router.get('/Get_Mail_Report', async (req, res, next) => {
+    try {
+        let { fromDate, toDate, templateId } = req.query;
+        
+        // Ensure the entire end day is included by appending time
+        if (toDate && toDate.trim() !== '') {
+            toDate = `${toDate} 23:59:59`;
+        }
+        
+        const rows = await emailLog.Get_Mail_Report(fromDate, toDate, templateId);
+        res.json(rows);
+    } catch (e) {
+        console.error('Get_Mail_Report error:', e);
+        res.status(500).json({ success: false, message: 'Failed to get mail report', error: e.message });
     }
 });
 
@@ -133,12 +151,12 @@ router.post('/Save_student/', async (req, res, next) => {
                             to: [{
                                 email: req.body['Email']
                             }],
-                            subject: 'Welcome to IGM Academy - Student Account Created Successfully',
+                            subject: 'Welcome to Track Box - Student Account Created Successfully',
                             htmlContent: `
                                 <html>
                                     <body style="font-family: Arial, sans-serif; color: #333;">
                                         <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                                            <h2 style="text-align: center; color: #4CAF50;">Welcome to IGM Academy!</h2>
+                                            <h2 style="text-align: center; color: #4CAF50;">Welcome to Track Box!</h2>
                                             <p>Dear ${req.body['First_Name']} ${req.body['Last_Name']},</p>
                                             <p>Welcome to IGM Academy! Your student account has been successfully created.</p>
                                             
@@ -148,7 +166,7 @@ router.post('/Save_student/', async (req, res, next) => {
                                             </ul>
                                             
                                             <h3>Next Steps:</h3>
-                                            <p>Download the IGM Academy Student App:</p>
+                                            <p>Download the Track Box Student App:</p>
                                             <ul>
                                                 <li><a href="[Play Store Link]" style="color: #4CAF50; text-decoration: none;">Android: Play Store</a></li>
                                             </ul>

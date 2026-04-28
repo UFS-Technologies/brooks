@@ -1,9 +1,9 @@
 const db = require('../config/dbconnection');
 
-const Save_Email_Log = (Student_ID, Email_Address, Subject, Body, Status, Error_Message) => {
+const Save_Email_Log = (Student_ID, Template_ID, Email_Address, Subject, Body, Status, Error_Message) => {
     return new Promise((resolve, reject) => {
-        const query = 'CALL Save_Email_Log(?, ?, ?, ?, ?, ?)';
-        db.query(query, [Student_ID, Email_Address, Subject, Body, Status, Error_Message], (err, result) => {
+        const query = 'CALL Save_Email_Log(?, ?, ?, ?, ?, ?, ?)';
+        db.query(query, [Student_ID, Template_ID, Email_Address, Subject, Body, Status, Error_Message], (err, result) => {
             if (err) reject(err);
             else resolve(result);
         });
@@ -20,7 +20,18 @@ const Get_Email_Logs_By_Student = (Student_ID) => {
     });
 };
 
+const Get_Mail_Report = (fromDate, toDate, templateId) => {
+    return new Promise((resolve, reject) => {
+        const query = 'CALL Get_Mail_Report(?, ?, ?)';
+        db.query(query, [fromDate || null, toDate || null, templateId || null], (err, result) => {
+            if (err) reject(err);
+            else resolve(result[0]);
+        });
+    });
+};
+
 module.exports = {
     Save_Email_Log,
-    Get_Email_Logs_By_Student
+    Get_Email_Logs_By_Student,
+    Get_Mail_Report
 };

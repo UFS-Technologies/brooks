@@ -528,7 +528,7 @@ router.post("/Save_user/", async (req, res, next) => {
           },
         ],
         subject:
-          "Welcome to IGM Academy - Teacher Account Created Successfully",
+          "Welcome to Track Box - Teacher Account Created Successfully",
         htmlContent: emailBody,
       };
 

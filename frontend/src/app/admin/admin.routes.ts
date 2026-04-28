@@ -232,5 +232,10 @@ export const ADMIN_ROUTES: Routes = [
     component: EmailTemplateComponent,
     data: { breadcrumb: 'Email Templates' }
   },
+  {
+    path: 'mail-report',
+    loadComponent: () => import('./components/mail-report/mail-report.component').then(m => m.MailReportComponent),
+    data: { breadcrumb: 'Mail Report' }
+  },
 ];
 

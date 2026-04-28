@@ -2896,7 +2896,7 @@ private getStudentStatusValue(student: any): string {
                   ${this.currentStudent.name}
                 </div>
                 <div class="certificate-text">
-                  Has successfully completed the <b>${this.currentStudent.Course_Name}</b> at IGM Academy, demonstrating proficiency and commitment to advancing their language and career skills.
+                  Has successfully completed the <b>${this.currentStudent.Course_Name}</b> at Track Box, demonstrating proficiency and commitment to advancing their language and career skills.
                 </div>
               </div>
             </div>

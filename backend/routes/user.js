@@ -22,7 +22,7 @@ router.post('/Save_user/', async (req, res, next) => {
                          <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                              <h2 style="text-align: center; color: #4CAF50;">Welcome to IGM Academy!</h2>
                              <p>Dear ${req.body['First_Name']} ${req.body['Last_Name']},</p>
-                             <p>Welcome to IGM Academy! Your teacher account has been successfully created.</p>
+                             <p>Welcome to Track Box! Your teacher account has been successfully created.</p>
                              
                              <h3>Account Details:</h3>
                              <ul>
@@ -53,7 +53,7 @@ router.post('/Save_user/', async (req, res, next) => {
         to: [{
           email: req.body['Email']
         }],
-        subject: 'Welcome to IGM Academy - Teacher Account Created Successfully',
+        subject: 'Welcome to Track Box - Teacher Account Created Successfully',
         htmlContent: emailBody
       };
 
