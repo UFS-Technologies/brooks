@@ -23,6 +23,7 @@ export class NavbarComponent implements OnInit {
     Email: '/admin/email-templates',
     'Email Template': '/admin/email-templates',
     'Email Templates': '/admin/email-templates',
+    'Mail Report': '/admin/Mail_Report',
   };
 
   private router = inject(Router);
@@ -238,6 +239,10 @@ export class NavbarComponent implements OnInit {
         return isActive
           ? 'assets/images/navbar/ppt-active.png'
           : 'assets/images/navbar/ppt.svg';
+      case 'Mail Report':
+        return isActive
+          ? 'assets/images/navbar/dashboard-active.png'
+          : 'assets/images/navbar/dashboard.png';
       default:
         return ''; 
     }
