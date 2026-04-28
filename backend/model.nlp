@@ -506,7 +506,7 @@
             "intent": "pre_purchase_course_types",
             "domain": "default"
           },
-          "academi,are,at,avail,IGM,cours,which": {
+          "academi,are,at,avail,Trackbox,cours,which": {
             "intent": "pre_purchase_course_types",
             "domain": "default"
           },
@@ -514,15 +514,15 @@
             "intent": "pre_purchase_course_types",
             "domain": "default"
           },
-          "about,academi,IGM,me,tell": {
+          "about,academi,Trackbox,me,tell": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,detail,provid,you": {
+          "about,academi,Trackbox,can,detail,provid,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "academi,IGM,make,uniqu,what": {
+          "academi,Trackbox,make,uniqu,what": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
@@ -1018,7 +1018,7 @@
             "intent": "pre_purchase_course_types",
             "domain": "default"
           },
-          "about,academi,IGM,can,me,more,tell,you": {
+          "about,academi,Trackbox,can,me,more,tell,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
@@ -8150,39 +8150,39 @@
             "intent": "pre_purchase_course_types",
             "domain": "default"
           },
-          "academi,IGM,is,the,what": {
+          "academi,Trackbox,is,the,what": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "IGM,is,the,what": {
+          "Trackbox,is,the,what": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,detail,explain,in,me,more,tell,you": {
+          "about,academi,Trackbox,can,detail,explain,in,me,more,tell,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,could,elabor,me,more,on,tell,you": {
+          "about,academi,Trackbox,can,could,elabor,me,more,on,tell,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,explain,me,more,tell,you": {
+          "about,academi,Trackbox,can,explain,me,more,tell,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,i,know,me,more,tell,you": {
+          "about,academi,Trackbox,can,i,know,me,more,tell,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,i,know,like,me,more,tell,to,would,you": {
+          "about,academi,Trackbox,can,i,know,like,me,more,tell,to,would,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,ani,IGM,can,inform,is,me,more,on,tell,there,you": {
+          "about,academi,ani,Trackbox,can,inform,is,me,more,on,tell,there,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
-          "about,academi,IGM,can,detail,me,more,provid,tell,you": {
+          "about,academi,Trackbox,can,detail,me,more,provid,tell,you": {
             "intent": "pre_purchase_academy_info",
             "domain": "default"
           },
@@ -9311,7 +9311,7 @@
           },
           {
             "domain": "default",
-            "utterance": "Which courses are available at IGM Academy?",
+            "utterance": "Which courses are available at Trackbox?",
             "intent": "pre_purchase_course_types"
           },
           {
@@ -9321,17 +9321,17 @@
           },
           {
             "domain": "default",
-            "utterance": "Tell me about IGM Academy.",
+            "utterance": "Tell me about Trackbox.",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Can you provide details about IGM Academy?",
+            "utterance": "Can you provide details about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "What makes IGM Academy unique?",
+            "utterance": "What makes Trackbox unique?",
             "intent": "pre_purchase_academy_info"
           },
           {
@@ -9981,7 +9981,7 @@
           },
           {
             "domain": "default",
-            "utterance": "Can you tell me more about IGM Academy?",
+            "utterance": "Can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
@@ -20871,57 +20871,57 @@
           },
           {
             "domain": "default",
-            "utterance": "What is the IGM academy?",
+            "utterance": "What is the Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "What is the IGM ?",
+            "utterance": "What is the Trackbox ?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Explain can you tell me more about IGM academy? in detail",
+            "utterance": "Explain can you tell me more about Trackbox? in detail",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Can you tell me more about IGM Academy",
+            "utterance": "Can you tell me more about Trackbox",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Could you elaborate on can you tell me more about IGM academy?",
+            "utterance": "Could you elaborate on can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Can you explain can you tell me more about IGM academy?",
+            "utterance": "Can you explain can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Can I know more about can you tell me more about IGM academy?",
+            "utterance": "Can I know more about can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "I would like to know can you tell me more about IGM academy?",
+            "utterance": "I would like to know can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Is there any more information on can you tell me more about IGM academy??",
+            "utterance": "Is there any more information on can you tell me more about Trackbox??",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Can you tell me more about IGM Academy?",
+            "utterance": "Can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
             "domain": "default",
-            "utterance": "Provide details about can you tell me more about IGM academy?",
+            "utterance": "Provide details about can you tell me more about Trackbox?",
             "intent": "pre_purchase_academy_info"
           },
           {
@@ -21749,7 +21749,7 @@
               "offer": 1,
               "which": 1,
               "at": 1,
-              "IGM": 1,
+              "Trackbox": 1,
               "academi": 1,
               "tell": 1,
               "about": 1,
@@ -22371,7 +22371,7 @@
                 "are": 1,
                 "avail": 1,
                 "at": 1,
-                "IGM": 1,
+                "Trackbox": 1,
                 "academi": 1,
                 "can": 1,
                 "tell": 1,
@@ -22401,7 +22401,7 @@
                 "tell": 1,
                 "me": 1,
                 "about": 1,
-                "IGM": 1,
+                "Trackbox": 1,
                 "academi": 1,
                 "can": 1,
                 "you": 1,
@@ -26986,7 +26986,7 @@
               "at": [
                 "pre_purchase_course_types"
               ],
-              "IGM": [
+              "Trackbox": [
                 "pre_purchase_course_types",
                 "pre_purchase_academy_info"
               ],
@@ -28848,7 +28848,7 @@
                 "offer",
                 "which",
                 "at",
-                "IGM",
+                "Trackbox",
                 "academi",
                 "tell",
                 "about",
@@ -67521,7 +67521,7 @@
       ],
       [
         "en",
-        "Which courses are available at IGM Academy?"
+        "Which courses are available at Trackbox?"
       ],
       [
         "en",
@@ -67529,15 +67529,15 @@
       ],
       [
         "en",
-        "Tell me about IGM Academy."
+        "Tell me about Trackbox."
       ],
       [
         "en",
-        "Can you provide details about IGM Academy?"
+        "Can you provide details about Trackbox?"
       ],
       [
         "en",
-        "What makes IGM Academy unique?"
+        "What makes Trackbox unique?"
       ],
       [
         "en",
@@ -68057,7 +68057,7 @@
       ],
       [
         "en",
-        "Can you tell me more about IGM Academy?"
+        "Can you tell me more about Trackbox?"
       ],
       [
         "en",
@@ -76769,47 +76769,47 @@
       ],
       [
         "en",
-        "What is the IGM academy?"
+        "What is the Trackbox?"
       ],
       [
         "en",
-        "What is the IGM ?"
+        "What is the Trackbox ?"
       ],
       [
         "en",
-        "Explain can you tell me more about IGM academy? in detail"
+        "Explain can you tell me more about Trackbox? in detail"
       ],
       [
         "en",
-        "Can you tell me more about IGM Academy"
+        "Can you tell me more about Trackbox"
       ],
       [
         "en",
-        "Could you elaborate on can you tell me more about IGM academy?"
+        "Could you elaborate on can you tell me more about Trackbox?"
       ],
       [
         "en",
-        "Can you explain can you tell me more about IGM academy?"
+        "Can you explain can you tell me more about Trackbox?"
       ],
       [
         "en",
-        "Can I know more about can you tell me more about IGM academy?"
+        "Can I know more about can you tell me more about Trackbox?"
       ],
       [
         "en",
-        "I would like to know can you tell me more about IGM academy?"
+        "I would like to know can you tell me more about Trackbox?"
       ],
       [
         "en",
-        "Is there any more information on can you tell me more about IGM academy??"
+        "Is there any more information on can you tell me more about Trackbox??"
       ],
       [
         "en",
-        "Can you tell me more about IGM Academy?"
+        "Can you tell me more about Trackbox?"
       ],
       [
         "en",
-        "Provide details about can you tell me more about IGM academy?"
+        "Provide details about can you tell me more about Trackbox?"
       ],
       [
         "en",
@@ -77622,13 +77622,13 @@
         ],
         "pre_purchase_bot_identity": [
           {
-            "answer": "I'm igm chatbot 🤖 here to assist you! ✨"
+            "answer": "I'm Trackbox chatbot 🤖 here to assist you! ✨"
           },
           {
-            "answer": "I'm just a igm bot 🤖, but I can help with your questions! 🌟"
+            "answer": "I'm just a Trackbox bot 🤖, but I can help with your questions! 🌟"
           },
           {
-            "answer": "Yes, I'm a igm chatbot 🤖 designed to help with your inquiries! 💡"
+            "answer": "Yes, I'm a Trackbox chatbot 🤖 designed to help with your inquiries! 💡"
           },
           {
             "answer": "I'm not a human, but I'm here to assist you! 🤖 How can I help? ✨"
@@ -77688,10 +77688,10 @@
         ],
         "pre_purchase_academy_info": [
           {
-            "answer": "IGM Academy is committed to enhancing learners' English skills 📚 and preparing them for standardized exams 🎯. We offer innovative, AI-integrated online learning ✨ with features like 24/7 virtual classrooms 💻, real-time doubt clearing ❓, missed class replacements 🔄, and access to an extensive online library 📚!"
+            "answer": "Trackbox is committed to enhancing learners' English skills 📚 and preparing them for standardized exams 🎯. We offer innovative, AI-integrated online learning ✨ with features like 24/7 virtual classrooms 💻, real-time doubt clearing ❓, missed class replacements 🔄, and access to an extensive online library 📚!"
           },
           {
-            "answer": "IGM Academy is dedicated to helping learners improve their English skills and excel in standardized exams. We offer AI-integrated online learning with 24/7 virtual classrooms, doubt clearance, missed class replacements, and a vast online library."
+            "answer": "Trackbox is dedicated to helping learners improve their English skills and excel in standardized exams. We offer AI-integrated online learning with 24/7 virtual classrooms, doubt clearance, missed class replacements, and a vast online library."
           },
           {
             "answer": "Our Academy is committed to enhancing learners' English skills 📚 and preparing them for standardized exams 🎯. We offer innovative, AI-integrated online learning ✨ with features like 24/7 virtual classrooms 💻, real-time doubt clearing ❓, missed class replacements 🔄, and access to an extensive online library 📚!"
@@ -78068,7 +78068,7 @@
         ],
         "pre_purchase_app_download": [
           {
-            "answer": "Our app is available for download on both iOS and Android platforms and window. Simply search for \"IGM Academy\" in the App Store or Google Play."
+            "answer": "Our app is available for download on both iOS and Android platforms and window. Simply search for \"Trackbox\" in the App Store or Google Play."
           }
         ],
         "pre_purchase_app_login_issues": [
@@ -78088,7 +78088,7 @@
         ],
         "pre_purchase_app_ask_questions": [
           {
-            "answer": "You can ask questions by selecting the \"Ask Breff/IGM\" option in the app's main menu. The AI avatar is available 24/7 for doubt clearance."
+            "answer": "You can ask questions by selecting the \"Ask Breff/Trackbox\" option in the app's main menu. The AI avatar is available 24/7 for doubt clearance."
           }
         ],
         "pre_purchase_app_missed_classes": [
@@ -78380,7 +78380,7 @@
         ],
         "app_related_app_download": [
           {
-            "answer": "Our app is available for download on both iOS and Android platforms and window. Simply search for \"IGM Academy\" in the App Store or Google Play."
+            "answer": "Our app is available for download on both iOS and Android platforms and window. Simply search for \"Trackbox\" in the App Store or Google Play."
           }
         ],
         "app_related_app_login_issues": [
@@ -78400,7 +78400,7 @@
         ],
         "app_related_app_ask_questions": [
           {
-            "answer": "You can ask questions by selecting the \"Ask Breff/IGM\" option in the app's main menu. The AI avatar is available 24/7 for doubt clearance."
+            "answer": "You can ask questions by selecting the \"Ask Breff/Trackbox\" option in the app's main menu. The AI avatar is available 24/7 for doubt clearance."
           }
         ],
         "app_related_app_missed_classes": [

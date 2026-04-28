@@ -3,7 +3,9 @@ const dbConfig = {
     host: "localhost",
     user: "root",
     password: "password",
-    database: "brooks_db",
+    // database: "brooks_new",
+        database: "aives_db",
+
     multipleStatements: true,
 };
 
@@ -317,6 +319,51 @@ END`;
             END;
         `);
         console.log("Created Delete_Leave.");
+        
+        // 5. Create Email_Logs table
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS Email_Logs (
+                Log_ID INT AUTO_INCREMENT PRIMARY KEY,
+                Student_ID INT,
+                Email_Address VARCHAR(255),
+                Subject VARCHAR(255),
+                Body TEXT,
+                Sent_At DATETIME DEFAULT CURRENT_TIMESTAMP,
+                Status VARCHAR(50),
+                Error_Message TEXT
+            );
+        `);
+        console.log("Email_Logs table verified.");
+
+        // 6. Create Email Log procedures
+        await connection.query(`DROP PROCEDURE IF EXISTS Save_Email_Log;`);
+        await connection.query(`
+            CREATE PROCEDURE Save_Email_Log(
+                IN p_Student_ID INT,
+                IN p_Email_Address VARCHAR(255),
+                IN p_Subject VARCHAR(255),
+                IN p_Body TEXT,
+                IN p_Status VARCHAR(50),
+                IN p_Error_Message TEXT
+            )
+            BEGIN
+                INSERT INTO Email_Logs (Student_ID, Email_Address, Subject, Body, Status, Error_Message)
+                VALUES (p_Student_ID, p_Email_Address, p_Subject, p_Body, p_Status, p_Error_Message);
+                SELECT LAST_INSERT_ID() AS Log_ID;
+            END;
+        `);
+        console.log("Created Save_Email_Log.");
+
+        await connection.query(`DROP PROCEDURE IF EXISTS Get_Email_Logs_By_Student;`);
+        await connection.query(`
+            CREATE PROCEDURE Get_Email_Logs_By_Student(
+                IN p_Student_ID INT
+            )
+            BEGIN
+                SELECT * FROM Email_Logs WHERE Student_ID = p_Student_ID ORDER BY Sent_At DESC;
+            END;
+        `);
+        console.log("Created Get_Email_Logs_By_Student.");
         
         await connection.end();
         console.log("All DB changes applied.");

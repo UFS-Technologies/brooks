@@ -188,7 +188,7 @@ export class StudentDocumentsComponent {
     // Upload only if a new file is selected
     if (this.selectedFile) {
       const file = this.selectedFile;
-      const key = `IGM/Students/${studentName}_${uuidv4()}`;
+      const key = `Trackbox/Students/${studentName}_${uuidv4()}`;
 
       const bucket = new S3({
         accessKeyId: environment.awsAccessKeyId,

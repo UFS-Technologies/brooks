@@ -207,7 +207,7 @@ Get_All_Enquiry(): Observable<any> {
       const contentType = file.type;
       const randomString = uuidv4(); // Generate a random UUID
       if (!key) {
-        key = `IGM/Students/${studentName}${randomString}`;
+        key = `Trackbox/Students/${studentName}${randomString}`;
       }
 
       const bucket = new S3({

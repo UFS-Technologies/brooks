@@ -344,9 +344,9 @@
             "Are you real?"
         ],
         "answers": [
-            "I'm igm chatbot 🤖 here to assist you! ✨",
-            "I'm just a igm bot 🤖, but I can help with your questions! 🌟",
-            "Yes, I'm a igm chatbot 🤖 designed to help with your inquiries! 💡",
+            "I'm Trackbox chatbot 🤖 here to assist you! ✨",
+            "I'm just a Trackbox bot 🤖, but I can help with your questions! 🌟",
+            "Yes, I'm a Trackbox chatbot 🤖 designed to help with your inquiries! 💡",
             "I'm not a human, but I'm here to assist you! 🤖 How can I help? ✨"
         ]
     },
@@ -411,7 +411,7 @@
         "category": "pre_purchase",
         "questions": [
             "What types of courses do you offer?",
-            "Which courses are available at IGM Academy?",
+            "Which courses are available at Trackbox?",
             "Can you tell me about the courses you provide?"
         ],
         "answers": [
@@ -422,12 +422,12 @@
         "intent": "academy_info",
         "category": "pre_purchase",
         "questions": [
-            "Tell me about IGM Academy.",
-            "Can you provide details about IGM Academy?",
-            "What makes IGM Academy unique?"
+            "Tell me about Trackbox.",
+            "Can you provide details about Trackbox?",
+            "What makes Trackbox unique?"
         ],
         "answers": [
-            "IGM Academy is committed to enhancing learners' English skills 📚 and preparing them for standardized exams 🎯. We offer innovative, AI-integrated online learning ✨ with features like 24/7 virtual classrooms 💻, real-time doubt clearing ❓, missed class replacements 🔄, and access to an extensive online library 📚!"
+            "Trackbox is committed to enhancing learners' English skills 📚 and preparing them for standardized exams 🎯. We offer innovative, AI-integrated online learning ✨ with features like 24/7 virtual classrooms 💻, real-time doubt clearing ❓, missed class replacements 🔄, and access to an extensive online library 📚!"
         ]
     },
     {
@@ -1028,10 +1028,10 @@
       "intent": "academy_info",
       "category": "pre_purchase",
       "questions": [
-        "Can you tell me more about IGM Academy?"
+        "Can you tell me more about Trackbox?"
       ],
       "answers": [
-        "IGM Academy is dedicated to helping learners improve their English skills and excel in standardized exams. We offer AI-integrated online learning with 24/7 virtual classrooms, doubt clearance, missed class replacements, and a vast online library."
+        "Trackbox is dedicated to helping learners improve their English skills and excel in standardized exams. We offer AI-integrated online learning with 24/7 virtual classrooms, doubt clearance, missed class replacements, and a vast online library."
       ]
     },
     {
@@ -1363,7 +1363,7 @@
         "How do I download your app?"
       ],
       "answers": [
-        "Our app is available for download on both iOS and Android platforms and window. Simply search for \"IGM Academy\" in the App Store or Google Play."
+        "Our app is available for download on both iOS and Android platforms and window. Simply search for \"Trackbox\" in the App Store or Google Play."
       ]
     },
     {
@@ -1403,7 +1403,7 @@
         "How do I ask questions to the study partner avatar?"
       ],
       "answers": [
-        "You can ask questions by selecting the \"Ask Breff/IGM\" option in the app's main menu. The AI avatar is available 24/7 for doubt clearance."
+        "You can ask questions by selecting the \"Ask Breff/Trackbox\" option in the app's main menu. The AI avatar is available 24/7 for doubt clearance."
       ]
     },
     {

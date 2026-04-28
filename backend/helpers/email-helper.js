@@ -27,10 +27,10 @@ const sendEmail = async (to, subject, html) => {
         // Try to determine the best sender
         let senderEmail = (process.env.BREVO_SENDER_EMAIL || '').trim().replace(/^['"]|['"]$/g, '');
         if (!senderEmail || senderEmail === 'your_sender_email@example.com') {
-            senderEmail = 'info@breffniacademy.in'; // Use the verified sender
+            senderEmail = 'info@trackbox.in'; // Default to rebranded email
         }
 
-        const senderName = (process.env.BREVO_SENDER_NAME || 'Brifni').trim().replace(/^['"]|['"]$/g, '');
+        const senderName = (process.env.BREVO_SENDER_NAME || 'Trackbox').trim().replace(/^['"]|['"]$/g, '');
 
         const response = await axios({
             method: 'post',

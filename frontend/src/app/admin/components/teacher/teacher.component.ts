@@ -1003,7 +1003,7 @@ export class TeacherComponent implements OnInit {
                  <div style="display: flex; justify-content: space-between;align-items: center;">
         <h1 style="font-size: 32px; color: #1a365d; margin-bottom: 20px;">Invoice</h1>
         <div style="text-align: right;">
-          <img src="assets/images/logo2.svg" alt="IGM Logo" style="width: 50px; height: auto;">
+          <img src="assets/images/logo2.svg" alt="Trackbox Logo" style="width: 50px; height: auto;">
       </div>
       </div>
                 <div class="header-content">
@@ -1036,11 +1036,11 @@ export class TeacherComponent implements OnInit {
                   }</p>
                 </div>
                 <div style="text-align: right;">
-                  <p class="detail-label">IGM Tower, 176/10, Vazhappally west,</p>
+                  <p class="detail-label">Trackbox Tower, 176/10, Vazhappally west,</p>
                   <p class="detail-label">Thuruthy p.o, Changanassery,</p>
                   <p class="detail-label">Kottayam - 686535</p>
                   <p class="detail-label">8891505777</p>
-                  <p class="detail-label">Info@IGMacademy.in</p>
+                  <p class="detail-label">info@trackbox.in</p>
                 </div>
               </div>
 

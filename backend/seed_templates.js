@@ -10,38 +10,38 @@ const dbConfigBase = {
 const templates = [
     {
         name: 'Lead Welcome Greeting',
-        subject: 'Welcome to IGM Academy!',
-        body: 'Dear Lead,\n\nThank you for your interest in IGM Academy! We are excited to help you on your educational journey. Our counselor will contact you shortly with more details about our courses.\n\nBest regards,\nTeam IGM Academy'
+        subject: 'Welcome to Trackbox!',
+        body: 'Dear Lead,\n\nThank you for your interest in Trackbox! We are excited to help you on your educational journey. Our counselor will contact you shortly with more details about our courses.\n\nBest regards,\nTeam Trackbox'
     },
     {
         name: 'Lead Follow-up Reminder',
         subject: 'Following up on your inquiry',
-        body: 'Dear Lead,\n\nWe noticed you had an inquiry regarding our courses recently. Do you have any further questions? We are here to help you make the best choice for your future.\n\nBest regards,\nTeam IGM Academy'
+        body: 'Dear Lead,\n\nWe noticed you had an inquiry regarding our courses recently. Do you have any further questions? We are here to help you make the best choice for your future.\n\nBest regards,\nTeam Trackbox'
     },
     {
         name: 'Course Admission Confirmation',
-        subject: 'Admission Confirmed - IGM Academy',
-        body: 'Dear Student,\n\nCongratulations! Your admission has been confirmed at IGM Academy. We are thrilled to have you as part of our community. Please check your student portal for your batch details and schedule.\n\nBest regards,\nIGM Academy'
+        subject: 'Admission Confirmed - Trackbox',
+        body: 'Dear Student,\n\nCongratulations! Your admission has been confirmed at Trackbox. We are thrilled to have you as part of our community. Please check your student portal for your batch details and schedule.\n\nBest regards,\nTrackbox'
     },
     {
         name: 'Fee Payment Reminder',
         subject: 'Fee Payment Due Reminder',
-        body: 'Dear Student,\n\nThis is a gentle reminder that your next fee installment is due soon. Kindly ensure timely payment to avoid any inconvenience. You can pay via the mobile app or visit the branch.\n\nBest regards,\nAccounts Dept, IGM Academy'
+        body: 'Dear Student,\n\nThis is a gentle reminder that your next fee installment is due soon. Kindly ensure timely payment to avoid any inconvenience. You can pay via the mobile app or visit the branch.\n\nBest regards,\nAccounts Dept, Trackbox'
     },
     {
         name: 'Payment Receipt Acknowledgment',
         subject: 'Payment Received - Thank You',
-        body: 'Dear Student,\n\nWe have successfully received your fee payment. Thank you! Your account has been updated, and you can view the receipt in your student portal.\n\nBest regards,\nAccounts Dept, IGM Academy'
+        body: 'Dear Student,\n\nWe have successfully received your fee payment. Thank you! Your account has been updated, and you can view the receipt in your student portal.\n\nBest regards,\nAccounts Dept, Trackbox'
     },
     {
         name: 'Outstanding Balance Alert',
         subject: 'IMPORTANT: Outstanding Fees Notice',
-        body: 'Dear Student,\n\nOur records show an outstanding balance on your account. Please clear your dues as soon as possible to ensure uninterrupted access to classes and resources.\n\nBest regards,\nAccounts Dept, IGM Academy'
+        body: 'Dear Student,\n\nOur records show an outstanding balance on your account. Please clear your dues as soon as possible to ensure uninterrupted access to classes and resources.\n\nBest regards,\nAccounts Dept, Trackbox'
     },
     {
         name: 'Course Completion Greeting',
         subject: 'Congratulations on Completing Your Course!',
-        body: 'Dear Student,\n\nIt is with great pleasure that we congratulate you on finishing your course! We are proud of your achievement and wish you the very best in your future endeavors.\n\nBest regards,\nDirector, IGM Academy'
+        body: 'Dear Student,\n\nIt is with great pleasure that we congratulate you on finishing your course! We are proud of your achievement and wish you the very best in your future endeavors.\n\nBest regards,\nDirector, Trackbox'
     }
 ];
 

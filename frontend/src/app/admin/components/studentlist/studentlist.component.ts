@@ -483,7 +483,7 @@ export class StudentlistComponent {
     // 🧾 Header
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('Innoglobal Medco Edu Services LLP', textStartX, 15);
+    doc.text('Trackbox', textStartX, 15);
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
@@ -497,7 +497,7 @@ export class StudentlistComponent {
       textStartX,
       27
     );
-    doc.text('https://www.Igmacademy.in', textStartX, 32);
+    doc.text('https://www.trackbox.in', textStartX, 32);
 
     // 🔻 Separator line
     doc.setLineWidth(0.8);
@@ -2205,7 +2205,7 @@ doc.text(
                   [fee.ContactNo, fee.MobileNo].filter(v => v && String(v).trim() !== 'null').join(', '),
                   fee.Branch_Email && String(fee.Branch_Email).trim() !== 'null' ? fee.Branch_Email : ''
                 ].filter(Boolean).join(' | ') || '&nbsp;'}<br>
-                <a href="${fee.Website && String(fee.Website).trim() !== 'null' ? fee.Website : 'https://www.Igmacademy.in'}" target="_blank">${fee.Website && String(fee.Website).trim() !== 'null' ? fee.Website : 'https://www.Igmacademy.in'}</a>
+                <a href="${fee.Website && String(fee.Website).trim() !== 'null' ? fee.Website : 'https://www.trackbox.in'}" target="_blank">${fee.Website && String(fee.Website).trim() !== 'null' ? fee.Website : 'https://www.trackbox.in'}</a>
               </div>          
             </div>
              <div class="sub-header" ><strong>RECEIPT<strong></div>

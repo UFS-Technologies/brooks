@@ -1,6 +1,6 @@
 module.exports = {
     apps: [{
-        name: "IGM-backend",
+        name: "Trackbox-backend",
         script: "./app.js",
         instances: 1,
         exec_mode: "cluster",

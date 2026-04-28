@@ -326,7 +326,7 @@ async function sendBatchWhatsappNotification(batch_id, classInfo, data, timePhra
                             parameters: [
                                 {
                                     type: "text",
-                                    text:mobile.name?mobile.name:'IGM'
+                                    text:mobile.name?mobile.name:'Trackbox'
                                 },
                                 {
                                     type: "text",

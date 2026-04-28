@@ -711,7 +711,7 @@ onCancelEdit(): void {
     }
 
     const imageUrl =
-      'https://ufsnabeelphotoalbum.s3.amazonaws.com/IGM/1751630158698';
+      'https://ufsnabeelphotoalbum.s3.amazonaws.com/Trackbox/1751630158698';
 
     this.getImageBase64FromUrl(imageUrl).then((logoBase64) => {
       const printContent = `
@@ -735,10 +735,10 @@ onCancelEdit(): void {
             <div class="sub-header">
               <img id="logoImg" src="${logoBase64}" alt="Logo" />
               <div style="text-align: left;">
-                <strong>Innoglobal Medco Edu Services LLP</strong><br>
+                <strong>Trackbox</strong><br>
                 Near HDFC Bank Angadippuram Valanchery Road Perinthalmanna Kerala - 679321<br>
                 +91-8078250037, +91-8281570037 | Medcoeduservicellp@gmail.com<br>
-                <a href="https://www.Igmacademy.in" target="_blank">https://www.Igmacademy.in</a>
+                <a href="https://www.trackbox.in" target="_blank">https://www.trackbox.in</a>
               </div>
             </div>
 
@@ -829,7 +829,7 @@ onCancelEdit(): void {
               }
               <tr>
                 <td><strong>Bank</strong> : ${
-                  fee.Bank || 'HDFC Innoglobal Medco'
+                  fee.Bank || 'HDFC Trackbox'
                 }</td>
                 <td></td>
               </tr>
@@ -2537,7 +2537,7 @@ onCancelEdit(): void {
                   ${this.currentStudent.name}
                 </div>
                 <div class="certificate-text">
-                  Has successfully completed the <b>${this.currentStudent.Course_Name}</b> at IGM Academy, demonstrating proficiency and commitment to advancing their language and career skills.
+                  Has successfully completed the <b>${this.currentStudent.Course_Name}</b> at Trackbox, demonstrating proficiency and commitment to advancing their language and career skills.
                 </div>
               </div>
             </div>
