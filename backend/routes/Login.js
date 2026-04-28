@@ -13,7 +13,7 @@ const jwtSecret = getJwtSecret();
 
 const apiKey = process.env.BREVO_API_KEY;
 const senderEmail = process.env.BREVO_SENDER_EMAIL || "ufsdev123@gmail.com";
-const senderName = process.env.BREVO_SENDER_NAME || "IGM Academy";
+const senderName = process.env.BREVO_SENDER_NAME || "Track Box";
 // for admin or teacher
 
 router.post("/Login_Check", async (req, res, next) => {
@@ -121,9 +121,9 @@ router.post("/Check_User_Exist", async (req, res, next) => {
                                 </div>
                                 <p style="margin-top: 20px;">This code will expire in 10 minutes.</p>
                                 <p>If you did not request this code, please ignore this email.</p>
-                                <p>Best regards,<br>IGM Academy Team</p>
+                                <p>Best regards,<br>Track Box Team</p>
                               </div>`;
-        const textContent = `Hello, Your OTP for IGM login is: ${otp}. This code will expire in 10 minutes.`;
+        const textContent = `Hello, Your OTP for Track Box login is: ${otp}. This code will expire in 10 minutes.`;
 
         // Prepare email payload
         const emailPayload = {
@@ -136,7 +136,7 @@ router.post("/Check_User_Exist", async (req, res, next) => {
               email: finalEmail,
             },
           ],
-          subject: "OTP for IGM Login",
+          subject: "OTP for Track Box Login",
           htmlContent: processedBody,
           text: textContent,
         };
@@ -368,7 +368,7 @@ router.post("/Generate-forget-Password", async (req, res) => {
       });
     }
 
-    const textContent = `Hello, Your OTP for IGM login is: ${otp}. This code will expire in 10 minutes.`;
+    const textContent = `Hello, Your OTP for Track Box login is: ${otp}. This code will expire in 10 minutes.`;
     const processedBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                           <h2>Password Reset Request</h2>
                           <p>Hello,</p>
@@ -378,13 +378,13 @@ router.post("/Generate-forget-Password", async (req, res) => {
                           </div>
                           <p>If you didn't request this password reset, please ignore this email or contact support.</p>
                           <br/>
-                          <p>Best regards,<br/>IGM Academy</p>
+                          <p>Best regards,<br/>Track Box</p>
                       </div>`;
 
     // Prepare email payload
     const emailPayload = {
       sender: {
-        name: `IGM Academy`,
+        name: `Track Box`,
         email: senderEmail,
       },
       to: [
@@ -392,7 +392,7 @@ router.post("/Generate-forget-Password", async (req, res) => {
           email: Email,
         },
       ],
-      subject: "Password Reset Request - IGM Academy",
+      subject: "Password Reset Request - Track Box",
       htmlContent: processedBody,
       text: textContent,
     };
@@ -492,9 +492,9 @@ router.post("/Save_user/", async (req, res, next) => {
                       <html>
                           <body style="font-family: Arial, sans-serif; color: #333;">
                               <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                                  <h2 style="text-align: center; color: #4CAF50;">Welcome to IGM Academy!</h2>
+                                  <h2 style="text-align: center; color: #4CAF50;">Welcome to Track Box!</h2>
                                   <p>Dear ${req.body["First_Name"]} ${req.body["Last_Name"]},</p>
-                                  <p>Welcome to IGM Academy! Your teacher account has been successfully created.</p>
+                                  <p>Welcome to Track Box! Your teacher account has been successfully created.</p>
                                   
                                   <h3>Account Details:</h3>
                                   <ul>
@@ -511,7 +511,7 @@ router.post("/Save_user/", async (req, res, next) => {
       
                                   <p style="font-size: 0.9em; color: #888;">Note: This is an automated email. Please do not reply.</p>
                                   <p style="text-align: center; font-weight: bold;">Best regards,</p>
-                                  <p style="text-align: center;">Team IGM Academy</p>
+                                  <p style="text-align: center;">Team Track Box </p>
                               </div>
                           </body>
                       </html>

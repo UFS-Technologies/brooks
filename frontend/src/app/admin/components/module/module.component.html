@@ -39,13 +39,11 @@
   <form [formGroup]="course_module_Form" (ngSubmit)="Save_course_module();submitted = true">
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700">Level Name <span class="text-red-700">*</span></label>
-      <input type="text" formControlName="Module_Name"       (keydown.enter)="Save_course_module()"
+      <input type="text" formControlName="Module_Name" (keydown.enter)="Save_course_module()" (blur)="course_module_Form.get('Module_Name')?.markAsTouched()"
       maxlength="50" required class="mt-1 px-2 py-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-      @if (!course_module_Form.valid && submitted) {
-        <span class="text-red-500">
-          Level Name  is required
-        </span>
-      }
+      <div *ngIf="course_module_Form.get('Module_Name')?.invalid && (course_module_Form.get('Module_Name')?.touched || submitted)" class="text-red-500 text-xs mt-1">
+        Level Name is required.
+      </div>
     </div>
     <div class="w-full flex justify-end gap-4">
       <button class="border border-blue hover:bg-gray-500 hover:text-white text-black font-bold py-2 px-4 rounded" (click)="closeClick();submitted = false">

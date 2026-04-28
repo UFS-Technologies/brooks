@@ -171,56 +171,43 @@
             class="text-red-700">*</span></label>
         <input type="text" formControlName="First_Name" maxlength="50" required
           class="mt-1 px-2 py-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-        @if
-        (user_Form.get('First_Name')?.invalid && (user_Form.get('First_Name')?.touched || submitted)) {
-        <div class="text-red-500 text-sm mt-1">
-          Faculty Name is required
+        <div *ngIf="user_Form.get('First_Name')?.invalid && (user_Form.get('First_Name')?.touched || submitted)" class="text-red-500 text-xs mt-1">
+          First Name is required.
         </div>
-        }
       </div>
       <div class="mb-4">
-        <label for="numberOfQuestions" class="block text-sm font-medium text-gray-700">Last_Name <span
+        <label for="numberOfQuestions" class="block text-sm font-medium text-gray-700">Last Name <span
             class="text-red-700">*</span></label>
         <input type="text" formControlName="Last_Name"
           class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @if (user_Form.get('Last_Name')?.invalid
-        && (user_Form.get('Last_Name')?.touched || submitted)) {
-        <div class="text-red-500 text-sm mt-1">
-          Last Name is required
+        <div *ngIf="user_Form.get('Last_Name')?.invalid && (user_Form.get('Last_Name')?.touched || submitted)" class="text-red-500 text-xs mt-1">
+          Last Name is required.
         </div>
-        }
       </div>
 
       <div class="mb-4">
         <label for="passMark" class="block text-sm font-medium text-gray-700">Email<span
             class="text-red-700">*</span></label>
-        <input type="email" formControlName="Email"
+        <input type="email" formControlName="Email" (blur)="checkUniqueness('Email')"
           class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @if (user_Form.get('Email')?.invalid
-        && (user_Form.get('Email')?.touched || submitted)) { @if (user_Form.get('Email')?.errors?.['required']) {
-        <div class="text-red-500 text-sm mt-1">
-          Email is required
+        <div *ngIf="user_Form.get('Email')?.invalid && (user_Form.get('Email')?.touched || submitted)" class="text-red-500 text-xs mt-1">
+          <span *ngIf="user_Form.get('Email')?.errors?.['required']">Email is required.</span>
+          <span *ngIf="user_Form.get('Email')?.errors?.['email']">Please enter a valid email address.</span>
+          <span *ngIf="user_Form.get('Email')?.errors?.['serverError']">{{ user_Form.get('Email')?.errors?.['serverError'] }}</span>
         </div>
-        } @else if (user_Form.get('Email')?.errors?.['email']) {
-        <div class="text-red-500 text-sm mt-1">
-          Please enter a valid email address
-        </div>
-        } }
       </div>
 
 
 
       <div class="mb-4">
-        <label for="duration" class="block text-sm font-medium text-gray-700">PhoneNumber <span
+        <label for="duration" class="block text-sm font-medium text-gray-700">Phone Number <span
             class="text-red-700">*</span></label>
-        <input type="number" formControlName="PhoneNumber"
+        <input type="number" formControlName="PhoneNumber" (blur)="checkUniqueness('PhoneNumber')"
           class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        @if (user_Form.get('PhoneNumber')?.invalid
-        && (user_Form.get('PhoneNumber')?.touched || submitted)) {
-        <div class="text-red-500 text-sm mt-1">
-          Phone Number is required
+        <div *ngIf="user_Form.get('PhoneNumber')?.invalid && (user_Form.get('PhoneNumber')?.touched || submitted)" class="text-red-500 text-xs mt-1">
+          <span *ngIf="user_Form.get('PhoneNumber')?.errors?.['required']">Phone Number is required.</span>
+          <span *ngIf="user_Form.get('PhoneNumber')?.errors?.['serverError']">{{ user_Form.get('PhoneNumber')?.errors?.['serverError'] }}</span>
         </div>
-        }
       </div>
 
       <div class="mb-4 relative">
@@ -232,11 +219,10 @@
         <button type="button" (click)="togglePasswordVisibility()"
           class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
           <span class="material-icons mt-5">{{ showPassword ? 'visibility':'visibility_off'}}</span>
-        </button> @if (user_Form.get('password')?.invalid && (user_Form.get('password')?.touched || submitted)) {
-        <div class="text-red-500 text-sm mt-1">
-          Password is required
+        </button> 
+        <div *ngIf="user_Form.get('password')?.invalid && (user_Form.get('password')?.touched || submitted)" class="text-red-500 text-xs mt-1">
+          Password is required.
         </div>
-        }
       </div>
       <div class="mb-4 relative">
         <label for="Branch" class="block text-sm font-medium text-gray-700">

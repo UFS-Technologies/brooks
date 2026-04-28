@@ -34,6 +34,13 @@ export class student_Service {
       student_
     );
   }
+
+  Check_Uniqueness(data: { Email?: string, Phone_Number?: string, Student_ID?: number }) {
+    return this.http.post(
+      environment.BasePath + 'student/Check_Uniqueness/',
+      data
+    );
+  }
   Save_student_followup(followup_data: any) {
     console.log('Follow-up data payload:', followup_data);
     return this.http.post(

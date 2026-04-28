@@ -1685,6 +1685,30 @@ export class TeacherComponent implements OnInit {
     });
   }
 
+  checkUniqueness(type: 'Email' | 'PhoneNumber') {
+    const control = this.user_Form.get(type);
+    if (!control || !control.value) return;
+
+    const payload = {
+      [type]: control.value,
+      User_ID: this.user_Form.get('User_ID')?.value || 0
+    };
+
+    this.user_Service_.Check_Uniqueness(payload).subscribe((res: any) => {
+      if (type === 'Email' && res.emailCount > 0) {
+        control.setErrors({ serverError: 'Email already exists' });
+      } else if (type === 'PhoneNumber' && res.phoneCount > 0) {
+        control.setErrors({ serverError: 'Phone number already exists' });
+      } else {
+        if (control.hasError('serverError')) {
+          const errors = { ...control.errors };
+          delete errors['serverError'];
+          control.setErrors(Object.keys(errors).length ? errors : null);
+        }
+      }
+    });
+  }
+
   onHodChange(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     if (isChecked) {

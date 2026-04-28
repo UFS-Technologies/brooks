@@ -29,6 +29,9 @@
               {{ type.Expense_Type_Name }}
             </option>
           </select>
+          <div *ngIf="expenseForm.submitted && !selectedExpenseType" class="text-red-500 text-xs mt-1">
+            Expense type is required.
+          </div>
         </div>
 
         <!-- Amount -->
@@ -36,6 +39,9 @@
           <label for="amount" class="block font-medium mb-1">Amount:</label>
           <input type="number" id="amount" [(ngModel)]="amount" name="amount" required
             class="w-full border border-gray-300 p-2 rounded" />
+          <div *ngIf="expenseForm.submitted && !amount" class="text-red-500 text-xs mt-1">
+            Amount is required.
+          </div>
         </div>
 
         <!-- Description -->

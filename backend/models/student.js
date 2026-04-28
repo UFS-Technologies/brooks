@@ -92,7 +92,7 @@ var student = {
       student.User_ID,
     ]);
   },
-Remove_Student_Registration: async function (student) {
+  Remove_Student_Registration: async function (student) {
     console.log("student: ", student);
     return executeTransaction("Remove_Student_Registration", [
       student.Student_ID,
@@ -100,6 +100,14 @@ Remove_Student_Registration: async function (student) {
       0,
       student.User_ID,
     ]);
+  },
+  Check_Uniqueness: async function (data) {
+    const { Email, Phone_Number, Student_ID } = data;
+    let sql = `SELECT 
+                (SELECT COUNT(*) FROM student WHERE Email = ? AND Student_ID <> ? AND IFNULL(Delete_Status, 0) = 0) as emailCount,
+                (SELECT COUNT(*) FROM student WHERE Phone_Number = ? AND Student_ID <> ? AND IFNULL(Delete_Status, 0) = 0) as phoneCount`;
+    const [rows] = await db.promise().query(sql, [Email || '', Student_ID || 0, Phone_Number || '', Student_ID || 0]);
+    return rows[0];
   },
   Save_student: async function (student) {
    

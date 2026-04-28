@@ -16,6 +16,13 @@ export class user_Service {
     Save_user(user) {
         return this.http.post(environment.BasePath + 'user/Save_user/', user);
     }
+
+    Check_Uniqueness(data: { Email?: string, PhoneNumber?: string, User_ID?: number }) {
+        return this.http.post(
+            environment.BasePath + 'user/Check_Uniqueness/',
+            data
+        );
+    }
   
     saveCourseFees(user) {
         return this.http.post(environment.BasePath + 'course/saveCourseFees/', user);
@@ -360,4 +367,11 @@ export class user_Service {
         return this.http.get(environment.BasePath + 'user/Get_Enquiry_Conversion_Details', { params });
     }
     
+    Send_Bulk_Email(data: { students: any[], subject: string, body: string }): Observable<any> {
+        return this.http.post(environment.BasePath + 'student/Send_Bulk_Email', data);
+    }
+
+    Get_Email_Logs_By_Student(student_Id: number): Observable<any> {
+        return this.http.get(environment.BasePath + 'student/Get_Email_Logs_By_Student/' + student_Id);
+    }
 }

@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { StudentDocumentsComponent } from '../student-documents/student-documents.component';
 import { AddExpenseDialogComponent } from '../add-expense-dialog/add-expense-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import Swal from 'sweetalert2';
 import { ExpenseTypeService } from '../../services/expense-type.service';
 import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
 import { StudentFeesService } from '../../services/student-fees.service';
@@ -26,6 +27,7 @@ import {
 import { student } from '../../../core/models/student';
 import { StudentFeesComponent } from '../student-fees/student-fees.component';
 import { student_Service } from '../../services/student.Service';
+import { user_Service } from '../../services/user.Service';
 import { EmailTemplateService } from '../../services/email-template.service';
 import { IConfig, ICountry } from 'ngx-countries-dropdown';
 import { environment } from '../../../../environments/environment';
@@ -159,11 +161,16 @@ export class StudentlistComponent {
   isEdit: boolean = false;
   isSave: boolean = false;
   isDelete: boolean = false;
+  
+  // Email Logs
+  emailLogs: any[] = [];
+  emailLogsLoading: boolean = false;
 
   private currentSubscription?: Subscription;
   private courseSubscription?: Subscription;
   StudentFees_Service_ = inject(StudentFeesService);
   student_Service_ = inject(student_Service);
+  private user = inject(user_Service);
   private emailTemplateService = inject(EmailTemplateService);
   private fb = inject(FormBuilder);
   private url = inject(ActivatedRoute);
@@ -237,7 +244,7 @@ export class StudentlistComponent {
       // Height_cm: [0],
       // Weight_kg: [''],
       Admission_Date: [today],
-      Roll_No: null,
+      Roll_No: [null, [Validators.maxLength(10)]],
       Enquiry_Source_Id: [''],
       Branch_Id: [''],
       isRegistering: [false],
@@ -408,6 +415,21 @@ export class StudentlistComponent {
         error: (err) => console.error('Error sending email', err)
       });
     }
+  }
+
+  getEmailLogs(student: any) {
+    if (!student || !student.Student_ID) return;
+    this.emailLogsLoading = true;
+    this.user.Get_Email_Logs_By_Student(student.Student_ID).subscribe({
+      next: (res: any) => {
+        this.emailLogs = res || [];
+        this.emailLogsLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to get email logs:', err);
+        this.emailLogsLoading = false;
+      }
+    });
   }
 
   loadImageAsBase64(url: string): Promise<string> {
@@ -1400,6 +1422,31 @@ doc.text(
     this.loadingFollowupHistory = false;
   }
 
+  checkUniqueness(type: 'Email' | 'Phone_Number') {
+    const control = this.student_Form.get(type);
+    if (!control || !control.value) return;
+
+    const payload = {
+      [type]: control.value,
+      Student_ID: this.student_Form.get('Student_ID')?.value || 0
+    };
+
+    this.student_Service_.Check_Uniqueness(payload).subscribe((res: any) => {
+      if (type === 'Email' && res.emailCount > 0) {
+        control.setErrors({ serverError: 'Email already exists' });
+      } else if (type === 'Phone_Number' && res.phoneCount > 0) {
+        control.setErrors({ serverError: 'Phone number already exists' });
+      } else {
+        // If it was a server error, clear it but keep other errors
+        if (control.hasError('serverError')) {
+          const errors = { ...control.errors };
+          delete errors['serverError'];
+          control.setErrors(Object.keys(errors).length ? errors : null);
+        }
+      }
+    });
+  }
+
   private processStudentSave(Save_status: any): Observable<any> {
     this.student_Course.get('Student_ID')?.setValue(Save_status[0].Student_ID);
 
@@ -1421,9 +1468,16 @@ doc.text(
     return this.student_Service_.enroleCourse(payload).pipe(
       tap(() => {
         if (Save_status[0].existingUser === 1) {
+          if (Save_status[0].duplicateEmail === 1) {
+            this.student_Form.get('Email')?.setErrors({ serverError: 'Email already exists' });
+          }
+          if (Save_status[0].duplicatePhone === 1) {
+            this.student_Form.get('Phone_Number')?.setErrors({ serverError: 'Phone number already exists' });
+          }
+          
           this.dialogBox.open(DialogBox_Component, {
             panelClass: 'Dialogbox-Class',
-            data: { Message: 'Student Already Exists', Type: '3' },
+            data: { Message: 'Student Already Exists. Please check the fields for details.', Type: '3' },
           });
         } else if (Number(Save_status[0].Student_ID) > 0) {
           this.dialogBox.open(DialogBox_Component, {
@@ -2296,7 +2350,12 @@ doc.text(
 
     const file = (event.target as HTMLInputElement).files;
     if (file && file[0] && file[0].size > fileSizeLimit) {
-      alert('File size exceeds the 1MB limit. Please select a smaller file.');
+      Swal.fire({
+        title: 'File Too Large',
+        text: 'File size exceeds the 1MB limit. Please select a smaller file.',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6'
+      });
       return; // Exit if the file is too large
     }
 

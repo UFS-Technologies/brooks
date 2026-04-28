@@ -3,7 +3,7 @@ const dbConfig = {
     host: "localhost",
     user: "root",
     password: "password",
-    database: "brooks_new",
+    database: "brooks_db",
     multipleStatements: true,
 };
 

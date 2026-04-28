@@ -98,7 +98,7 @@ BEGIN
         END IF;
 
         IF existing_user_id IS NOT NULL THEN
-            SELECT existing_user_id AS Student_ID, 'User' AS Source, 1 AS existingUser;
+            SELECT existing_user_id AS Student_ID, 'User' AS Source, 1 AS existingUser, 1 AS duplicateEmail, 0 AS duplicatePhone;
             LEAVE main_block;
         END IF;
 
@@ -109,111 +109,123 @@ BEGIN
                 FROM student
                 WHERE LOWER(Email) = LOWER(Email_) AND Delete_Status = 0 AND Student_ID != Student_ID_
                 LIMIT 1;
+                
+                IF existing_student_id IS NOT NULL THEN
+                    SELECT existing_student_id AS Student_ID, 'Student' AS Source, 1 AS existingUser, 1 AS duplicateEmail, 0 AS duplicatePhone;
+                    LEAVE main_block;
+                END IF;
             END IF;
 
-            IF existing_student_id IS NULL AND Phone_Number_ != '' THEN
+            IF Phone_Number_ != '' THEN
                 SELECT Student_ID INTO existing_student_id
                 FROM student
                 WHERE Phone_Number = Phone_Number_ AND Country_Code = Country_Code_ AND Delete_Status = 0 AND Student_ID != Student_ID_
                 LIMIT 1;
+                
+                IF existing_student_id IS NOT NULL THEN
+                    SELECT existing_student_id AS Student_ID, 'Student' AS Source, 1 AS existingUser, 0 AS duplicateEmail, 1 AS duplicatePhone;
+                    LEAVE main_block;
+                END IF;
             END IF;
 
-            IF existing_student_id IS NOT NULL THEN
-                SELECT existing_student_id AS Student_ID, 'Student' AS Source, 1 AS existingUser;
-                LEAVE main_block;
-            ELSE
-                UPDATE student 
-                SET First_Name = First_Name_,
-                    Last_Name = Last_Name_,
-                    Email = Email_,
-                    Phone_Number = Phone_Number_,
-                    Social_Provider = Social_Provider_,
-                    Social_ID = Social_ID_,
-                    Profile_Photo_Name = Profile_Photo_Name_,
-                    Profile_Photo_Path = Profile_Photo_Path_,
-                    Delete_Status = Delete_Status_,
-                    Avatar = Avatar_,
-                    Country_Code = Country_Code_,
-                    Country_Code_Name = Country_Code_Name_,
-                    Roll_No = Roll_No_,
-                    Branch_Name = Branch_Name_,
-                    Branch_Id = Branch_Id_,
-                    Follow_Up_Date = Follow_Up_Date_,
-                    Admission_Date = v_Admission_Date,
-                    Status_Id = Status_Id_,
-                    Status_Name = v_Status_Name,
-                    To_User_Id = To_User_Id_,
-                    To_User_Name = To_User_Name_,
-                    By_User_Id = By_User_Id_,
-                    Remark = Remark_,
-                    Followup_Status = Followup_Status_,
-                    Department_Id = Department_Id_,
-                    Department_Name = Department_Name_,
-                    Age = Age_,
-                    Qualification = Qualification_,
-                    Qualification_Description = Qualification_Description_,
-                    Alt_Phone_Number = Alt_Phone_Number_,
-                    Address = Address_,
-                    Guardian_Type = Guardian_Type_,
-                    Guardian_Name = Guardian_Name_,
-                    Guardian_Phone = Guardian_Phone_,
-                    Guardian_Alt_Phone = Guardian_Alt_Phone_,
-                    Height_cm = Height_cm_,
-                    Weight_kg = Weight_kg_,
-                    isActive = v_isActive,
-                    Enquiry_Source_Id = Enquiry_Source_Id_,
-                    Is_Registered = isRegistering_,
-                    Registered_By = Registered_By_,
-                    Registration_No = Roll_No_,
-                    Registered_On = Registered_On_
-                WHERE Student_ID = Student_ID_;
+            -- If no duplicates, proceed with update
+            UPDATE student 
+            SET First_Name = First_Name_,
+                Last_Name = Last_Name_,
+                Email = Email_,
+                Phone_Number = Phone_Number_,
+                Social_Provider = Social_Provider_,
+                Social_ID = Social_ID_,
+                Profile_Photo_Name = Profile_Photo_Name_,
+                Profile_Photo_Path = Profile_Photo_Path_,
+                Delete_Status = Delete_Status_,
+                Avatar = Avatar_,
+                Country_Code = Country_Code_,
+                Country_Code_Name = Country_Code_Name_,
+                Roll_No = Roll_No_,
+                Branch_Name = Branch_Name_,
+                Branch_Id = Branch_Id_,
+                Follow_Up_Date = Follow_Up_Date_,
+                Admission_Date = v_Admission_Date,
+                Status_Id = Status_Id_,
+                Status_Name = v_Status_Name,
+                To_User_Id = To_User_Id_,
+                To_User_Name = To_User_Name_,
+                By_User_Id = By_User_Id_,
+                Remark = Remark_,
+                Followup_Status = Followup_Status_,
+                Department_Id = Department_Id_,
+                Department_Name = Department_Name_,
+                Age = Age_,
+                Qualification = Qualification_,
+                Qualification_Description = Qualification_Description_,
+                Alt_Phone_Number = Alt_Phone_Number_,
+                Address = Address_,
+                Guardian_Type = Guardian_Type_,
+                Guardian_Name = Guardian_Name_,
+                Guardian_Phone = Guardian_Phone_,
+                Guardian_Alt_Phone = Guardian_Alt_Phone_,
+                Height_cm = Height_cm_,
+                Weight_kg = Weight_kg_,
+                isActive = v_isActive,
+                Enquiry_Source_Id = Enquiry_Source_Id_,
+                Is_Registered = isRegistering_,
+                Registered_By = Registered_By_,
+                Registration_No = Roll_No_,
+                Registered_On = Registered_On_
+            WHERE Student_ID = Student_ID_;
 
-                SET existing_student_id = Student_ID_;
-                SET student_action_source = 'Student';
-                SET was_existing = 0;
-            END IF;
+            SET existing_student_id = Student_ID_;
+            SET student_action_source = 'Student';
+            SET was_existing = 0;
         ELSE
             IF Email_ != '' THEN
                 SELECT Student_ID INTO existing_student_id
                 FROM student
                 WHERE LOWER(Email) = LOWER(Email_) AND Delete_Status = 0
                 LIMIT 1;
+                
+                IF existing_student_id IS NOT NULL THEN
+                    SELECT existing_student_id AS Student_ID, 'Student' AS Source, 1 AS existingUser, 1 AS duplicateEmail, 0 AS duplicatePhone;
+                    LEAVE main_block;
+                END IF;
             END IF;
 
-            IF existing_student_id IS NULL AND Phone_Number_ != '' THEN
+            IF Phone_Number_ != '' THEN
                 SELECT Student_ID INTO existing_student_id
                 FROM student
                 WHERE Phone_Number = Phone_Number_ AND Country_Code = Country_Code_ AND Delete_Status = 0
                 LIMIT 1;
+                
+                IF existing_student_id IS NOT NULL THEN
+                    SELECT existing_student_id AS Student_ID, 'Student' AS Source, 1 AS existingUser, 0 AS duplicateEmail, 1 AS duplicatePhone;
+                    LEAVE main_block;
+                END IF;
             END IF;
 
-            IF existing_student_id IS NOT NULL THEN
-                SELECT existing_student_id AS Student_ID, 'Student' AS Source, 1 AS existingUser;
-                LEAVE main_block;
-            ELSE
-                INSERT INTO student (
-                    First_Name, Last_Name, Email, Phone_Number, Social_Provider, Social_ID,
-                    Delete_Status, Profile_Photo_Name, Profile_Photo_Path, Avatar,
-                    Country_Code, Country_Code_Name, Roll_No, Branch_Name, Branch_Id,
-                    Follow_Up_Date, Admission_Date, Status_Id, Status_Name, To_User_Id, To_User_Name,
-                    By_User_Id, Remark, Followup_Status, Department_Id, Department_Name, Age, Qualification, Qualification_Description, Alt_Phone_Number,
-                    Address, Guardian_Type, Guardian_Name, Guardian_Phone, Guardian_Alt_Phone,
-                    Height_cm, Weight_kg, isActive, Enquiry_Source_Id, Is_Registered, Registered_By, Registration_No, Registered_On
-                )
-                VALUES (
-                    First_Name_, Last_Name_, Email_, Phone_Number_, Social_Provider_, Social_ID_,
-                    Delete_Status_, Profile_Photo_Name_, Profile_Photo_Path_, Avatar_,
-                    Country_Code_, Country_Code_Name_, Roll_No_, Branch_Name_, Branch_Id_,
-                    Follow_Up_Date_, v_Admission_Date, Status_Id_, v_Status_Name, To_User_Id_, To_User_Name_,
-                    By_User_Id_, Remark_, Followup_Status_, Department_Id_, Department_Name_, Age_, Qualification_, Qualification_Description_, Alt_Phone_Number_,
-                    Address_, Guardian_Type_, Guardian_Name_, Guardian_Phone_, Guardian_Alt_Phone_,
-                    Height_cm_, Weight_kg_, v_isActive, Enquiry_Source_Id_, isRegistering_, Registered_By_, Roll_No_, Registered_On_
-                );
+            -- If no duplicates, proceed with insert
+            INSERT INTO student (
+                First_Name, Last_Name, Email, Phone_Number, Social_Provider, Social_ID,
+                Delete_Status, Profile_Photo_Name, Profile_Photo_Path, Avatar,
+                Country_Code, Country_Code_Name, Roll_No, Branch_Name, Branch_Id,
+                Follow_Up_Date, Admission_Date, Status_Id, Status_Name, To_User_Id, To_User_Name,
+                By_User_Id, Remark, Followup_Status, Department_Id, Department_Name, Age, Qualification, Qualification_Description, Alt_Phone_Number,
+                Address, Guardian_Type, Guardian_Name, Guardian_Phone, Guardian_Alt_Phone,
+                Height_cm, Weight_kg, isActive, Enquiry_Source_Id, Is_Registered, Registered_By, Registration_No, Registered_On
+            )
+            VALUES (
+                First_Name_, Last_Name_, Email_, Phone_Number_, Social_Provider_, Social_ID_,
+                Delete_Status_, Profile_Photo_Name_, Profile_Photo_Path_, Avatar_,
+                Country_Code_, Country_Code_Name_, Roll_No_, Branch_Name_, Branch_Id_,
+                Follow_Up_Date_, v_Admission_Date, Status_Id_, v_Status_Name, To_User_Id_, To_User_Name_,
+                By_User_Id_, Remark_, Followup_Status_, Department_Id_, Department_Name_, Age_, Qualification_, Qualification_Description_, Alt_Phone_Number_,
+                Address_, Guardian_Type_, Guardian_Name_, Guardian_Phone_, Guardian_Alt_Phone_,
+                Height_cm_, Weight_kg_, v_isActive, Enquiry_Source_Id_, isRegistering_, Registered_By_, Roll_No_, Registered_On_
+            );
 
-                SET existing_student_id = LAST_INSERT_ID();
-                SET student_action_source = 'Student';
-                SET was_existing = 0;
-            END IF;
+            SET existing_student_id = LAST_INSERT_ID();
+            SET student_action_source = 'Student';
+            SET was_existing = 0;
         END IF;
 
         -- Insert installments if provided

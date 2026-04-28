@@ -26,6 +26,12 @@
                     <span class="student-tab__label">Fees</span>
                 </button>
 
+                <button (click)="view = 'Email_Logs'; getEmailLogs(followUps)" title="Email Logs"
+                    class="student-tab" [class.student-tab--active]="view === 'Email_Logs'">
+                    <span class="material-symbols-outlined student-tab__icon">mail</span>
+                    <span class="student-tab__label">Email Logs</span>
+                </button>
+
                 <button *ngIf="isDelete" (click)="Delete_student(followUps)" title="Delete Student"
                     class="student-tab student-tab--delete">
                     <span class="material-symbols-outlined student-tab__icon">delete</span>
@@ -62,6 +68,46 @@
     <app-add-expense-dialog [student]="studentExpense" (cancel)="handleExpenseCancel($event)"
         (save)="handleExpenseSave($event)">
     </app-add-expense-dialog>
+    }@else if (view == 'Email_Logs') {
+    <div class="bg-white rounded-lg shadow-md p-6 mt-4">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Email History</h2>
+        
+        <div *ngIf="emailLogsLoading" class="flex justify-center py-8">
+            <mat-icon class="animate-spin text-blue-500">refresh</mat-icon>
+            <span class="ml-2 text-gray-600">Loading email logs...</span>
+        </div>
+        
+        <div *ngIf="!emailLogsLoading && emailLogs.length === 0" class="text-center py-8 text-gray-500">
+            No email history found for this student.
+        </div>
+
+        <div *ngIf="!emailLogsLoading && emailLogs.length > 0" class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded shadow text-sm">
+                <thead class="bg-gray-100 text-left text-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 border-b">Sent On</th>
+                        <th class="px-4 py-2 border-b">Email Address</th>
+                        <th class="px-4 py-2 border-b">Subject</th>
+                        <th class="px-4 py-2 border-b">Status</th>
+                        <th class="px-4 py-2 border-b">Error (if any)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let log of emailLogs" class="hover:bg-gray-50">
+                        <td class="px-4 py-2 border-b whitespace-nowrap">{{ log.Sent_At | date:'medium' }}</td>
+                        <td class="px-4 py-2 border-b">{{ log.Email_Address || '-' }}</td>
+                        <td class="px-4 py-2 border-b">{{ log.Subject }}</td>
+                        <td class="px-4 py-2 border-b">
+                            <span [ngClass]="{'text-green-600 bg-green-100 px-2 py-1 rounded': log.Status === 'Success', 'text-red-600 bg-red-100 px-2 py-1 rounded': log.Status !== 'Success'}">
+                                {{ log.Status }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 border-b text-red-500">{{ log.Error_Message || '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     }@else if (view == 'Student_Fees') {
     <div style="justify-content: space-between;display: flex;">
         <div
@@ -286,8 +332,11 @@
                         </div>
                         <div class="mb-1">
                             <label for="lead-email" class="block text-sm font-medium text-gray-700">Email</label>
-                            <input id="lead-email" type="email" formControlName="Email"
+                            <input id="lead-email" type="email" formControlName="Email" (blur)="checkUniqueness('Email')"
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                            <div *ngIf="student_Form.get('Email')?.errors?.['serverError']" class="text-red-500 text-xs mt-1">
+                                {{ student_Form.get('Email')?.errors?.['serverError'] }}
+                            </div>
                         </div>
                     </div>
 
@@ -296,6 +345,9 @@
                             <label for="lead-age" class="block text-sm font-medium text-gray-700">Age</label>
                             <input id="lead-age" type="number" formControlName="Age" min="0"
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                            <div *ngIf="student_Form.get('Age')?.touched && student_Form.get('Age')?.invalid" class="text-red-500 text-xs mt-1">
+                                Invalid age.
+                            </div>
                         </div>
                         <div class="mb-1">
                             <label for="country" class="block text-sm font-medium text-gray-700">Country Code</label>
@@ -307,8 +359,11 @@
                         </div>
                         <div class="mb-1">
                             <label for="lead-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                            <input id="lead-phone" type="number" formControlName="Phone_Number"
+                            <input id="lead-phone" type="number" formControlName="Phone_Number" (blur)="checkUniqueness('Phone_Number')"
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                            <div *ngIf="student_Form.get('Phone_Number')?.errors?.['serverError']" class="text-red-500 text-xs mt-1">
+                                {{ student_Form.get('Phone_Number')?.errors?.['serverError'] }}
+                            </div>
                         </div>
                         <div class="mb-1">
                             <label for="lead-alt-phone" class="block text-sm font-medium text-gray-700">Alternative Number</label>
@@ -388,8 +443,11 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Admission Number</label>
-                                <input type="text" formControlName="Roll_No"
+                                <input type="text" formControlName="Roll_No" maxlength="10" (blur)="student_Form.get('Roll_No')?.markAsTouched()"
                                     class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <div *ngIf="student_Form.get('Roll_No')?.touched && student_Form.get('Roll_No')?.errors?.['maxlength']" class="text-red-500 text-xs mt-1">
+                                    Admission Number cannot exceed 10 characters.
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Date of Admission</label>
@@ -479,8 +537,11 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Email ID</label>
-                                <input type="email" formControlName="Email"
+                                <input type="email" formControlName="Email" (blur)="checkUniqueness('Email')"
                                     class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <div *ngIf="student_Form.get('Email')?.errors?.['serverError']" class="text-red-500 text-xs mt-1">
+                                    {{ student_Form.get('Email')?.errors?.['serverError'] }}
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Aadhaar Card Number</label>
@@ -493,8 +554,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Student Contact Number</label>
-                                <input type="text" formControlName="Phone_Number"
+                                <input type="text" formControlName="Phone_Number" (blur)="checkUniqueness('Phone_Number')"
                                     class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <div *ngIf="student_Form.get('Phone_Number')?.errors?.['serverError']" class="text-red-500 text-xs mt-1">
+                                    {{ student_Form.get('Phone_Number')?.errors?.['serverError'] }}
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Alternative Contact Number</label>

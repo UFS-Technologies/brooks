@@ -637,9 +637,17 @@ var user = {
         const [data] = await db.promise().query(dataSql, [...params, pageSize, offset]);
 
         return [countResult, data];
-    }
+    },
     // get_chat_call_history: async function (student_Id_,teacher_Id_) {
     //     return executeTransaction('get_chat_call_history', [student_Id_,teacher_Id_]);
     // },
+    Check_Uniqueness: async function (data) {
+        const { Email, PhoneNumber, User_ID } = data;
+        let sql = `SELECT 
+                    (SELECT COUNT(*) FROM users WHERE Email = ? AND User_ID <> ? AND IFNULL(Delete_Status, 0) = 0) as emailCount,
+                    (SELECT COUNT(*) FROM users WHERE PhoneNumber = ? AND User_ID <> ? AND IFNULL(Delete_Status, 0) = 0) as phoneCount`;
+        const [rows] = await db.promise().query(sql, [Email || '', User_ID || 0, PhoneNumber || '', User_ID || 0]);
+        return rows[0];
+    },
 };
 module.exports = user;

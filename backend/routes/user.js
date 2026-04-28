@@ -91,6 +91,15 @@ router.post('/Save_user/', async (req, res, next) => {
   }
 });
 
+router.post('/Check_Uniqueness', async (req, res, next) => {
+  try {
+    const result = await user.Check_Uniqueness(req.body);
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to check uniqueness', error: e.message });
+  }
+});
+
 router.post('/Save_StudentLiveClass/', async (req, res, next) => {
   try {
     console.log('req.body: ', req.body);

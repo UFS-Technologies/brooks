@@ -19,6 +19,7 @@ import { student_Service } from '../../services/student.Service';
 import { EmailTemplateService } from '../../services/email-template.service';
 import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
 import { MatDialog } from '@angular/material/dialog';
+import Swal from 'sweetalert2';
 import { student } from '../../../core/models/student';
 import { student_course } from '../../../core/models/student_course';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -1683,7 +1684,12 @@ onCancelEdit(): void {
 
     const file = (event.target as HTMLInputElement).files;
     if (file && file[0] && file[0].size > fileSizeLimit) {
-      alert('File size exceeds the 1MB limit. Please select a smaller file.');
+      Swal.fire({
+        title: 'File Too Large',
+        text: 'File size exceeds the 1MB limit. Please select a smaller file.',
+        icon: 'warning',
+        confirmButtonColor: '#3085d6'
+      });
       return; // Exit if the file is too large
     }
 

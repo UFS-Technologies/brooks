@@ -123,28 +123,34 @@ table {
 // Buttons
 button.mat-raised-button {
   text-transform: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.875rem;
+  justify-content: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  font-size: 0.7rem;
+  height: 28px;
+  padding: 0 0.4rem !important;
+  min-width: auto !important;
+  line-height: 1 !important;
+  border-radius: 4px;
+  transition: all 0.2s ease;
 
-  &.bg-blue-600 {
-    background-color: #2563eb;
-
-    &:hover {
-      background-color: #1d4ed8;
-    }
-  }
-
-  &.bg-red-500 {
-    background-color: #ef4444;
-
-    &:hover {
-      background-color: #dc2626;
-    }
+  ::ng-deep .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 0;
   }
 }
+
+.btn-blue { background-color: #0000ff !important; color: white !important; }
+.btn-orange { background-color: #ff9800 !important; color: white !important; }
+.btn-gray { background-color: #757575 !important; color: white !important; }
+.btn-red { background-color: #d32f2f !important; color: white !important; }
+
+.filter-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: flex-end; }
+.action-group { display: flex; gap: 0.4rem; align-items: flex-end; }
 
 // Duration Display
 .total-duration {

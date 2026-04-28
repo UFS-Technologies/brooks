@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-leave',
@@ -79,17 +80,37 @@ export class LeaveComponent implements OnInit {
   }
 
   deleteLeave(leaveId: number): void {
-    if(confirm('Are you sure you want to delete this leaf?')){
-      this.isLoading = true;
-      this.http.get(`${environment.BasePath}user/Delete_Leave/${leaveId}`).subscribe({
-        next: () => {
-          this.loadLeaves();
-        },
-        error: (err) => {
-          console.error(err);
-          this.isLoading = false;
-        }
-      });
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this leave application!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.http.get(`${environment.BasePath}user/Delete_Leave/${leaveId}`).subscribe({
+          next: () => {
+            this.loadLeaves();
+            Swal.fire(
+              'Deleted!',
+              'Your leave application has been deleted.',
+              'success'
+            );
+          },
+          error: (err) => {
+            console.error(err);
+            this.isLoading = false;
+            Swal.fire(
+              'Error!',
+              'Failed to delete leave application.',
+              'error'
+            );
+          }
+        });
+      }
+    });
   }
 }

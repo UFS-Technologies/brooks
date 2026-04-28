@@ -3,6 +3,50 @@ var router = express.Router();
 var student = require('../models/student');
 const nodemailer = require("nodemailer");
 const axios = require('axios');
+const emailHelper = require('../helpers/email-helper');
+const emailLog = require('../models/email_log');
+
+// Send_Bulk_Email
+router.post('/Send_Bulk_Email', async (req, res, next) => {
+    try {
+        const { students, subject, body } = req.body;
+        console.log('Send_Bulk_Email received for', students?.length, 'students');
+
+        if (!students || students.length === 0) {
+            return res.status(400).json({ success: false, message: 'No students provided.' });
+        }
+
+        // Loop and send email
+        for (const student of students) {
+            if (student.Email) {
+                try {
+                    await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'));
+                    await emailLog.Save_Email_Log(student.Student_ID, student.Email, subject, body, 'Success', null);
+                } catch (emailError) {
+                    console.error('Error sending email to', student.Email, emailError);
+                    await emailLog.Save_Email_Log(student.Student_ID, student.Email, subject, body, 'Failed', emailError.message || String(emailError));
+                }
+            } else {
+                await emailLog.Save_Email_Log(student.Student_ID, null, subject, body, 'Failed', 'No email address');
+            }
+        }
+
+        res.json({ success: true, message: 'Bulk email sent successfully' });
+    } catch (e) {
+        console.error('Send_Bulk_Email error:', e);
+        res.status(500).json({ success: false, message: 'Failed to send bulk emails', error: e.message });
+    }
+});
+
+// Get_Email_Logs_By_Student
+router.get('/Get_Email_Logs_By_Student/:student_Id?', async (req, res, next) => {
+    try {
+        const rows = await emailLog.Get_Email_Logs_By_Student(req.params.student_Id);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get email logs', error: e.message });
+    }
+});
 
 // Registration_Using_Student_Branch
 router.post('/Registration_Using_Student_Branch', async (req, res, next) => {
@@ -13,6 +57,15 @@ router.post('/Registration_Using_Student_Branch', async (req, res, next) => {
         res.json(rows[0]);
     } catch (error) {       
         res.status(500).json({ error: 'Internal Server Error', message: error.sqlMessage });
+    }
+});
+
+router.post('/Check_Uniqueness', async (req, res, next) => {
+    try {
+        const result = await student.Check_Uniqueness(req.body);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to check uniqueness', error: e.message });
     }
 });
 // Remove_Student_Registration
