@@ -19,6 +19,12 @@ import { DialogBox_Component } from '../../components/DialogBox/DialogBox.compon
   standalone: false,
 })
 export class NavbarComponent implements OnInit {
+  private readonly menuRouteOverrides: Record<string, string> = {
+    Email: '/admin/email-templates',
+    'Email Template': '/admin/email-templates',
+    'Email Templates': '/admin/email-templates',
+  };
+
   private router = inject(Router);
   private dataService = inject(ObservablesService);
   private activatedRoute = inject(ActivatedRoute);
@@ -71,7 +77,7 @@ export class NavbarComponent implements OnInit {
       'Expenses',
       'Income',
       'Staff',
-      'Email',
+      // 'Email',
       'Mail Report',
       'Enquiry Source',
       'Enquiry Summary',
@@ -88,6 +94,8 @@ export class NavbarComponent implements OnInit {
       'Work Report',
       'Enquiry Conversion',
       'Status',
+      'Email',
+     
       // 'Leave',
     ];
 
@@ -234,6 +242,22 @@ export class NavbarComponent implements OnInit {
         return ''; 
     }
   }
+
+  getMenuRoute(item: any): string {
+    const overrideRoute = this.menuRouteOverrides[item?.Menu_Name];
+    const route = overrideRoute || item?.Route || '';
+
+    if (!route) {
+      return '/admin/dash';
+    }
+
+    if (route.startsWith('/')) {
+      return route;
+    }
+
+    return `/admin/${route}`;
+  }
+
   isActive(link: string): boolean {
     const options: IsActiveMatchOptions = {
       paths: 'exact', // Ensure the entire path matches exactly
