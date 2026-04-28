@@ -43,7 +43,7 @@ export class MailReportComponent implements OnInit {
   
   tableData: any[] = [];
   templates: EmailTemplate[] = [];
-  displayedColumns: string[] = ['date', 'leadName', 'template', 'email', 'subject', 'status'];
+  displayedColumns: string[] = ['date', 'leadName', 'template', 'email', 'subject', 'status', 'openedStatus'];
   isLoaded: boolean = false;
 
   // Filters

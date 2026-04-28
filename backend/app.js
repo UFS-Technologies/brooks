@@ -34,6 +34,8 @@ const ReportsRouter = require('./routes/Reports');
 const IncomeRouter = require('./routes/Income');
 const LateFeeRouter = require('./routes/LateFee');
 const EmailTemplateRouter = require('./routes/email_template');
+const webhookRouter = require('./routes/webhook');
+
 
 
 // Import cron jobs
@@ -78,6 +80,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/', indexRouter);
 app.use('/Login', loginRouter);
+app.use('/webhook', webhookRouter);
+
 
 // Add this before your routes
 // app.use(rateLimiter);  

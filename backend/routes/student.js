@@ -20,14 +20,15 @@ router.post('/Send_Bulk_Email', async (req, res, next) => {
         for (const student of students) {
             if (student.Email) {
                 try {
-                    await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'));
-                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, body, 'Success', null);
+                    const response = await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'));
+                    const messageId = response?.messageId || null;
+                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, messageId, body, 'Success', null);
                 } catch (emailError) {
                     console.error('Error sending email to', student.Email, emailError);
-                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, body, 'Failed', emailError.message || String(emailError));
+                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, null, body, 'Failed', emailError.message || String(emailError));
                 }
             } else {
-                await emailLog.Save_Email_Log(student.Student_ID, templateId || null, null, subject, body, 'Failed', 'No email address');
+                await emailLog.Save_Email_Log(student.Student_ID, templateId || null, null, subject, null, body, 'Failed', 'No email address');
             }
         }
 

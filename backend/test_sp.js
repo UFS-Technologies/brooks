@@ -1,10 +1,15 @@
 const db = require('./config/dbconnection');
 
-db.query('CALL Search_student_lead("", 1, 10, NULL, NULL, "all", "all", 131, 1)', (err, rows) => {
+const messageId = '<202604281004.79211113489@smtp-relay.mailin.fr>'; // From the check_logs.js output
+
+db.query('CALL Update_Email_Opened(?)', [messageId], (err, result) => {
     if (err) {
-        console.error("SQL Error:", err.message);
-        process.exit(1);
+        console.error('Error updating status:', err);
+    } else {
+        console.log('Update result:', result);
+        db.query('SELECT Status, Opened_At FROM Email_Logs WHERE Message_ID = ?', [messageId], (err, rows) => {
+            console.log('Current row state:', rows);
+            db.end();
+        });
     }
-    console.log("Success! Rows:", rows[1] ? rows[1].length : 0);
-    process.exit(0);
 });
