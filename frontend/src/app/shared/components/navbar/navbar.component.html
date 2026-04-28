@@ -13,15 +13,15 @@
         <img src="assets/images/logo3.svg" width="170px" alt="Logo" />
       </div>
      
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto pb-8">
       <ul class="space-y-2 pt-1 font-medium">
         @for (item of menuItems; track item) {       
         @if (!item.subItems) {
         <li (click)="performAction(item.Menu_Name)">
-          <a [routerLink]="[item.Route]" [queryParams]="{  item: item | json}" routerLinkActive="router-link-active" 
+          <a [routerLink]="getMenuRoute(item)" [queryParams]="{  item: item | json}" routerLinkActive="router-link-active" 
             class="flex items-center p-2 rounded-lg hover:bg-[#7FC7D91A] hover:text-dark-blue hover:font-bold group">
             <span class="flex gap-2 ms-5 h-5 whitespace-nowrap text-blue">
-              <img [src]="getImageSource(item.Menu_Name, isActive(item.Route))" style="height: 100%" alt="" />
+              <img [src]="getImageSource(item.Menu_Name, isActive(getMenuRoute(item)))" style="height: 100%" alt="" />
               <span class="flex items-center pt-1">{{ item.Menu_Name }}</span>
             </span>
           </a>

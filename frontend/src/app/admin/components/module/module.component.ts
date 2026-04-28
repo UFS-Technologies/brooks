@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -10,7 +11,7 @@ import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
     selector: 'app-module',
-    imports: [ReactiveFormsModule, MatSlideToggleModule, DragDropModule,SharedModule],
+    imports: [CommonModule, ReactiveFormsModule, MatSlideToggleModule, DragDropModule,SharedModule],
     templateUrl: './module.component.html',
     styleUrl: './module.component.scss'
 })
@@ -195,4 +196,3 @@ export class ModuleComponent {
     }
   
   }
-

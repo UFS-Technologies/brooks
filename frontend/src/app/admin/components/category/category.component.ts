@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -10,7 +11,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'app-category',
-    imports: [ReactiveFormsModule, MatSlideToggleModule],
+    imports: [CommonModule, ReactiveFormsModule, MatSlideToggleModule],
     templateUrl: './category.component.html',
     styleUrl: './category.component.scss'
 })
