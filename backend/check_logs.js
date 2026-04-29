@@ -1,11 +1,10 @@
 const db = require('./config/dbconnection');
 
-db.query('SELECT Log_ID, Sent_At, Email_Address, Message_ID, Status FROM Email_Logs ORDER BY Sent_At DESC LIMIT 5', (err, rows) => {
+db.query('SELECT Message_ID, Status, Opened_At FROM Email_Logs ORDER BY Log_ID DESC LIMIT 10', (err, results) => {
     if (err) {
-        console.error('Error fetching logs:', err);
-    } else {
-        console.log('Latest 5 Email Logs:');
-        console.table(rows);
+        console.error(err);
+        process.exit(1);
     }
-    db.end();
+    console.log(JSON.stringify(results, null, 2));
+    process.exit(0);
 });

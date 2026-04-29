@@ -28,13 +28,26 @@ router.post('/brevo', async (req, res) => {
             fs.appendFileSync(path.join(__dirname, '../webhook_debug.log'), logMsg);
             
             const event = payload.event;
-            const messageId = payload['message-id'];
+            let messageId = payload['message-id'] || payload['messageId'];
 
-            if ((event === 'opened' || event === 'open' || event === 'first_opening' || event === 'unique_opened') && messageId) {
-                console.log(`Email opened detected (${event}) for messageId: ${messageId}`);
+            console.log(`Processing Brevo event: ${event} for messageId: ${messageId}`);
+
+            if ((event === 'opened' || event === 'open' || event === 'first_opening' || event === 'unique_opened' || event === 'proxy_open' || event === 'click' || event === 'clicked') && messageId) {
+                console.log(`Email opened/clicked detected (${event}) for messageId: ${messageId}`);
                 await emailLog.Update_Email_Opened(messageId);
+                
+                // Fallback: if messageId has angle brackets, try without them, and vice versa
+                if (messageId.startsWith('<') && messageId.endsWith('>')) {
+                    const cleanId = messageId.substring(1, messageId.length - 1);
+                    console.log(`Trying fallback without brackets: ${cleanId}`);
+                    await emailLog.Update_Email_Opened(cleanId);
+                } else {
+                    const bracketId = `<${messageId}>`;
+                    console.log(`Trying fallback with brackets: ${bracketId}`);
+                    await emailLog.Update_Email_Opened(bracketId);
+                }
             } else {
-                console.log(`Email event: ${event} for messageId: ${messageId}`);
+                console.log(`Email event: ${event} for messageId: ${messageId} (No action taken)`);
             }
         }
 
