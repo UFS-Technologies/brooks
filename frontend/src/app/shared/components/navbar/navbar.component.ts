@@ -20,11 +20,19 @@ import { DialogBox_Component } from '../../components/DialogBox/DialogBox.compon
 })
 export class NavbarComponent implements OnInit {
   private readonly menuRouteOverrides: Record<string, string> = {
-    Email: '/admin/email-templates',
-    'Email Template': '/admin/email-templates',
-    'Email Templates': '/admin/email-templates',
+    Email: '/admin/email',
+    'Email Template': '/admin/email',
+    'Email Templates': '/admin/email',
     'Mail Report': '/admin/Mail_Report',
+    'My Students': '/admin/My_Students',
   };
+  private readonly fallbackMenuItems = [
+    {
+      Menu_ID: 'fallback-mail-report',
+      Menu_Name: 'Mail Report',
+      Route: '/admin/Mail_Report',
+    },
+  ];
 
   private router = inject(Router);
   private dataService = inject(ObservablesService);
@@ -78,7 +86,7 @@ export class NavbarComponent implements OnInit {
       'Expenses',
       'Income',
       'Staff',
-      // 'Email',
+      'Email',
       'Mail Report',
       'Enquiry Source',
       'Enquiry Summary',
@@ -95,8 +103,6 @@ export class NavbarComponent implements OnInit {
       'Work Report',
       'Enquiry Conversion',
       'Status',
-      'Email',
-     
       // 'Leave',
     ];
 
@@ -104,6 +110,7 @@ export class NavbarComponent implements OnInit {
       let items = res[0] || [];
 
       items = items.filter((item: any) => item.Menu_Name !== 'Leave');
+      items = this.addMissingMenuItems(items);
 
       items.sort((a: any, b: any) => {
         const indexA = menuOrder.indexOf(a.Menu_Name);
@@ -119,6 +126,16 @@ export class NavbarComponent implements OnInit {
       this.menuItems = items;
       console.log(this.menuItems);
     });
+  }
+
+  private addMissingMenuItems(items: any[]): any[] {
+    const existingNames = new Set(items.map((item: any) => item?.Menu_Name));
+
+    const missingItems = this.fallbackMenuItems.filter(
+      (item) => !existingNames.has(item.Menu_Name)
+    );
+
+    return [...items, ...missingItems];
   }
 
   ngOnInit(): void {
@@ -239,10 +256,6 @@ export class NavbarComponent implements OnInit {
         return isActive
           ? 'assets/images/navbar/ppt-active.png'
           : 'assets/images/navbar/ppt.svg';
-      case 'Mail Report':
-        return isActive
-          ? 'assets/images/navbar/dashboard-active.png'
-          : 'assets/images/navbar/dashboard.png';
       default:
         return ''; 
     }

@@ -120,7 +120,8 @@ Get_All_Enquiry(): Observable<any> {
     batchId: number | null,
     enrollmentStatus: string | 'all',
     activeStatus: string,
-    branchId: number | null
+    branchId: number | null,
+    assignedStaffId: number | null = null
   ): Observable<any> {
     let params = new HttpParams()
       .set('student_Name', student_Name)
@@ -136,6 +137,9 @@ Get_All_Enquiry(): Observable<any> {
     }
     if (branchId != null) {
       params = params.set('branchId', branchId.toString());
+    }
+    if (assignedStaffId != null) {
+      params = params.set('assignedStaffId', assignedStaffId.toString());
     }
     console.log('Search Params:', params.toString());
     

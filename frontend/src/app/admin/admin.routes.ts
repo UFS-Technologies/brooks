@@ -45,175 +45,175 @@ export const ADMIN_ROUTES: Routes = [
   },
   {
     path: 'dash',
-    component:DashboardComponent, 
-    data: { breadcrumb: 'Dashboard' } 
+    component: DashboardComponent,
+    data: { breadcrumb: 'Dashboard' }
 
   },
   {
     path: 'category',
-    component:CategoryComponent, 
-    data: { breadcrumb: 'Course Categories' } 
+    component: CategoryComponent,
+    data: { breadcrumb: 'Course Categories' }
 
   },
   {
     path: 'course',
-    component:CourseComponent, 
-    data: { breadcrumb: 'Course' } 
+    component: CourseComponent,
+    data: { breadcrumb: 'Course' }
   },
 
   {
 
     path: 'Faculty',
     component: TeacherComponent,
-    data: { breadcrumb: 'Faculty'}
+    data: { breadcrumb: 'Faculty' }
   },
   {
     path: 'student',
     component: StudentComponent,
-    data: { breadcrumb: 'Student'}
+    data: { breadcrumb: 'Student' }
   },
 
   {
     path: 'teacher_Report',
     component: TeacherReportComponent,
-    data: { breadcrumb: 'Teacher Report'}
+    data: { breadcrumb: 'Teacher Report' }
   },
   {
     path: 'student_Report',
     component: StudentReportComponent,
-    data: { breadcrumb: 'Student Report'}
+    data: { breadcrumb: 'Student Report' }
   },
   {
     path: 'course_module',
     component: ModuleComponent,
-    data: { breadcrumb: 'Levels'}
+    data: { breadcrumb: 'Levels' }
   },
   {
     path: 'reviews',
     component: ReviewsComponent,
-    data: { breadcrumb: 'FeedBack'}
+    data: { breadcrumb: 'FeedBack' }
   },
   {
     path: 'student_appInfo',
     component: StudentAppinfoComponent,
-    data: { breadcrumb: 'Student AppInfo'}
+    data: { breadcrumb: 'Student AppInfo' }
   },
   {
     path: 'Teacher_attendance',
     component: TeacherReportComponent,
-    data: { breadcrumb: 'Teacher Attendance'}
+    data: { breadcrumb: 'Teacher Attendance' }
   },
   {
     path: 'file-upload',
-    component: FileUploadComponent ,
-    data: { breadcrumb: 'Studentfile upload'}
+    component: FileUploadComponent,
+    data: { breadcrumb: 'Studentfile upload' }
   },
-     {
+  {
     path: 'payment_installment_file_import',
-    component: payment_installment_file_importComponent ,
-    data: { breadcrumb: 'Upload Installment Data '}
+    component: payment_installment_file_importComponent,
+    data: { breadcrumb: 'Upload Installment Data ' }
   },
-   {
+  {
     path: 'Course_Enrollment_Import',
-    component: Course_Enrollment_ImportComponent ,
-    data: { breadcrumb: 'Enrollment Upload '}
+    component: Course_Enrollment_ImportComponent,
+    data: { breadcrumb: 'Enrollment Upload ' }
   },
   {
     path: 'Exam_Import',
-    component: ExamImportComponent ,
-    data: { breadcrumb: 'Exam Upload '}
+    component: ExamImportComponent,
+    data: { breadcrumb: 'Exam Upload ' }
   },
   {
     path: 'Expenses',
-    component: ExpensesComponent ,
-    data: { breadcrumb: 'Expenses '}
+    component: ExpensesComponent,
+    data: { breadcrumb: 'Expenses ' }
   },
   {
     path: 'Expense_Type',
     component: ExpenseTypeComponent,
-    data: { breadcrumb: 'Expense Type'}
+    data: { breadcrumb: 'Expense Type' }
   },
-    {
+  {
     path: 'Expense_Category',
     component: ExpenseCategoryComponent,
-    data: { breadcrumb: 'Expense Category'}
+    data: { breadcrumb: 'Expense Category' }
   },
   {
     path: 'Income',
     component: IncomeComponent,
-    data: { breadcrumb: 'Income'}
+    data: { breadcrumb: 'Income' }
   },
   {
     path: 'Reports',
     component: ReportsComponent,
-    data: { breadcrumb: 'Reports'}
+    data: { breadcrumb: 'Reports' }
   },
   {
     path: 'Student_Reports',
     component: StudentReportComponent,
-    data: { breadcrumb: 'Student Reports'}
+    data: { breadcrumb: 'Student Reports' }
   },
   {
     path: 'Tax_Reports',
     component: TaxReportsComponent,
-    data: { breadcrumb: 'Tax Reports'}
+    data: { breadcrumb: 'Tax Reports' }
   },
   {
-    path:'Registration_Report',
-    component:RegistrationreportComponent,
-    data: { breadcrumb: 'Registration  Reports'}
+    path: 'Registration_Report',
+    component: RegistrationreportComponent,
+    data: { breadcrumb: 'Registration  Reports' }
   },
   {
     path: 'Fees_Total_Outstanding',
     component: FeesTotalOutstandingComponent,
-    data: { breadcrumb: 'Fees Total Outstanding'}
+    data: { breadcrumb: 'Fees Total Outstanding' }
   },
   {
     path: 'Upcoming_Installment',
     component: UpcomingInstallmentComponent,
-    data: { breadcrumb: 'Upcoming Installment'}
+    data: { breadcrumb: 'Upcoming Installment' }
   },
-{
+  {
     path: 'Due_Instalment',
     component: DueInstalmentComponent,
-    data: { breadcrumb: 'Due Instalment'}
+    data: { breadcrumb: 'Due Instalment' }
   },
   {
     path: 'Student_Lead',
     component: StudentLeadComponent,
-    data: { breadcrumb: 'Student Lead'}
+    data: { breadcrumb: 'Student Lead' }
   },
   {
     path: 'Import',
     component: LeadImportComponent,
-    data: { breadcrumb: 'Import'}
+    data: { breadcrumb: 'Import' }
   },
   {
     path: 'Follow_up_Reports',
     component: FollowUpReportsComponent,
-    data: { breadcrumb: 'Follow-up Reports'}
+    data: { breadcrumb: 'Follow-up Reports' }
   },
   {
     path: 'Follow_up_Status',
     component: FollowUpStatusComponent,
-    data: { breadcrumb: 'Follow-up Status'}
+    data: { breadcrumb: 'Follow-up Status' }
   },
   {
     path: 'Leave',
     component: LeaveComponent,
-    data: { breadcrumb: 'Leave'}
+    data: { breadcrumb: 'Leave' }
   },
   {
     path: 'Work_Report',
     component: WorkReportComponent,
-    data: { breadcrumb: 'Work Report'}
+    data: { breadcrumb: 'Work Report' }
   },
   {
     path: 'Enquiry_Source',
     component: EnquirySourceComponent,
-    data: { breadcrumb: 'Enquiry Source'}
+    data: { breadcrumb: 'Enquiry Source' }
   },
-    {
+  {
     path: 'Enquiry_Conversion',
     component: EnquiryConversionComponent,
     data: { breadcrumb: 'Enquiry Conversion' }
@@ -221,17 +221,17 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'My_Students',
     component: MyStudentsComponent,
-    data: { breadcrumb: 'My Students'}
+    data: { breadcrumb: 'My Students' }
   },
   {
     path: 'Enquiry_Summary',
     loadComponent: () => import('./components/enquiry-summary/enquiry-summary.component').then(c => c.EnquirySummaryComponent),
-    data: { breadcrumb: 'Enquiry Summary'}
+    data: { breadcrumb: 'Enquiry Summary' }
   },
   {
-    path: 'email-templates',
+    path: 'email',
     component: EmailTemplateComponent,
-    data: { breadcrumb: 'Email Templates' }
+    data: { breadcrumb: 'Email' }
   },
   {
     path: 'Mail_Report',

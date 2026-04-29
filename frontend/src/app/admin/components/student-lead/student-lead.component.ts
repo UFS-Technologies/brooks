@@ -136,7 +136,7 @@ export class StudentLeadComponent implements OnInit {
     'certificateContainer'
   );
   enrollmentStatus: string = 'enrolled';
-  selectedStaffFilter: string = 'all';
+  selectedStaffFilter: number | null = null;
   selectedStudentStatusFilter: string = 'all';
   selectedBranchFilter: number | null = null;
 
@@ -1126,6 +1126,7 @@ onCancelEdit(): void {
     this.Department_Dropdown();
     this.User_Dropdown();
     this.Followup_status_Dropdown();
+    this.loadLeadBatches();
     this.Get_All_Enquiry();
     this.Search_student_lead();
     ;
@@ -1364,6 +1365,24 @@ onCancelEdit(): void {
         console.error('Failed to fetch branch data:', err);
       }
     );
+  }
+
+  loadLeadBatches() {
+    this.student_Service_.loadBatches().subscribe({
+      next: (rows: any) => {
+        if (rows && Array.isArray(rows[0])) {
+          this.Batch_List = rows[0];
+        } else if (Array.isArray(rows)) {
+          this.Batch_List = rows;
+        } else {
+          this.Batch_List = [];
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch batch data:', err);
+        this.Batch_List = [];
+      },
+    });
   }
 
   // Handle staff change
@@ -1768,9 +1787,19 @@ onCancelEdit(): void {
   Search_student_lead() {
     this.isLoading = true;
     this.student_Data = [];
-const followUpStatus = this.followUpStatus?.Status_Name || 'all';
+    const followUpStatus = this.followUpStatus?.Status_Name || 'all';
     this.student_Service_
-      .Search_student_lead(this.searchTerm, this.currentPage, this.pageSize, this.selectedCourseId, this.selectedBatchId, this.enrollmentStatus, followUpStatus, this.selectedBranchFilter)
+      .Search_student_lead(
+        this.searchTerm,
+        this.currentPage,
+        this.pageSize,
+        this.selectedCourseId,
+        this.selectedBatchId,
+        this.enrollmentStatus,
+        followUpStatus,
+        this.selectedBranchFilter,
+        this.selectedStaffFilter
+      )
       .subscribe(
         (response: any) => {
           console.log('response: ', response);
@@ -1840,29 +1869,6 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
             next: (enrichedRows: any[]) => {
               this.student_Data = enrichedRows;
 
-              // Filter out leads whose follow-up status is marked as 'No' (Is_Active === 0 / false)
-              if (this.followUpStatusData && this.followUpStatusData.length > 0) {
-                this.student_Data = this.student_Data.filter((student: any) => {
-                  const statusName = student.Status_Name || student.Follow_Up_Status_Name || student.Followup_Status_Name;
-                  if (statusName) {
-                    const matchedStatus = this.followUpStatusData.find(
-                      (s: any) => s.Status_Name === statusName
-                    );
-                    if (matchedStatus && (matchedStatus.Is_Active === 0 || matchedStatus.Is_Active === false || matchedStatus.Is_Active === '0')) {
-                      return false; // exclude leads with inactive follow-up statuses
-                    }
-                  }
-                  return true; // keep others
-                });
-              }
-
-              if (this.selectedStaffFilter && this.selectedStaffFilter !== 'all') {
-                this.student_Data = this.student_Data.filter(
-                  (s) =>
-                    s['Assigned_Staff_Name'] === this.selectedStaffFilter ||
-                    s['studentResponse']?.Assigned_Staff_Name === this.selectedStaffFilter
-                );
-              }
                if (this.selectedStudentStatusFilter !== 'all') {
                 this.student_Data = this.student_Data.filter(
                   (student: any) => this.getStudentStatusValue(student) === this.selectedStudentStatusFilter
@@ -1873,29 +1879,6 @@ const followUpStatus = this.followUpStatus?.Status_Name || 'all';
             error: () => {
               this.student_Data = rows;
 
-              // Filter out leads whose follow-up status is marked as 'No' (Is_Active === 0 / false)
-              if (this.followUpStatusData && this.followUpStatusData.length > 0) {
-                this.student_Data = this.student_Data.filter((student: any) => {
-                  const statusName = student.Status_Name || student.Follow_Up_Status_Name || student.Followup_Status_Name;
-                  if (statusName) {
-                    const matchedStatus = this.followUpStatusData.find(
-                      (s: any) => s.Status_Name === statusName
-                    );
-                    if (matchedStatus && (matchedStatus.Is_Active === 0 || matchedStatus.Is_Active === false || matchedStatus.Is_Active === '0')) {
-                      return false; // exclude leads with inactive follow-up statuses
-                    }
-                  }
-                  return true;
-                });
-              }
-              
-              if (this.selectedStaffFilter && this.selectedStaffFilter !== 'all') {
-                this.student_Data = this.student_Data.filter(
-                  (s) =>
-                    s['Assigned_Staff_Name'] === this.selectedStaffFilter ||
-                    s['studentResponse']?.Assigned_Staff_Name === this.selectedStaffFilter
-                );
-              }
                if (this.selectedStudentStatusFilter !== 'all') {
                 this.student_Data = this.student_Data.filter(
                   (student: any) => this.getStudentStatusValue(student) === this.selectedStudentStatusFilter

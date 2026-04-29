@@ -23,6 +23,10 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { registerLocaleData } from '@angular/common';
 import localeGb from '@angular/common/locales/en-GB';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
+import { MatDialog } from '@angular/material/dialog';
+import { EmailTemplateService } from '../../services/email-template.service';
+import Swal from 'sweetalert2';
 
 // Register 'en-GB' locale for dd-MM-yyyy support
 registerLocaleData(localeGb);
@@ -60,6 +64,8 @@ export class MyStudentsComponent implements OnInit {
   toDate = new FormControl(new Date());
   private user = inject(user_Service);
   private courseService = inject(course_Service);
+  private emailTemplateService = inject(EmailTemplateService);
+  dialogBox = inject(MatDialog);
 
   courseList: any[] = [];
   batchList: any[] = [];
@@ -91,10 +97,25 @@ showMoreOptions: boolean = false;
 
   staffId = parseInt(localStorage.getItem('User_Id') || '0');
 
+  selectedStudents: Set<any> = new Set();
+  showEmailModal: boolean = false;
+  emailTemplates: any[] = [];
+  selectedTemplateId: number | null = null;
+  emailSubject: string = '';
+  emailBody: string = '';
+  isSendingEmail: boolean = false;
+
   constructor() { }
 
   ngOnInit() {
     this.loadInitialData();
+    this.loadEmailTemplates();
+  }
+
+  loadEmailTemplates() {
+    this.emailTemplateService.searchTemplates('').subscribe((res) => {
+      this.emailTemplates = res || [];
+    });
   }
 
   loadInitialData() {
@@ -176,6 +197,124 @@ const params = {
     });
 }
 
+  get isAllSelected() {
+    return this.tableData.length > 0 && this.selectedStudents.size === this.tableData.length;
+  }
+
+  toggleSelectAll(event: any) {
+    if (event.checked) {
+      this.tableData.forEach(row => this.selectedStudents.add(row));
+    } else {
+      this.selectedStudents.clear();
+    }
+  }
+
+  toggleSelectStudent(row: any, event: any) {
+    if (event.checked) {
+      this.selectedStudents.add(row);
+    } else {
+      this.selectedStudents.delete(row);
+    }
+  }
+
+  openBulkEmailModal() {
+    if (this.selectedStudents.size === 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Please select at least one student to send email.', Type: '3' },
+      });
+      return;
+    }
+
+    const noEmailStudents = Array.from(this.selectedStudents).filter(s => !s.Email);
+    if (noEmailStudents.length > 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: `Warning: ${noEmailStudents.length} selected student(s) do not have an email address. They will be skipped.`, Type: '3' },
+      });
+    }
+
+    this.showEmailModal = true;
+    this.emailSubject = '';
+    this.emailBody = '';
+    this.selectedTemplateId = null;
+  }
+
+  closeEmailModal() {
+    this.showEmailModal = false;
+  }
+
+  onTemplateChange() {
+    if (this.selectedTemplateId) {
+      const template = this.emailTemplates.find(t => t.Template_ID === this.selectedTemplateId);
+      if (template) {
+        this.emailSubject = template.Subject;
+        this.emailBody = template.Body;
+      }
+    } else {
+      this.emailSubject = '';
+      this.emailBody = '';
+    }
+  }
+
+  sendBulkEmail() {
+    if (!this.emailSubject.trim() || !this.emailBody.trim()) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Please enter Subject and Body for the email.', Type: '3' },
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Confirm Sending',
+      text: `Are you sure you want to send this email to ${this.selectedStudents.size} student(s)?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, send it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeBulkEmailSend();
+      }
+    });
+  }
+
+  private executeBulkEmailSend() {
+    this.isSendingEmail = true;
+    const payload = {
+      students: Array.from(this.selectedStudents),
+      subject: this.emailSubject,
+      body: this.emailBody,
+      templateId: this.selectedTemplateId
+    };
+
+    this.user.Send_Bulk_Email(payload).subscribe({
+      next: () => {
+        this.isSendingEmail = false;
+        this.closeEmailModal();
+        this.selectedStudents.clear();
+        Swal.fire({
+          title: 'Sent!',
+          text: 'Bulk emails sent successfully!',
+          icon: 'success',
+          confirmButtonColor: '#3085d6'
+        });
+      },
+      error: (err) => {
+        this.isSendingEmail = false;
+        console.error('Bulk email error:', err);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to send bulk emails.',
+          icon: 'error',
+          confirmButtonColor: '#3085d6'
+        });
+      }
+    });
+  }
+
   onSaveStudent(event: any): void {
   this.student_edit = false; 
 }
@@ -206,12 +345,14 @@ const params = {
     this.toDate.setValue(new Date());
     this.showMoreOptions = false;
     this.currentPage = 1;
+    this.selectedStudents.clear();
     this.fetchReportData();
   }
 
   onPageChange(event: { pageIndex: number, pageSize: number }) {
     this.currentPage = event.pageIndex + 1;
     this.pageSize = event.pageSize;
+    this.selectedStudents.clear();
     this.fetchReportData();
   }
 

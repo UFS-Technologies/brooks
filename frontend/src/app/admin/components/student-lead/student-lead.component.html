@@ -26,9 +26,9 @@
         <div class="relative">
           <select id="staff-filter" [(ngModel)]="selectedStaffFilter" (change)="onSearchChange()"
             class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
-            <option value="all">All Staff</option>
+            <option [ngValue]="null">All Staff</option>
             <ng-container *ngFor="let staff of staffData">
-              <option *ngIf="staff.First_Name !== 'Select Staff'" [value]="staff.First_Name">
+              <option *ngIf="staff.First_Name !== 'Select Staff'" [ngValue]="staff.User_ID">
                 {{ staff.First_Name }} {{ staff.Last_Name || '' }}
               </option>
             </ng-container>
@@ -74,7 +74,7 @@
             class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
             <option [ngValue]="null">All Branches</option>
             <ng-container *ngFor="let branch of Search_Branch_Data">
-              <option *ngIf="branch.Branch_Name !== 'Select Branch'" [value]="branch.Branch_ID">
+              <option *ngIf="branch.Branch_Name !== 'Select Branch'" [ngValue]="branch.Branch_ID">
                 {{ branch.Branch_Name }}
               </option>
             </ng-container>
@@ -129,14 +129,14 @@
       </div> -->
 
       <!-- Batch Filter -->
-      @if(Batch_List.length) {
+      <!-- @if(Batch_List.length) {
       <div class="min-w-[180px]">
         <label for="batch" class="block text-sm font-medium text-gray-600 mb-1">Select Batch</label>
         <div class="relative">
           <select id="batch" [(ngModel)]="selectedBatchId" (change)="onSearchChange()"
             class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
             <option [ngValue]="null">All Batches</option>
-            <option *ngFor="let batch of Batch_List" [value]="batch.Batch_ID">
+            <option *ngFor="let batch of Batch_List" [ngValue]="batch.Batch_ID">
               {{ batch.Batch_Name }}
             </option>
           </select>
@@ -148,7 +148,7 @@
           </svg>
         </div>
       </div>
-      }
+      } -->
 
       <!-- Add Student Button -->
       <div *ngIf="isSave " class="flex items-end">

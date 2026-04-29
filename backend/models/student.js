@@ -301,6 +301,7 @@ var student = {
     enrollment_status = "all",
     activeStatus,
     branchId,
+    assignedStaffId,
     p_user_id,
     p_user_type_id
   ) {
@@ -325,6 +326,7 @@ var student = {
       enrollment_status || "all",
       activeStatus,
       toIntOrNull(branchId),
+      toIntOrNull(assignedStaffId),
       toIntOrNull(p_user_id),
       toIntOrNull(p_user_type_id),
     ]);
