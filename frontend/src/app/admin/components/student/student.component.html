@@ -350,6 +350,28 @@
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           [min]="getCurrentDate()">
       </div>
+
+      <!-- Email Template Selection -->
+      <div class="space-y-2">
+        <label for="email-template-student" class="block text-sm font-medium text-gray-700">
+          Email Template
+        </label>
+        <div class="flex gap-2">
+          <select id="email-template-student" [(ngModel)]="selectedTemplateId" name="selectedTemplateId"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option [ngValue]="null">-- Select Template To Send --</option>
+            <option *ngFor="let template of emailTemplates" [value]="template.Template_ID">
+              {{ template.Template_Name }}
+            </option>
+          </select>
+          <button type="button" 
+                  (click)="sendSelectedEmail(selectedStudent.Email, selectedStudent.First_Name + ' ' + selectedStudent.Last_Name)"
+                  [disabled]="!selectedTemplateId || !selectedStudent?.Email"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition-colors flex items-center">
+            <span class="material-symbols-outlined">send</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Remark Text Area -->

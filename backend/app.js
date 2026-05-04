@@ -35,6 +35,8 @@ const IncomeRouter = require('./routes/Income');
 const LateFeeRouter = require('./routes/LateFee');
 const EmailTemplateRouter = require('./routes/email_template');
 const webhookRouter = require('./routes/webhook');
+const campaignRouter = require('./routes/campaign');
+
 
 
 
@@ -103,6 +105,8 @@ app.use('/Reports', ReportsRouter);
 app.use('/Income', IncomeRouter);
 app.use('/LateFee', LateFeeRouter);
 app.use('/EmailTemplate', EmailTemplateRouter);
+app.use('/Campaign', campaignRouter);
+
 
 
 // 404 Error handler

@@ -217,7 +217,7 @@ router.get('/Search_user/', async (req, res, next) => {
       user_Name: user_Name || '',
       slot_wise: slot_wise === 'true' ? true : (slot_wise === 'false' ? false : null),
       batch_wise: batch_wise === 'true' ? true : (batch_wise === 'false' ? false : null),
-      course_id: course_id ? parseInt(course_id) : null,
+      course_id: course_id ? parseInt(course_id) : 0,
       hod_only: hod_only === 'true' ? true : (hod_only === 'false' ? false : null)
     };
 

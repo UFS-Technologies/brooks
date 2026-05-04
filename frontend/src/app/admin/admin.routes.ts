@@ -36,6 +36,8 @@ import { EnquiryConversionComponent } from './components/enquiry-conversion/enqu
 import { MyStudentsComponent } from './components/my-students/my-students.component';
 import { EmailTemplateComponent } from './components/email-template/email-template.component';
 import { MailReportComponent } from './components/mail-report/mail-report.component';
+import { CampaignComponent } from './components/campaign/campaign.component';
+
 export const ADMIN_ROUTES: Routes = [
 
   {
@@ -238,5 +240,11 @@ export const ADMIN_ROUTES: Routes = [
     component: MailReportComponent,
     data: { breadcrumb: 'Mail Report' }
   },
+  {
+    path: 'Campaign',
+    component: CampaignComponent,
+    data: { breadcrumb: 'Campaign' }
+  },
+
 ];
 

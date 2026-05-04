@@ -41,6 +41,7 @@
     "rxjs": "~7.8.0",
     "sass-migrator": "^2.2.1",
     "socket.io-client": "^4.7.5",
+    "sweetalert2": "^11.26.24",
     "tslib": "^2.3.0",
     "uuid": "^9.0.1",
     "xlsx": "^0.18.5",

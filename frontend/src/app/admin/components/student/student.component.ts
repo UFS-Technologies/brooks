@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { student_Service } from '../../services/student.Service';
+import { EmailTemplateService } from '../../services/email-template.service';
 import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
 import { MatDialog } from '@angular/material/dialog';
 import { student } from '../../../core/models/student';
@@ -116,6 +117,7 @@ export class StudentComponent implements OnInit {
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
   dialogBox = inject(MatDialog);
+  private emailTemplateService = inject(EmailTemplateService);
   private course_Service_ = inject(course_Service);
   router = inject(Router);
   url = inject(ActivatedRoute);
@@ -145,6 +147,8 @@ export class StudentComponent implements OnInit {
   showHistoryBox: boolean = false;
   followUpHistory: any[] = [];
   isLoadingHistory: boolean = false;
+  emailTemplates: any[] = [];
+  selectedTemplateId: number | null = null;
 
   nextFollowUpDate: string = '';
   remark: string = '';
@@ -317,6 +321,7 @@ export class StudentComponent implements OnInit {
   ngOnInit(): void {
     this.pageLoad();
     this.initForm();
+    this.loadEmailTemplates();
     const today = new Date();
     this.todayString = today.toISOString().split('T')[0];
     this.feesForm.get('Total_Amount')?.valueChanges.subscribe((total) => {
@@ -1130,6 +1135,48 @@ onCancelEdit(): void {
     this.remark = '';
     this.followupPriority = '';
   }
+
+  loadEmailTemplates() {
+    this.emailTemplateService.searchTemplates('').subscribe((res) => {
+      this.emailTemplates = res || [];
+    });
+  }
+
+  sendSelectedEmail(email: string, studentName: string) {
+    if (this.selectedTemplateId && email) {
+      // Find the selected template name to check if it's the PTE one
+      const selectedTemplate = this.emailTemplates.find(t => t.Template_ID == this.selectedTemplateId);
+      
+      const placeholders: any = {
+        'Student Name': studentName,
+        'Lead Name': studentName
+      };
+
+      // If it's the PTE template, add specific placeholders from the student record
+      if (selectedTemplate?.Template_Name === 'PTE course admission confirmation' && this.selectedStudent) {
+        placeholders['Payment Amount'] = this.selectedStudent.Paid_Amount || '0.00';
+        placeholders['Start Date'] = this.selectedStudent.Start_Date || '-';
+        placeholders['Start Time'] = this.selectedStudent.Time_Slot || '-';
+      }
+
+      this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId, email, placeholders).subscribe({
+        next: (res) => {
+          this.dialogBox.open(DialogBox_Component, {
+            panelClass: 'Dialogbox-Class',
+            data: { Message: 'Email sent successfully', Type: 'false' },
+          });
+        },
+        error: (err) => {
+          console.error('Error sending email:', err);
+          this.dialogBox.open(DialogBox_Component, {
+            panelClass: 'Dialogbox-Class',
+            data: { Message: 'Failed to send email', Type: 'false' },
+          });
+        }
+      });
+    }
+  }
+
   // Add method to load follow-up related data
   loadFollowupData() {
     ;

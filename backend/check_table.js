@@ -1,7 +1,7 @@
 const db = require('./config/dbconnection');
 
-async function listTables() {
-    db.query('SHOW TABLES', (err, rows) => {
+async function checkTable() {
+    db.query('SELECT * FROM email_log ORDER BY Sent_At DESC LIMIT 10', (err, rows) => {
         if (err) {
             console.error(err);
         } else {
@@ -11,4 +11,4 @@ async function listTables() {
     });
 }
 
-listTables();
+checkTable();

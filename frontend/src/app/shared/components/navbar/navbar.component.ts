@@ -19,14 +19,8 @@ import { DialogBox_Component } from '../../components/DialogBox/DialogBox.compon
   standalone: false,
 })
 export class NavbarComponent implements OnInit {
-  private readonly fallbackMenuItems = [
-    {
-      Menu_ID: 'fallback-mail-report',
-      Menu_Name: 'Mail Report',
-      Route: '/admin/Mail_Report',
-    },
-  ];
 
+  // ✅ Inject Services
   private router = inject(Router);
   private dataService = inject(ObservablesService);
   private activatedRoute = inject(ActivatedRoute);
@@ -34,15 +28,15 @@ export class NavbarComponent implements OnInit {
   user_Service = inject(user_Service);
   private dialog = inject(MatDialog);
 
+  // ✅ UI State
   menuOpen: boolean = false;
-  menuItems: any = [];
-  private routerSubscription: Subscription | undefined;
+  menuItems: any[] = [];
+  private routerSubscription?: Subscription;
 
   user = localStorage.getItem('User_Type');
   title: string = 'Dashboard';
-  data: any;
-  userEmail: any = '';
-  First_Name: any = '';
+  userEmail: string = '';
+  First_Name: string = '';
 
   isSidebarVisible: boolean = true;
   isSidebarPinned: boolean = true;
@@ -54,11 +48,13 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  // ✅ Screen Resize
   @HostListener('window:resize')
   onResize() {
     this.isSmallScreen = window.innerWidth <= 768;
   }
 
+  // ✅ Sidebar Controls
   toggleSidebar() {
     if (!this.isSidebarPinned) {
       this.isSidebarVisible = !this.isSidebarVisible;
@@ -70,8 +66,15 @@ export class NavbarComponent implements OnInit {
     this.isSidebarVisible = this.isSidebarPinned;
   }
 
+  // ✅ MAIN MENU FUNCTION (Mail Report INCLUDED HERE)
   async getMenu() {
     const User_Id = localStorage.getItem('User_Id');
+
+    if (!User_Id) {
+      console.error('User_Id not found');
+      this.menuItems = [];
+      return;
+    }
 
     const menuOrder = [
       'Dashboard',
@@ -84,6 +87,7 @@ export class NavbarComponent implements OnInit {
       'Staff',
       'Email',
       'Mail Report',
+      'Campaign',
       'Enquiry Source',
       'Enquiry Summary',
       'Expense Category',
@@ -101,42 +105,71 @@ export class NavbarComponent implements OnInit {
       'Status',
     ];
 
-    this.user_Service.Get_user_Menus(User_Id).subscribe((res) => {
-      let items = res[0] || [];
+    this.user_Service.Get_user_Menus(User_Id).subscribe({
+      next: (res: any) => {
+        let items = Array.isArray(res?.[0]) ? res[0] : [];
 
-      // Remove unwanted menu
-      items = items.filter((item: any) => item.Menu_Name !== 'Leave');
+        // ✅ Remove unwanted menu
+        items = items.filter((item: any) => item?.Menu_Name !== 'Leave');
 
-      // Add missing fallback items
-      items = this.addMissingMenuItems(items);
+        // ✅ Normalize menu names
+        items = items.map((item: any) => ({
+          ...item,
+          Menu_Name: item.Menu_Name?.trim(),
+        }));
 
-      // Sort menu
-      items.sort((a: any, b: any) => {
-        const indexA = menuOrder.indexOf(a.Menu_Name);
-        const indexB = menuOrder.indexOf(b.Menu_Name);
+        // ✅ 👉 Ensure Mail Report is always present
+        const mailReportExists = items.some(
+          (item: any) => item.Menu_Name === 'Mail Report'
+        );
 
-        if (indexA === -1 && indexB === -1) return 0;
-        if (indexA === -1) return 1;
-        if (indexB === -1) return -1;
+        if (!mailReportExists) {
+          items.push({
+            Menu_ID: 'fallback-mail-report',
+            Menu_Name: 'Mail Report',
+            Route: '/admin/Mail_Report',
+          });
+        }
 
-        return indexA - indexB;
-      });
+        // ✅ Fix routes
+        items = items.map((item: any) => ({
+          ...item,
+          Route: this.getMenuRoute(item),
+        }));
 
-      this.menuItems = items;
-      console.log('Menu Items:', this.menuItems);
+        // ✅ Sort menu
+        items.sort((a: any, b: any) => {
+          const indexA = menuOrder.indexOf(a.Menu_Name);
+          const indexB = menuOrder.indexOf(b.Menu_Name);
+
+          if (indexA === -1 && indexB === -1) return 0;
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+
+          return indexA - indexB;
+        });
+
+        this.menuItems = items;
+
+        console.log('Final Menu:', this.menuItems);
+      },
+
+      error: (err) => {
+        console.error('Menu API error:', err);
+
+        // ✅ Fallback if API fails
+        this.menuItems = [
+          {
+            Menu_ID: 'fallback-mail-report',
+            Menu_Name: 'Mail Report',
+            Route: '/admin/Mail_Report',
+          },
+        ];
+      },
     });
   }
 
-  private addMissingMenuItems(items: any[]): any[] {
-    const existingNames = new Set(items.map((item: any) => item?.Menu_Name));
-
-    const missingItems = this.fallbackMenuItems.filter(
-      (item) => !existingNames.has(item.Menu_Name)
-    );
-
-    return [...items, ...missingItems];
-  }
-
+  // ✅ INIT
   ngOnInit(): void {
     this.onResize();
 
@@ -151,6 +184,7 @@ export class NavbarComponent implements OnInit {
       )
       .subscribe((route) => {
         const breadcrumbData = this.getBreadcrumb(route.snapshot.data);
+
         localStorage.setItem('NavTitle', breadcrumbData.breadcrumb);
         this.dataService.setData('NavTitle', breadcrumbData.breadcrumb);
 
@@ -162,27 +196,22 @@ export class NavbarComponent implements OnInit {
       this.title = navTitle;
     }
 
-    this.userEmail = this.dataService.getData('Email');
-    this.First_Name = this.dataService.getData('Name');
+    this.userEmail = this.dataService.getData('Email') || '';
+    this.First_Name = this.dataService.getData('Name') || '';
   }
 
+  // ✅ Breadcrumb
   getBreadcrumb(routeData: any): { breadcrumb: string } {
-    let breadcrumb = '';
+    let breadcrumb = routeData?.breadcrumb || '';
 
-    if (routeData.breadcrumb) {
-      breadcrumb = routeData.breadcrumb;
-
-      if (breadcrumb === 'Faculty') {
-        breadcrumb = 'Staff';
-      }
-      if (breadcrumb === 'Student') {
-        breadcrumb = 'Student';
-      }
+    if (breadcrumb === 'Faculty') {
+      breadcrumb = 'Staff';
     }
 
     return { breadcrumb };
   }
 
+  // ✅ Icon Handling
   getImageSource(label: string, isActive: boolean): string {
     switch (label) {
       case 'Dashboard':
@@ -206,17 +235,12 @@ export class NavbarComponent implements OnInit {
           ? 'assets/images/navbar/ppt-active.png'
           : 'assets/images/navbar/ppt.svg';
 
-      case 'Enquiry Summary':
-      case 'Enquiry Conversion':
-        return isActive
-          ? 'assets/images/navbar/dashboard-active.png'
-          : 'assets/images/navbar/dashboard.png';
-
       default:
-        return '';
+        return 'assets/images/navbar/default.png';
     }
   }
 
+  // ✅ Route Fix
   getMenuRoute(item: any): string {
     const route = item?.Route || '';
 
@@ -225,6 +249,7 @@ export class NavbarComponent implements OnInit {
     return route.startsWith('/') ? route : `/admin/${route}`;
   }
 
+  // ✅ Active Check
   isActive(link: string): boolean {
     const options: IsActiveMatchOptions = {
       paths: 'exact',
@@ -236,10 +261,12 @@ export class NavbarComponent implements OnInit {
     return this.router.isActive(link, options);
   }
 
+  // ✅ Mobile Menu
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }
 
+  // ✅ Logout
   logout() {
     const dialogRef = this.dialog.open(DialogBox_Component, {
       panelClass: 'Dialogbox-Class',
@@ -252,16 +279,14 @@ export class NavbarComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'Yes') {
-        if (this.routerSubscription) {
-          this.routerSubscription.unsubscribe();
-        }
+        this.routerSubscription?.unsubscribe();
 
         localStorage.clear();
         this.dataService.clearData();
 
         const userType = Number(this.user);
 
-        if (userType === 1 || userType === 2 || userType === 3) {
+        if ([1, 2, 3].includes(userType)) {
           this.router.navigateByUrl('auth');
         } else if (userType === 4) {
           this.router.navigateByUrl('auth/user');
@@ -272,9 +297,10 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  // ✅ Menu Actions
   performAction(nav: string) {
     if (nav === 'Sign Out') {
       this.logout();
     }
   }
-}
+}

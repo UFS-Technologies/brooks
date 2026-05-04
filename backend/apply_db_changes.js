@@ -4,7 +4,7 @@ const dbConfig = {
     user: "root",
     password: "password",
     // database: "brooks_new",
-        database: "aives_db",
+        database: "avies_db",
 
     multipleStatements: true,
 };
@@ -365,6 +365,35 @@ END`;
         `);
         console.log("Created Get_Email_Logs_By_Student.");
         
+        // 7. Insert Mail Report menu
+        const [mailReportMenuResult] = await connection.query(`
+            INSERT INTO menu (Menu_Name, Route, Parent_Menu_ID, Delete_Status)
+            SELECT 'Mail Report', '/admin/Mail_Report', NULL, 0
+            FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM menu WHERE Menu_Name = 'Mail Report');
+        `);
+        if (mailReportMenuResult.affectedRows > 0) {
+            console.log("Mail Report menu inserted.");
+        } else {
+            console.log("Mail Report menu already exists.");
+        }
+
+        // 8. Assign Mail Report menu to all Admin users (User_Type_Id = 1)
+        const [mailReportMenu] = await connection.query("SELECT Menu_ID FROM menu WHERE Menu_Name = 'Mail Report'");
+        if (mailReportMenu.length > 0) {
+            const mailReportId = mailReportMenu[0].Menu_ID;
+            const [admins] = await connection.query("SELECT User_ID FROM users WHERE User_Type_Id = 1");
+            for (const admin of admins) {
+                await connection.query(`
+                    INSERT INTO user_menu_selection (Menu_Id, User_Id, IsEdit, IsSave, IsDelete, IsView, DeleteStatus)
+                    SELECT ?, ?, 1, 1, 1, 1, 0
+                    FROM DUAL
+                    WHERE NOT EXISTS (SELECT 1 FROM user_menu_selection WHERE Menu_Id = ? AND User_Id = ?);
+                `, [mailReportId, admin.User_ID, mailReportId, admin.User_ID]);
+            }
+            console.log("Mail Report menu permissions assigned to admins.");
+        }
+
         await connection.end();
         console.log("All DB changes applied.");
     } catch (e) {

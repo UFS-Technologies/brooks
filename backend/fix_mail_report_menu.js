@@ -7,8 +7,8 @@ async function fixMenu() {
         // 1. Insert into menu table
         const insertMenuQuery = `
             INSERT INTO menu (Menu_Name, Route, Parent_Menu_ID, Delete_Status)
-            VALUES ('Mail Report', '/admin/mail-report', NULL, 0)
-            ON DUPLICATE KEY UPDATE Route = '/admin/mail-report', Delete_Status = 0;
+            VALUES ('Mail Report', '/admin/Mail_Report', NULL, 0)
+            ON DUPLICATE KEY UPDATE Route = '/admin/Mail_Report', Delete_Status = 0;
         `;
         
         // Check if it exists first to handle cases where ON DUPLICATE KEY might not work as expected with unique constraints
@@ -22,7 +22,7 @@ async function fixMenu() {
         let menuId;
         if (existingMenu.length === 0) {
             const result = await new Promise((resolve, reject) => {
-                db.query("INSERT INTO menu (Menu_Name, Route, Parent_Menu_ID, Delete_Status) VALUES ('Mail Report', '/admin/mail-report', NULL, 0)", (err, results) => {
+                db.query("INSERT INTO menu (Menu_Name, Route, Parent_Menu_ID, Delete_Status) VALUES ('Mail Report', '/admin/Mail_Report', NULL, 0)", (err, results) => {
                     if (err) reject(err);
                     else resolve(results);
                 });
@@ -32,7 +32,7 @@ async function fixMenu() {
         } else {
             menuId = existingMenu[0].Menu_ID;
             await new Promise((resolve, reject) => {
-                db.query("UPDATE menu SET Route = '/admin/mail-report', Delete_Status = 0 WHERE Menu_ID = ?", [menuId], (err, results) => {
+                db.query("UPDATE menu SET Route = '/admin/Mail_Report', Delete_Status = 0 WHERE Menu_ID = ?", [menuId], (err, results) => {
                     if (err) reject(err);
                     else resolve(results);
                 });

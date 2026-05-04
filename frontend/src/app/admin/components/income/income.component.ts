@@ -68,10 +68,23 @@ export class IncomeComponent implements OnInit {
 
   sendSelectedEmail(email: string, studentName: string = '') {
     if (this.selectedTemplateId && email) {
-      const placeholders = {
+      // Find the selected template name to check if it's the PTE one
+      const selectedTemplate = this.emailTemplates.find(t => t.Template_ID == this.selectedTemplateId);
+
+      const placeholders: any = {
         'Student Name': studentName,
         'Lead Name': studentName
       };
+
+      // If it's the PTE template, add specific placeholders
+      if (selectedTemplate?.Template_Name === 'PTE course admission confirmation') {
+        placeholders['Payment Amount'] = this.amount || '0.00';
+        // For StartDate and StartTime, we'd need more context about the student's batch,
+        // but for now we'll pass what we have or empty.
+        placeholders['Start Date'] = '-';
+        placeholders['Start Time'] = '-';
+      }
+
       this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId, email, placeholders).subscribe({
         next: (res) => {
           console.log('Email sent successfully', res);

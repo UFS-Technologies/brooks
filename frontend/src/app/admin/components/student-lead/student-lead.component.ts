@@ -523,10 +523,21 @@ export class StudentLeadComponent implements OnInit {
   sendSelectedEmail(email: string, studentName: string) {
     console.log('Attempting to send email:', { email, templateId: this.selectedTemplateId });
     if (this.selectedTemplateId && email) {
-      const placeholders = {
+      // Find the selected template name to check if it's the PTE one
+      const selectedTemplate = this.emailTemplates.find(t => t.Template_ID == this.selectedTemplateId);
+
+      const placeholders: any = {
         'Student Name': studentName,
         'Lead Name': studentName
       };
+
+      // If it's the PTE template, add specific placeholders from the lead record if available
+      if (selectedTemplate?.Template_Name === 'PTE course admission confirmation' && this.selectedStudent) {
+        placeholders['PaymentAmount'] = this.selectedStudent.Paid_Amount || '0.00';
+        placeholders['StartDate'] = this.selectedStudent.Start_Date || '-';
+        placeholders['StartTime'] = this.selectedStudent.Time_Slot || '-';
+      }
+
       this.emailTemplateService.sendTemplateEmail(this.selectedTemplateId, email, placeholders).subscribe({
         next: (res) => {
           console.log('Email sent successfully response:', res);
