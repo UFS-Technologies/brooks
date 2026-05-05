@@ -105,6 +105,11 @@ showMoreOptions: boolean = false;
   emailBody: string = '';
   isSendingEmail: boolean = false;
 
+  // Bulk WhatsApp Properties
+  showWhatsAppModal: boolean = false;
+  whatsappMessage: string = '';
+  isSendingWhatsApp: boolean = false;
+
   constructor() { }
 
   ngOnInit() {
@@ -325,6 +330,83 @@ console.log("params", params,this.currentPage,
           confirmButtonColor: '#3085d6'
         });
       }
+    });
+  }
+
+  // Bulk WhatsApp Methods
+  openBulkWhatsAppModal() {
+    if (this.selectedStudents.size === 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Please select at least one student to send WhatsApp.', Type: '3' },
+      });
+      return;
+    }
+
+    const noContactStudents = Array.from(this.selectedStudents).filter(s => !s.Contact);
+    if (noContactStudents.length > 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: `Warning: ${noContactStudents.length} selected student(s) do not have a contact number. They will be skipped.`, Type: '3' },
+      });
+    }
+
+    this.showWhatsAppModal = true;
+    this.whatsappMessage = '';
+  }
+
+  closeWhatsAppModal() {
+    this.showWhatsAppModal = false;
+  }
+
+  sendBulkWhatsApp() {
+    if (!this.whatsappMessage.trim()) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Please enter a message to send.', Type: '3' },
+      });
+      return;
+    }
+
+    const studentsWithContact = Array.from(this.selectedStudents).filter(s => !!s.Contact);
+    
+    if (studentsWithContact.length === 0) {
+      Swal.fire('Error', 'No selected students have contact numbers.', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Confirm Sending',
+      text: `This will open WhatsApp Web for ${studentsWithContact.length} student(s). Are you sure?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, open WhatsApp!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeBulkWhatsAppSend(studentsWithContact);
+      }
+    });
+  }
+
+  private executeBulkWhatsAppSend(students: any[]) {
+    this.isSendingWhatsApp = true;
+    
+    // For WhatsApp, we open links in new tabs. 
+    // Note: Browser might block multiple popups.
+    students.forEach((student, index) => {
+      setTimeout(() => {
+        const phone = student.Contact.replace(/\D/g, '');
+        const text = encodeURIComponent(this.whatsappMessage.replace('[Student Name]', student.Name));
+        const url = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
+        window.open(url, '_blank');
+        
+        if (index === students.length - 1) {
+          this.isSendingWhatsApp = false;
+          this.closeWhatsAppModal();
+          this.selectedStudents.clear();
+          Swal.fire('Success', 'WhatsApp links opened. Please send them in the opened tabs.', 'success');
+        }
+      }, index * 1000); // Small delay to avoid browser blocking
     });
   }
 

@@ -144,13 +144,65 @@ button.mat-raised-button {
   }
 }
 
-.btn-blue { background-color: #0000ff !important; color: white !important; }
+.btn-blue-modern { 
+  background-color: #0000ff !important; 
+  color: white !important;
+  border-radius: 4px;
+  font-weight: 600;
+  padding: 0 1rem !important;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  
+  ::ng-deep .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
 .btn-orange { background-color: #ff9800 !important; color: white !important; }
 .btn-gray { background-color: #757575 !important; color: white !important; }
 .btn-red { background-color: #d32f2f !important; color: white !important; }
 
 .filter-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: flex-end; }
-.action-group { display: flex; gap: 0.4rem; align-items: flex-end; }
+.action-group { 
+  display: flex; 
+  gap: 1.5rem; 
+  align-items: center; 
+}
+
+.icon-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.icon-btn {
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: #000;
+    transform: scale(1.1);
+  }
+
+  &.material-symbols-outlined {
+    font-size: 28px;
+  }
+
+  &.whatsapp-icon {
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
 
 // Duration Display
 .total-duration {
