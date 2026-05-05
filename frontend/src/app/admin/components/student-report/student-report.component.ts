@@ -301,19 +301,26 @@ console.log("params", params,this.currentPage,
         this.isSendingEmail = false;
         this.closeEmailModal();
         this.selectedStudents.clear();
+        
+        const isPartialSuccess = res.details && res.details.failureCount > 0;
+        
         Swal.fire({
-          title: 'Sent!',
-          text: 'Bulk emails sent successfully!',
-          icon: 'success',
+          title: isPartialSuccess ? 'Partial Success' : 'Sent!',
+          text: res.message || 'Bulk emails sent successfully!',
+          icon: isPartialSuccess ? 'warning' : 'success',
           confirmButtonColor: '#3085d6'
         });
       },
       error: (err) => {
         this.isSendingEmail = false;
         console.error('Bulk email error:', err);
+        
+        const errorMessage = err.error?.message || err.message || 'Failed to send bulk emails.';
+        const detailedError = err.error?.error ? `\nReason: ${err.error.error}` : '';
+        
         Swal.fire({
           title: 'Error!',
-          text: 'Failed to send bulk emails.',
+          text: errorMessage + detailedError,
           icon: 'error',
           confirmButtonColor: '#3085d6'
         });

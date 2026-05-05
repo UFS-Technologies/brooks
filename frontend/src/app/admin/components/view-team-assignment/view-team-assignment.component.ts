@@ -13,6 +13,7 @@ interface TeamStaff {
 
 @Component({
   selector: 'app-view-team-assignment',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './view-team-assignment.component.html',
   styleUrl: './view-team-assignment.component.scss',

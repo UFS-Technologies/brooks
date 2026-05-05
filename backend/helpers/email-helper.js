@@ -56,13 +56,23 @@ const sendEmail = async (to, subject, html) => {
         console.log('Brevo API response success:', response.data);
         return response.data;
     } catch (error) {
+        let errorMessage = error.message;
+        if (error.response && error.response.data) {
+            errorMessage = error.response.data.message || error.response.data.code || JSON.stringify(error.response.data);
+        }
+
         console.error('Error sending email via Brevo API:', {
-            message: error.message,
+            message: errorMessage,
+            originalError: error.message,
             responseData: error.response ? error.response.data : 'No response data',
             to: to,
             apiKeyFound: !!process.env.BREVO_API_KEY
         });
-        throw error;
+
+        const enhancedError = new Error(errorMessage);
+        enhancedError.originalError = error;
+        enhancedError.responseData = error.response ? error.response.data : null;
+        throw enhancedError;
     }
 };
 

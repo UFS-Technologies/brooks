@@ -58,6 +58,7 @@ interface InstallmentEntry {
 
 @Component({
   selector: 'app-student-fees',
+  standalone: true,
   templateUrl: './student-fees.component.html',
   imports: [
     CommonModule,

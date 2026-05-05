@@ -16,6 +16,10 @@ router.post('/Send_Bulk_Email', async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'No students provided.' });
         }
 
+        let successCount = 0;
+        let failureCount = 0;
+        let lastError = null;
+
         // Loop and send email
         for (const student of students) {
             if (student.Email) {
@@ -23,19 +27,37 @@ router.post('/Send_Bulk_Email', async (req, res, next) => {
                     const response = await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'));
                     const messageId = response?.messageId || null;
                     await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, messageId, body, 'Success', null);
+                    successCount++;
                 } catch (emailError) {
                     console.error('Error sending email to', student.Email, emailError);
-                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, null, body, 'Failed', emailError.message || String(emailError));
+                    lastError = emailError.message || String(emailError);
+                    await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, null, body, 'Failed', lastError);
+                    failureCount++;
                 }
             } else {
                 await emailLog.Save_Email_Log(student.Student_ID, templateId || null, null, subject, null, body, 'Failed', 'No email address');
+                failureCount++;
+                lastError = 'No email address';
             }
         }
 
-        res.json({ success: true, message: 'Bulk email sent successfully' });
+        if (successCount === 0 && failureCount > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: students.length === 1 ? `Failed to send email: ${lastError}` : 'Failed to send all emails.',
+                error: lastError,
+                details: { successCount, failureCount }
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: failureCount === 0 ? 'Bulk email sent successfully' : `Sent ${successCount} emails, but ${failureCount} failed.`,
+            details: { successCount, failureCount, lastError: failureCount > 0 ? lastError : null }
+        });
     } catch (e) {
         console.error('Send_Bulk_Email error:', e);
-        res.status(500).json({ success: false, message: 'Failed to send bulk emails', error: e.message });
+        res.status(500).json({ success: false, message: 'Failed to process bulk emails', error: e.message });
     }
 });
 
@@ -706,6 +728,16 @@ router.post('/Save_Followup_Status/', async (req, res, next) => {
     }
     catch (e) {
         res.status(500).json({ success: false, message: 'Failed to save follow-up status', error: e.message });
+    }
+});
+
+router.post('/Save_Call_Log/', async (req, res, next) => {
+    try {
+        const rows = await student.Save_Call_Log(req.body);
+        res.json(rows);
+    }
+    catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to save call log', error: e.message });
     }
 });
 router.get('/Get_Followup_Status/', async (req, res, next) => {

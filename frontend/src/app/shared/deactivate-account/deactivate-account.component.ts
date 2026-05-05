@@ -8,6 +8,7 @@ import { user_Service } from '../../admin/services/user.Service';
 
 @Component({
     selector: 'app-deactivate-account',
+    standalone: true,
     imports: [SharedModule],
     animations: [
         trigger('fadeInOut', [

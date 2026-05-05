@@ -18,6 +18,7 @@ interface Permission {
 
 @Component({
   selector: 'app-view-permissions',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './view-permissions.component.html',
   styleUrl: './view-permissions.component.scss',

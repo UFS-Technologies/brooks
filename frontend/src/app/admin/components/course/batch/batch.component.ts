@@ -19,6 +19,7 @@ function atLeastOneTeacher(): ValidatorFn {
 }
 @Component({
     selector: 'app-batch',
+    standalone: true,
     imports: [SharedModule, CommonModule],
     templateUrl: './batch.component.html',
     styleUrl: './batch.component.scss'

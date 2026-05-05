@@ -10,6 +10,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-expense-category',
+  standalone: true,
   imports: [CommonModule, FormsModule, SharedModule],
   templateUrl: './expense-category.component.html',
   styleUrl: './expense-category.component.scss'

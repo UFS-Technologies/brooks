@@ -16,6 +16,7 @@ interface Review {
 }
 @Component({
     selector: 'app-reviews',
+    standalone: true,
     imports: [SharedModule],
     templateUrl: './reviews.component.html',
     styleUrl: './reviews.component.scss'

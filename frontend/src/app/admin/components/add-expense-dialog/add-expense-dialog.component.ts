@@ -21,6 +21,7 @@ import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
   selector: 'app-add-expense-dialog',
+  standalone: true,
   imports: [MatDialogModule, FormsModule, CommonModule, SharedModule],
   templateUrl: './add-expense-dialog.component.html',
   styleUrl: './add-expense-dialog.component.scss',

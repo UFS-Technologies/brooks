@@ -6,6 +6,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { CommonModule } from '@angular/common';
 @Component({
     selector: 'app-dashboard',
+    standalone: true,
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
     imports: [SharedModule, CommonModule]

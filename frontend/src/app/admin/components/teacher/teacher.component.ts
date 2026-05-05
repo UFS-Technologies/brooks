@@ -33,6 +33,7 @@ import { ViewTeamAssignmentComponent } from '../view-team-assignment/view-team-a
 
 @Component({
   selector: 'app-teacher',
+  standalone: true,
   imports: [ReactiveFormsModule, DatePipe, SharedModule, CommonModule, ViewPermissionsComponent, ViewTeamAssignmentComponent],
   templateUrl: './teacher.component.html',
   styleUrl: './teacher.component.scss',

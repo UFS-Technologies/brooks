@@ -23,6 +23,7 @@ import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-student-documents',
+  standalone: true,
   imports: [CommonModule, FormsModule, SharedModule],
   templateUrl: './student-documents.component.html',
   styleUrl: './student-documents.component.scss',

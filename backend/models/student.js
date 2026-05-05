@@ -184,13 +184,13 @@ var student = {
     student.Phone_Number,
     student.Social_Provider,
     student.Social_ID,
-    student.Delete_Status,
+    student.Delete_Status || 0,
     student.Profile_Photo_Path,
     student.Profile_Photo_Name,
     student.Avatar,
     student.Country_Code,
     student.Country_Code_Name,
-    student.Roll_No,
+    toInt(student.Roll_No),
     student.Branch_Name,
     Branch_Id_,
     student.Follow_Up_Date || student.Next_Follow_Up_Date || null,
@@ -217,11 +217,11 @@ var student = {
     toInt(student.Weight_kg),                 // ✅
     student.Active_Status,
     toInt(student.Enquiry_Source_Id) ?? 0,    // ✅
-    student.Registered_By,
+    toInt(student.Registered_By),
     student.Installments || null,
     student.Student_Fees_IDs || null,
     student.isRegistering ? 1 : 0,
-    student.Registered_By || null,
+    toInt(student.Registered_By),
     student.Registered_On || null,
 ]);
   },
@@ -690,6 +690,16 @@ enroleCourseFromAdmin: async function (course) {
   Get_AppInfo: async function (is_Student, id) {
     console.log(is_Student, id);
     return getmultipleSP("Get_AppInfo", [is_Student, id]);
+  },
+  Save_Call_Log: async function (data) {
+    return executeTransaction("Save_Call_Log", [
+      data.Call_Log_ID || 0,
+      data.Student_ID,
+      data.User_ID,
+      data.Call_Date,
+      data.Call_Status,
+      data.Remark
+    ]);
   },
   Get_Enquiry_Summary: async function (fromDate, toDate) {
     return getmultipleSP("Get_Enquiry_Summary", [fromDate || null, toDate || null]);

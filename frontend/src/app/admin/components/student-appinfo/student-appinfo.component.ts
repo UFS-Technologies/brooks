@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-student-appinfo',
+  standalone: true,
   templateUrl: './student-appinfo.component.html',
   styleUrls: ['./student-appinfo.component.scss'],
   imports:[CommonModule,SharedModule]

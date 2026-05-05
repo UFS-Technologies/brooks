@@ -9,6 +9,7 @@ import { SharedModule } from '../../shared/shared.module';
 
 @Component({
     selector: 'app-auth',
+    standalone: true,
     imports: [SharedModule],
     templateUrl: './auth.component.html',
     styleUrl: './auth.component.scss'

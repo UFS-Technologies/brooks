@@ -11,6 +11,7 @@ import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
     selector: 'app-module',
+    standalone: true,
     imports: [CommonModule, ReactiveFormsModule, MatSlideToggleModule, DragDropModule,SharedModule],
     templateUrl: './module.component.html',
     styleUrl: './module.component.scss'
