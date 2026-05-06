@@ -251,6 +251,24 @@ console.log("params", params,this.currentPage,
     this.selectedTemplateId = null;
   }
 
+  openIndividualEmailModal(student: any) {
+    this.selectedStudents.clear();
+    this.selectedStudents.add(student);
+    
+    if (!student.Email) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'This student does not have an email address.', Type: '3' },
+      });
+      return;
+    }
+
+    this.showEmailModal = true;
+    this.emailSubject = '';
+    this.emailBody = '';
+    this.selectedTemplateId = null;
+  }
+
   closeEmailModal() {
     this.showEmailModal = false;
   }
@@ -353,6 +371,20 @@ console.log("params", params,this.currentPage,
 
     this.showWhatsAppModal = true;
     this.whatsappMessage = '';
+  }
+
+  openIndividualWhatsApp(student: any) {
+    if (!student.Contact) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'This student does not have a contact number.', Type: '3' },
+      });
+      return;
+    }
+
+    const phone = student.Contact.replace(/\D/g, '');
+    const url = `https://api.whatsapp.com/send?phone=${phone}`;
+    window.open(url, '_blank');
   }
 
   closeWhatsAppModal() {
