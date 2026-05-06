@@ -733,10 +733,27 @@ router.post('/Save_Followup_Status/', async (req, res, next) => {
 
 router.post('/Save_Call_Log/', async (req, res, next) => {
     try {
+        console.log('[Save_Call_Log] req.body:', req.body);
+        
+        // Check if it's a batch sync from mobile app (Array)
+        if (Array.isArray(req.body)) {
+            const result = await student.Save_Call_Logs_Batch(req.body);
+            return res.json({
+                status: 'success',
+                message: `${result.savedCount} logs saved successfully`,
+                total_received: result.totalReceived
+            });
+        }
+
+        const { Student_ID } = req.body;
+        if (!Student_ID || Student_ID === 0) {
+            return res.status(400).json({ success: false, message: 'Student_ID is required and cannot be null or zero.' });
+        }
         const rows = await student.Save_Call_Log(req.body);
         res.json(rows);
     }
     catch (e) {
+        console.error('[Save_Call_Log] Error:', e.message);
         res.status(500).json({ success: false, message: 'Failed to save call log', error: e.message });
     }
 });

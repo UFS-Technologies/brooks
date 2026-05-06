@@ -41,6 +41,12 @@ export class student_Service {
       data
     );
   }
+  Save_Call_Log(call_log_data: any) {
+    return this.http.post(
+      environment.BasePath + 'student/Save_Call_Log/',
+      call_log_data
+    );
+  }
   Save_student_followup(followup_data: any) {
     console.log('Follow-up data payload:', followup_data);
     return this.http.post(

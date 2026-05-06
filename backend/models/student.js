@@ -692,6 +692,14 @@ enroleCourseFromAdmin: async function (course) {
     return getmultipleSP("Get_AppInfo", [is_Student, id]);
   },
   Save_Call_Log: async function (data) {
+    console.log('[Save_Call_Log model] params:', {
+      Call_Log_ID: data.Call_Log_ID || 0,
+      Student_ID: data.Student_ID,
+      User_ID: data.User_ID,
+      Call_Date: data.Call_Date,
+      Call_Status: data.Call_Status,
+      Remark: data.Remark,
+    });
     return executeTransaction("Save_Call_Log", [
       data.Call_Log_ID || 0,
       data.Student_ID,
@@ -700,6 +708,33 @@ enroleCourseFromAdmin: async function (course) {
       data.Call_Status,
       data.Remark
     ]);
+  },
+  Save_Call_Logs_Batch: async function (logs) {
+    if (!Array.isArray(logs) || logs.length === 0) return { savedCount: 0 };
+
+    let savedCount = 0;
+    for (const log of logs) {
+      // Prevent Duplicates: Check if this specific call (timestamp + number) already exists
+      const checkSql = 'SELECT COUNT(*) as count FROM call_logs WHERE number = ? AND timestamp = ?';
+      const [rows] = await db.promise().query(checkSql, [log.number, log.timestamp]);
+      
+      if (rows[0].count === 0) {
+        const insertSql = `INSERT INTO call_logs 
+          (number, name, call_type, duration, timestamp, user_id, user_name) 
+          VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        await db.promise().query(insertSql, [
+          log.number,
+          log.name || null,
+          log.call_type,
+          log.duration,
+          log.timestamp,
+          log.user_id,
+          log.user_name || null
+        ]);
+        savedCount++;
+      }
+    }
+    return { savedCount, totalReceived: logs.length };
   },
   Get_Enquiry_Summary: async function (fromDate, toDate) {
     return getmultipleSP("Get_Enquiry_Summary", [fromDate || null, toDate || null]);

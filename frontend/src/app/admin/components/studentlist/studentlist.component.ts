@@ -166,6 +166,12 @@ export class StudentlistComponent {
   emailLogs: any[] = [];
   emailLogsLoading: boolean = false;
 
+  // Call Log
+  callLogStatus: string = 'Answered';
+  callLogDate: string = new Date().toISOString().split('T')[0];
+  callLogRemark: string = '';
+  isSavingCallLog: boolean = false;
+
   private currentSubscription?: Subscription;
   private courseSubscription?: Subscription;
   StudentFees_Service_ = inject(StudentFeesService);
@@ -428,6 +434,52 @@ export class StudentlistComponent {
       error: (err) => {
         console.error('Failed to get email logs:', err);
         this.emailLogsLoading = false;
+      }
+    });
+  }
+
+  saveCallLog() {
+    // Resolve Student_ID from form (primary) or followUps input (fallback)
+    const studentId = this.student_Form.get('Student_ID')?.value || this.followUps?.Student_ID;
+
+    if (!studentId || studentId === 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Invalid student selected', Type: '3' },
+      });
+      return;
+    }
+
+    this.isSavingCallLog = true;
+    // 'User_Id' is the actual logged-in user numeric ID; 'User_Type' is the role/type ID
+    const User_Id = localStorage.getItem('User_Id') || '0';
+    
+    const callLogData = {
+      Call_Log_ID: 0,
+      Student_ID: studentId,
+      User_ID: parseInt(User_Id),
+      Call_Date: this.callLogDate || new Date().toISOString().split('T')[0],
+      Call_Status: this.callLogStatus,
+      Remark: this.callLogRemark
+    };
+
+    this.student_Service_.Save_Call_Log(callLogData).subscribe({
+      next: (res: any) => {
+        this.isSavingCallLog = false;
+        this.dialogBox.open(DialogBox_Component, {
+          panelClass: 'Dialogbox-Class',
+          data: { Message: 'Call log saved successfully', Type: 'false' },
+        });
+        this.callLogRemark = ''; // Clear remark after save
+        this.view = 'list'; // Return to list view
+      },
+      error: (err) => {
+        console.error('Error saving call log:', err);
+        this.isSavingCallLog = false;
+        this.dialogBox.open(DialogBox_Component, {
+          panelClass: 'Dialogbox-Class',
+          data: { Message: 'Failed to save call log', Type: '3' },
+        });
       }
     });
   }

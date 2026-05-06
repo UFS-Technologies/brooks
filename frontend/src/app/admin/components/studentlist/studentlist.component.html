@@ -32,6 +32,12 @@
                     <span class="student-tab__label">Email Logs</span>
                 </button>
 
+                <button (click)="view = 'Call_Log'" title="Call Log"
+                    class="student-tab" [class.student-tab--active]="view === 'Call_Log'">
+                    <span class="material-symbols-outlined student-tab__icon">call</span>
+                    <span class="student-tab__label">Call Log</span>
+                </button>
+
                 <button *ngIf="isDelete" (click)="Delete_student(followUps)" title="Delete Student"
                     class="student-tab student-tab--delete">
                     <span class="material-symbols-outlined student-tab__icon">delete</span>
@@ -106,6 +112,37 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+    }@else if (view == 'Call_Log') {
+    <div class="bg-white rounded-lg shadow-md p-6 mt-4">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Add Call Log</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Call Status</label>
+                <select [(ngModel)]="callLogStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="Answered">Answered</option>
+                    <option value="Not Answered">Not Answered</option>
+                    <option value="Busy">Busy</option>
+                    <option value="Invalid Number">Invalid Number</option>
+                    <option value="Switched Off">Switched Off</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Call Date</label>
+                <input type="date" [(ngModel)]="callLogDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+        </div>
+        <div class="space-y-2 mt-4">
+            <label class="block text-sm font-medium text-gray-700">Remark</label>
+            <textarea [(ngModel)]="callLogRemark" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter call remarks..."></textarea>
+        </div>
+        <div class="w-full flex justify-end gap-4 mt-6">
+            <button class="px-4 py-2 bg-transparent text-gray-600 rounded-md hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 font-medium border border-gray-300" (click)="closeClick()">Cancel</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-all duration-300" (click)="saveCallLog()" [disabled]="isSavingCallLog">
+                <span *ngIf="isSavingCallLog" class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                Save Call Log
+            </button>
         </div>
     </div>
     }@else if (view == 'Student_Fees') {
