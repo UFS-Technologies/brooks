@@ -368,7 +368,11 @@ export class user_Service {
     }
     
     Send_Bulk_Email(data: { students: any[], subject: string, body: string, templateId?: number | null }): Observable<any> {
-        return this.http.post(environment.BasePath + 'student/Send_Bulk_Email', data);
+        return this.http.post(environment.BasePath + 'student/Send_Bulk_Email', {
+            ...data,
+            Sender_Email: localStorage.getItem('Email'),
+            Sender_Name: localStorage.getItem('Name')
+        });
     }
 
     Get_Email_Logs_By_Student(student_Id: number): Observable<any> {

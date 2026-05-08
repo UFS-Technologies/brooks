@@ -12,7 +12,7 @@ const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
 const jwtSecret = getJwtSecret();
 
 const apiKey = process.env.BREVO_API_KEY;
-const senderEmail = process.env.BREVO_SENDER_EMAIL || "ufsdev123@gmail.com";
+const senderEmail = process.env.BREVO_SENDER_EMAIL || "testprep@aives.au";
 const senderName = process.env.BREVO_SENDER_NAME || "Track Box";
 // for admin or teacher
 

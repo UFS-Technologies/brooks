@@ -1,12 +1,13 @@
 const axios = require('axios');
 
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, html, fromEmail = null, fromName = null) => {
     try {
         const apiKey = (process.env.BREVO_API_KEY || '').trim().replace(/^['"]|['"]$/g, '');
         
         console.log('Brevo API sendEmail request:', { 
             to, 
             subject, 
+            fromEmail,
             apiKeyLength: apiKey.length,
             apiKeyStart: apiKey.substring(0, 5)
         });
@@ -25,12 +26,12 @@ const sendEmail = async (to, subject, html) => {
         `;
 
         // Try to determine the best sender
-        let senderEmail = (process.env.BREVO_SENDER_EMAIL || '').trim().replace(/^['"]|['"]$/g, '');
+        let senderEmail = fromEmail || (process.env.BREVO_SENDER_EMAIL || '').trim().replace(/^['"]|['"]$/g, '');
         if (!senderEmail || senderEmail === 'your_sender_email@example.com') {
             senderEmail = 'info@trackbox.in'; // Default to rebranded email
         }
 
-        const senderName = (process.env.BREVO_SENDER_NAME || 'Trackbox').trim().replace(/^['"]|['"]$/g, '');
+        const senderName = fromName || (process.env.BREVO_SENDER_NAME || 'Trackbox').trim().replace(/^['"]|['"]$/g, '');
 
         const response = await axios({
             method: 'post',

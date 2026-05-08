@@ -36,6 +36,7 @@ const LateFeeRouter = require('./routes/LateFee');
 const EmailTemplateRouter = require('./routes/email_template');
 const webhookRouter = require('./routes/webhook');
 const campaignRouter = require('./routes/campaign');
+const facebookLeadRouter = require('./routes/facebook_lead');
 
 
 
@@ -106,6 +107,7 @@ app.use('/Income', IncomeRouter);
 app.use('/LateFee', LateFeeRouter);
 app.use('/EmailTemplate', EmailTemplateRouter);
 app.use('/Campaign', campaignRouter);
+app.use('/facebooklead', facebookLeadRouter);
 
 
 

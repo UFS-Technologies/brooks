@@ -31,7 +31,9 @@ export class EmailTemplateService {
     return this.http.post(this.basePath + 'EmailTemplate/Send_Email_With_Template', {
       Template_ID: templateId,
       To_Email: toEmail,
-      Placeholders: placeholders
+      Placeholders: placeholders,
+      Sender_Email: localStorage.getItem('Email'),
+      Sender_Name: localStorage.getItem('Name')
     });
   }
 }

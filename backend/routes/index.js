@@ -5,6 +5,11 @@ var course = require('../models/course');
 var teacher = require('../models/teacher');
 
 /* GET home page. */
+router.get('/', function(req, res, next) {
+  res.json({ status: "API is running", version: "1.0.0" });
+});
+
+/* GET home page. */
 router.get('/Get_All_Menu', async function(req, res, next) {
   try {
 

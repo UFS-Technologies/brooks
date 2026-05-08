@@ -1234,24 +1234,24 @@ onCancelEdit(): void {
           rows = res;
         }
 
-        // Displaying all statuses without filtering by Is_Active based on requirement
-        // rows = rows.filter((status: any) => status.Is_Active === 1 || status.Is_Active === true);
-
         const defaultOption = { Status_Id: 0, Status_Name: 'Select Status' };
         this.followUpStatusData = [defaultOption, ...rows];
 
-        // Ensure Status_ID exists for components that might depend on it
         this.followUpStatusData.forEach((item: any) => {
           if (item.Status_Id !== undefined && item.Status_ID === undefined) {
             item.Status_ID = item.Status_Id;
           }
         });
 
-        const pendingStatus = this.followUpStatusData.find(
-          (status: any) => status.Status_Name?.toLowerCase() === 'pending'
+        const initialStatus = this.followUpStatusData.find(
+          (status: any) => status.Status_Name?.toLowerCase() === 'initial'
         );
 
-        this.Search_status = pendingStatus || defaultOption;
+        if (this.view !== 'list') {
+          if (!this.Search_status || this.Search_status.Status_Id === 0) {
+            this.Search_status = initialStatus || defaultOption;
+          }
+        }
 
         console.log('Follow-up statuses loaded from DB (Student Dynamic):', this.followUpStatusData);
       },
@@ -3128,6 +3128,9 @@ onCancelEdit(): void {
 
     // Change view
     this.view = 'followup';
+
+    // Ensure dropdown data is loaded
+    this.loadFollowupData();
 
     // Reset the form (optional if you're clearing previous session)
     this.resetFollowUpForm();

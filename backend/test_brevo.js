@@ -6,7 +6,7 @@ async function testBrevo() {
         console.log('Testing Brevo API with Key:', process.env.BREVO_API_KEY ? 'FOUND' : 'MISSING');
         console.log('Sender Email:', process.env.BREVO_SENDER_EMAIL);
         
-        const response = await emailHelper.sendEmail('work@ufstechnologies.com', 'Test Email', 'This is a test email from the backend.');
+        const response = await emailHelper.sendEmail('testprep@aives.au', 'Test Email', 'This is a test email from the backend.');
         console.log('Test Success:', response);
         process.exit(0);
     } catch (error) {

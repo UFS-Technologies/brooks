@@ -42,7 +42,7 @@ const emailHelper = require('../helpers/email-helper');
 
 router.post('/Send_Email_With_Template', async (req, res) => {
     try {
-        const { Template_ID, To_Email, Placeholders } = req.body;
+        const { Template_ID, To_Email, Placeholders, Sender_Email, Sender_Name } = req.body;
         console.log('Send_Email_With_Template request:', { Template_ID, To_Email, Placeholders });
         
         // 1. Get the template
@@ -69,7 +69,7 @@ router.post('/Send_Email_With_Template', async (req, res) => {
 
         // 3. Send email
         console.log('Attempting to send email to:', To_Email);
-        await emailHelper.sendEmail(To_Email, subject, body.replace(/\n/g, '<br>'));
+        await emailHelper.sendEmail(To_Email, subject, body.replace(/\n/g, '<br>'), Sender_Email, Sender_Name);
         console.log('Email sent successfully');
 
         res.json({ success: true, message: 'Email sent successfully' });

@@ -9,8 +9,8 @@ const emailLog = require('../models/email_log');
 // Send_Bulk_Email
 router.post('/Send_Bulk_Email', async (req, res, next) => {
     try {
-        const { students, subject, body, templateId } = req.body;
-        console.log('Send_Bulk_Email received for', students?.length, 'students');
+        const { students, subject, body, templateId, Sender_Email, Sender_Name } = req.body;
+        console.log('Send_Bulk_Email received for', students?.length, 'students', 'Sender:', Sender_Email);
 
         if (!students || students.length === 0) {
             return res.status(400).json({ success: false, message: 'No students provided.' });
@@ -24,7 +24,7 @@ router.post('/Send_Bulk_Email', async (req, res, next) => {
         for (const student of students) {
             if (student.Email) {
                 try {
-                    const response = await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'));
+                    const response = await emailHelper.sendEmail(student.Email, subject, body.replace(/\n/g, '<br>'), Sender_Email, Sender_Name);
                     const messageId = response?.messageId || null;
                     await emailLog.Save_Email_Log(student.Student_ID, templateId || null, student.Email, subject, messageId, body, 'Success', null);
                     successCount++;
