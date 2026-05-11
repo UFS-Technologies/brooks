@@ -2,44 +2,67 @@
     @if(!student_edit){
     <!-- Filters Section -->
     <section class="container-section">
-        <div class="flex flex-wrap gap-2 items-start">
-         
-            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[10px] flex-1">
-                <mat-label>Course</mat-label>
-                <mat-select [formControl]="selectedCourse" (selectionChange)="onCourseSelectionChange()">
-                    <mat-option value="">All Courses</mat-option>
-                    <mat-option *ngFor="let course of courseList" [value]="course.Course_Name">
-                        {{ course.Course_Name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+        <div class="flex flex-wrap gap-4 items-end bg-white p-3 rounded-lg shadow-sm mb-4">
+          
+            <!-- Course Filter -->
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">Course</label>
+                <div class="relative">
+                    <select [formControl]="selectedCourse" (change)="onCourseSelectionChange()"
+                        class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option value="">All Courses</option>
+                        <option *ngFor="let course of courseList" [value]="course.Course_Name">
+                            {{ course.Course_Name }}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
-            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[200px] flex-1">
-                <mat-label>Student Name / Phone Number</mat-label>
-                <input type="text" matInput [formControl]="selectedStudent" (keyup)="fetchReportData()">
-            </mat-form-field>
+            <!-- Search Input -->
+            <div class="flex-1 min-w-[250px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">Student Name / Phone Number</label>
+                <div class="relative">
+                    <input type="text" [formControl]="selectedStudent" (keyup)="fetchReportData()"
+                        placeholder="Search name or phone"
+                        class="w-full pl-4 pr-4 py-1.5 border-2 border-gray-300 rounded-md focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                </div>
+            </div>
 
-            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[200px] flex-1">
-                <mat-label>Batch</mat-label>
-                <mat-select [formControl]="selectedBatch" (selectionChange)="fetchReportData()">
-                    <mat-option value="">All Batches</mat-option>
-                    <mat-option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
-                        {{ batch.Batch_Name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <!-- Batch Filter -->
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">Batch</label>
+                <div class="relative">
+                    <select [formControl]="selectedBatch" (change)="fetchReportData()"
+                        class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option value="">All Batches</option>
+                        <option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
+                            {{ batch.Batch_Name }}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
-            <div class="flex gap-2 items-center h-[56px] ml-auto">
-                <button mat-raised-button 
-                        style="background-color: blue !important; color: white !important;" 
-                        (click)="navigateToAttendanceHistory()"
-                        class="shadow-sm transition-all hover:scale-105">
+            <div class="flex gap-2 items-center ml-auto">
+                <button (click)="navigateToAttendanceHistory()"
+                        style="background-color: blue !important; color: white !important;"
+                        class="h-[42px] px-6 font-semibold rounded-md shadow-sm transition-all hover:scale-105 flex items-center justify-center">
                     Attendance History
                 </button>
-                <button mat-raised-button 
-                        style="background-color: #facc15 !important; color: #1f2937 !important;" 
-                        (click)="navigateToMarkAttendance()"
-                        class="shadow-sm transition-all hover:scale-105">
+                <button (click)="navigateToMarkAttendance()"
+                        style="background-color: #facc15 !important; color: #1f2937 !important;"
+                        class="h-[42px] px-6 font-semibold rounded-md shadow-sm transition-all hover:scale-105 flex items-center justify-center">
                     Mark Attendance
                 </button>
             </div>
@@ -61,20 +84,22 @@
 
             <ng-container *ngIf="showMoreOptions">
                 <!-- From Date -->
-                <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[180px] flex-1">
-                    <mat-label>From Date</mat-label>
-                    <input matInput [formControl]="fromDate" [matDatepicker]="picker" (dateChange)="fetchReportData()">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
+                <div class="flex-1 min-w-[180px]">
+                    <label class="block text-xs font-medium text-gray-600 mb-0.5">From Date</label>
+                    <div class="relative">
+                        <input type="date" [formControl]="fromDate" (change)="fetchReportData()"
+                            class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300 h-[42px]">
+                    </div>
+                </div>
 
                 <!-- To Date -->
-                <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[180px] flex-1">
-                    <mat-label>To Date</mat-label>
-                    <input matInput [formControl]="toDate" [matDatepicker]="picker2" (dateChange)="fetchReportData()">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>
-                </mat-form-field>
+                <div class="flex-1 min-w-[180px]">
+                    <label class="block text-xs font-medium text-gray-600 mb-0.5">To Date</label>
+                    <div class="relative">
+                        <input type="date" [formControl]="toDate" (change)="fetchReportData()"
+                            class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300 h-[42px]">
+                    </div>
+                </div>
 
                 <div class="flex gap-2 mt-2">
                     <button (click)="exportToExcel()" style="background-color: gray;" class="text-white px-4 py-2 rounded">
