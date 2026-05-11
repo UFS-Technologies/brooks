@@ -150,7 +150,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'Reports',
     component: ReportsComponent,
-    data: { breadcrumb: 'Reports' }
+    data: { breadcrumb: 'Account Reports' }
   },
   {
     path: 'Student_Reports',

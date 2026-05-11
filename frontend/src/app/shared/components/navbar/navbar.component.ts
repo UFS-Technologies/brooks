@@ -99,7 +99,7 @@ export class NavbarComponent implements OnInit {
       'Fees Total Outstanding',
       'Upcoming Installment',
       'Due Instalment',
-      'Reports',
+      'Account Reports',
       'Work Report',
       'Enquiry Conversion',
       'Status',
@@ -115,7 +115,9 @@ export class NavbarComponent implements OnInit {
         // ✅ Normalize menu names
         items = items.map((item: any) => ({
           ...item,
-          Menu_Name: item.Menu_Name?.trim(),
+          Menu_Name: item.Menu_Name?.trim() === 'Reports'
+            ? 'Account Reports'
+            : item.Menu_Name?.trim(),
         }));
 
         // ✅ 👉 Ensure Mail Report is always present
@@ -193,7 +195,7 @@ export class NavbarComponent implements OnInit {
 
     const navTitle = this.dataService.getData('NavTitle');
     if (navTitle) {
-      this.title = navTitle;
+      this.title = this.normalizeTitle(navTitle);
     }
 
     this.userEmail = this.dataService.getData('Email') || '';
@@ -202,13 +204,17 @@ export class NavbarComponent implements OnInit {
 
   // ✅ Breadcrumb
   getBreadcrumb(routeData: any): { breadcrumb: string } {
-    let breadcrumb = routeData?.breadcrumb || '';
+    let breadcrumb = this.normalizeTitle(routeData?.breadcrumb || '');
 
     if (breadcrumb === 'Faculty') {
       breadcrumb = 'Staff';
     }
 
     return { breadcrumb };
+  }
+
+  private normalizeTitle(title: string): string {
+    return title === 'Reports' ? 'Account Reports' : title;
   }
 
   // ✅ Icon Handling

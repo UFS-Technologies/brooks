@@ -97,7 +97,6 @@
         <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx,.xls" id="fileUpload"
           class="file-input" />
         <label for="fileUpload" class="file-label">
-          <i class="upload-icon">📁</i>
           Choose Excel File
         </label>
       </div>
@@ -123,7 +122,7 @@
         <div *ngFor="let student of Student_Import_Details_Data; let i = index" class="student-form">
           <div class="student-header">
             <h4>Student {{ i + 1 }}</h4>
-            <button (click)="removeStudent(i)" class="remove-btn" title="Remove this student">❌</button>
+            <button (click)="removeStudent(i)" class="remove-btn" title="Remove this student">Remove</button>
           </div>
 
           <div class="form-row">
@@ -210,10 +209,10 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
       <button (click)="saveAllStudents()" class="save-btn" style="background-color: blue !important; color: white !important;">
-        💾 Save All Students
+        Save All Students
       </button>
       <button (click)="clearData()" class="clear-btn">
-        🗑️ Clear Data
+        Clear Data
       </button>
     </div>
   </div>
