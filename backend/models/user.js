@@ -631,7 +631,7 @@ var user = {
         ];
 
         const countSql = `SELECT COUNT(DISTINCT s.Student_ID) AS totalRecords ${baseQuery}`;
-        const dataSql = `SELECT s.*, cb.Batch_Name, c.Course_Name ${baseQuery} GROUP BY s.Student_ID ORDER BY s.Entry_Date DESC LIMIT ? OFFSET ?`;
+        const dataSql = `SELECT s.*, sc.Course_ID, sc.Batch_ID, cb.Batch_Name, c.Course_Name ${baseQuery} GROUP BY s.Student_ID ORDER BY s.Entry_Date DESC LIMIT ? OFFSET ?`;
 
         const [countResult] = await db.promise().query(countSql, params);
         const [data] = await db.promise().query(dataSql, [...params, pageSize, offset]);

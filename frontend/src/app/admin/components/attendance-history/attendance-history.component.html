@@ -1,0 +1,103 @@
+<div class="attendance-history-page">
+  <!-- Header -->
+  <div class="history-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()" class="back-btn" title="Back to My Students">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-title">
+        <h2> ATTENDANCE HISTORY PAGE</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-card">
+    <div class="filters-grid">
+      <!-- Course Dropdown -->
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
+        <mat-label>Course</mat-label>
+        <mat-select [formControl]="selectedCourse" (selectionChange)="onCourseChange()">
+          <mat-option value="">All</mat-option>
+          <mat-option *ngFor="let course of courseList" [value]="course.Course_Name">
+            {{ course.Course_Name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Batch Dropdown -->
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
+        <mat-label>Batch</mat-label>
+        <mat-select [formControl]="selectedBatch">
+          <mat-option value="">All</mat-option>
+          <mat-option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
+            {{ batch.Batch_Name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- From Date Picker -->
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
+        <mat-label>From Date</mat-label>
+        <input matInput [formControl]="fromDate" [matDatepicker]="pickerFrom">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFrom></mat-datepicker>
+      </mat-form-field>
+
+      <!-- To Date Picker -->
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
+        <mat-label>To Date</mat-label>
+        <input matInput [formControl]="toDate" [matDatepicker]="pickerTo">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerTo"></mat-datepicker-toggle>
+        <mat-datepicker #pickerTo></mat-datepicker>
+      </mat-form-field>
+
+      <button class="btn btn-search" (click)="fetchHistory()">Search</button>
+    </div>
+  </div>
+
+  <!-- History Table -->
+  <div class="table-card">
+    <!-- Loading State -->
+    <div *ngIf="isLoadingHistory" class="loading-state">
+      <mat-icon class="spin-icon">refresh</mat-icon>
+      <p>Loading history...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoadingHistory && historyList.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">history_toggle_off</mat-icon>
+      <p>No attendance history found</p>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoadingHistory && historyList.length > 0" class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Course</th>
+            <th>Batch</th>
+            <th>Session</th>
+            <th>Marked By</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of historyList">
+            <td>{{ record.Attendance_Date | date:'dd-MM-yyyy' }}</td>
+            <td>{{ record.Course_Name || 'N/A' }}</td>
+            <td>{{ record.Batch_Name || 'N/A' }}</td>
+            <td>{{ record.Session || '1' }}</td>
+            <td>{{ record.Marked_By_Name || 'John Doe' }}</td>
+            <td><span class="status-completed">Completed</span></td>
+            <td>
+              <button class="btn-view" (click)="viewAttendanceDetails(record)">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -34,6 +34,8 @@ import { LeaveComponent } from './components/leave/leave.component';
 import { EnquirySourceComponent } from './components/enquiry-source/enquiry-source.component';
 import { EnquiryConversionComponent } from './components/enquiry-conversion/enquiry-conversion.component';
 import { MyStudentsComponent } from './components/my-students/my-students.component';
+import { MarkAttendanceComponent } from './components/mark-attendance/mark-attendance.component';
+import { AttendanceHistoryComponent } from './components/attendance-history/attendance-history.component';
 import { EmailTemplateComponent } from './components/email-template/email-template.component';
 import { MailReportComponent } from './components/mail-report/mail-report.component';
 import { CampaignComponent } from './components/campaign/campaign.component';
@@ -224,6 +226,16 @@ export const ADMIN_ROUTES: Routes = [
     path: 'My_Students',
     component: MyStudentsComponent,
     data: { breadcrumb: 'My Students' }
+  },
+  {
+    path: 'Mark_Attendance',
+    component: MarkAttendanceComponent,
+    data: { breadcrumb: 'Mark Attendance' }
+  },
+  {
+    path: 'Attendance_History',
+    component: AttendanceHistoryComponent,
+    data: { breadcrumb: 'Attendance History' }
   },
   {
     path: 'Enquiry_Summary',

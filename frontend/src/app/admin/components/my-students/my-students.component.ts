@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { user_Service } from '../../services/user.Service';
+import { AttendanceService } from '../../services/attendance.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -66,6 +68,7 @@ export class MyStudentsComponent implements OnInit {
   private courseService = inject(course_Service);
   private emailTemplateService = inject(EmailTemplateService);
   dialogBox = inject(MatDialog);
+  private router = inject(Router);
 
   courseList: any[] = [];
   batchList: any[] = [];
@@ -104,6 +107,17 @@ showMoreOptions: boolean = false;
   emailSubject: string = '';
   emailBody: string = '';
   isSendingEmail: boolean = false;
+  
+  // Bulk WhatsApp Properties
+  showWhatsAppModal: boolean = false;
+  whatsappMessage: string = '';
+  isSendingWhatsApp: boolean = false;
+  
+  // Attendance Properties
+  isAttendanceMode: boolean = false;
+  attendanceStatuses: Map<number, number> = new Map(); // Student_ID -> Status (1: Present, 0: Absent)
+  isSavingAttendance: boolean = false;
+  private attendanceService = inject(AttendanceService);
 
   constructor() { }
 
@@ -193,9 +207,86 @@ const params = {
           Batch: item.Batch_Name,
         })) || [];
       },
-      complete: () => (this.IsLoaded = true),
+      complete: () => {
+        this.IsLoaded = true;
+        if (this.isAttendanceMode) {
+          this.initializeAttendanceStatuses();
+        }
+      },
     });
 }
+
+  toggleAttendanceMode() {
+    console.log('Toggling Attendance Mode:', !this.isAttendanceMode);
+    this.isAttendanceMode = !this.isAttendanceMode;
+    if (this.isAttendanceMode) {
+      this.initializeAttendanceStatuses();
+    }
+  }
+
+  navigateToMarkAttendance() {
+    this.router.navigate(['/admin/Mark_Attendance']);
+  }
+
+  navigateToAttendanceHistory() {
+    this.router.navigate(['/admin/Attendance_History']);
+  }
+
+  initializeAttendanceStatuses() {
+    this.tableData.forEach(student => {
+      if (!this.attendanceStatuses.has(student.Student_ID)) {
+        this.attendanceStatuses.set(student.Student_ID, 1); // Default to Present
+      }
+    });
+  }
+
+  setAttendanceStatus(studentId: number, status: number) {
+    this.attendanceStatuses.set(studentId, status);
+  }
+
+  saveAttendance() {
+    if (!this.selectedBatch.value) {
+      Swal.fire('Error', 'Please select a batch first.', 'error');
+      return;
+    }
+
+    const attendanceData = this.tableData.map(student => ({
+      Student_ID: student.Student_ID,
+      Course_ID: student.Course_ID, // Ensure Course_ID is available in tableData
+      Batch_ID: student.Batch_ID,   // Ensure Batch_ID is available in tableData
+      Attendance_Date: new Date().toISOString().split('T')[0],
+      Status: this.attendanceStatuses.get(student.Student_ID),
+      Course_Name: student.Course_Name,
+      Batch_Name: student.Batch_Name
+    }));
+
+    Swal.fire({
+      title: 'Confirm Attendance',
+      text: `Are you sure you want to save attendance for ${attendanceData.length} students? Absent students will receive WhatsApp notifications.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Save'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isSavingAttendance = true;
+        this.attendanceService.saveAttendance({
+          attendanceData,
+          markedBy: this.staffId
+        }).subscribe({
+          next: (res) => {
+            this.isSavingAttendance = false;
+            Swal.fire('Success', 'Attendance saved successfully.', 'success');
+            this.isAttendanceMode = false;
+          },
+          error: (err) => {
+            this.isSavingAttendance = false;
+            console.error('Save Attendance Error:', err);
+            Swal.fire('Error', 'Failed to save attendance.', 'error');
+          }
+        });
+      }
+    });
+  }
 
   get isAllSelected() {
     return this.tableData.length > 0 && this.selectedStudents.size === this.tableData.length;
@@ -232,6 +323,24 @@ const params = {
         panelClass: 'Dialogbox-Class',
         data: { Message: `Warning: ${noEmailStudents.length} selected student(s) do not have an email address. They will be skipped.`, Type: '3' },
       });
+    }
+
+    this.showEmailModal = true;
+    this.emailSubject = '';
+    this.emailBody = '';
+    this.selectedTemplateId = null;
+  }
+
+  openIndividualEmailModal(student: any) {
+    this.selectedStudents.clear();
+    this.selectedStudents.add(student);
+    
+    if (!student.Email) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'This student does not have an email address.', Type: '3' },
+      });
+      return;
     }
 
     this.showEmailModal = true;
@@ -312,6 +421,95 @@ const params = {
           confirmButtonColor: '#3085d6'
         });
       }
+    });
+  }
+
+  // Bulk WhatsApp Methods
+  openBulkWhatsAppModal() {
+    if (this.selectedStudents.size === 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Please select at least one student to send WhatsApp.', Type: '3' },
+      });
+      return;
+    }
+
+    const noContactStudents = Array.from(this.selectedStudents).filter(s => !s.Contact);
+    if (noContactStudents.length > 0) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: `Warning: ${noContactStudents.length} selected student(s) do not have a contact number. They will be skipped.`, Type: '3' },
+      });
+    }
+
+    this.showWhatsAppModal = true;
+    this.whatsappMessage = '';
+  }
+
+  openIndividualWhatsApp(student: any) {
+    if (!student.Contact) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'This student does not have a contact number.', Type: '3' },
+      });
+      return;
+    }
+
+    const phone = student.Contact.replace(/\D/g, '');
+    const url = `https://api.whatsapp.com/send?phone=${phone}`;
+    window.open(url, '_blank');
+  }
+
+  closeWhatsAppModal() {
+    this.showWhatsAppModal = false;
+  }
+
+  sendBulkWhatsApp() {
+    if (!this.whatsappMessage.trim()) {
+      this.dialogBox.open(DialogBox_Component, {
+        panelClass: 'Dialogbox-Class',
+        data: { Message: 'Please enter a message to send.', Type: '3' },
+      });
+      return;
+    }
+
+    const studentsWithContact = Array.from(this.selectedStudents).filter(s => !!s.Contact);
+    
+    if (studentsWithContact.length === 0) {
+      Swal.fire('Error', 'No selected students have contact numbers.', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Confirm Sending',
+      text: `This will open WhatsApp Web for ${studentsWithContact.length} student(s). Are you sure?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, open WhatsApp!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeBulkWhatsAppSend(studentsWithContact);
+      }
+    });
+  }
+
+  private executeBulkWhatsAppSend(students: any[]) {
+    this.isSendingWhatsApp = true;
+    
+    students.forEach((student, index) => {
+      setTimeout(() => {
+        const phone = student.Contact.replace(/\D/g, '');
+        const text = encodeURIComponent(this.whatsappMessage.replace('[Student Name]', student.Name));
+        const url = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
+        window.open(url, '_blank');
+        
+        if (index === students.length - 1) {
+          this.isSendingWhatsApp = false;
+          this.closeWhatsAppModal();
+          this.selectedStudents.clear();
+          Swal.fire('Success', 'WhatsApp links opened. Please send them in the opened tabs.', 'success');
+        }
+      }, index * 1000); 
     });
   }
 
