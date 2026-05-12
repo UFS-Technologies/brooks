@@ -1,209 +1,269 @@
+/* ─── Page wrapper ─── */
 .work-report-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 6px 0 24px;
+  gap: 12px;
+  padding: 8px 0 20px;
+  background: #f3f4f6;
 }
 
+/* ─── Cards ─── */
 .filter-card,
 .table-card {
   background: #ffffff;
-  border: 1px solid #e8edf3;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  border: 1px solid #e1e5ea;
+  border-radius: 10px;
+  box-shadow: none;
 }
 
 .filter-card {
-  padding: 22px 24px;
+  padding: 10px 12px;
 }
 
+/* ─── Filter row ─── */
 .filters {
-  display: grid;
-  gap: 16px;
-  align-items: end;
-}
-
-.filters-summary {
-  grid-template-columns: minmax(140px, 180px) repeat(2, minmax(180px, 220px)) 140px;
-}
-
-.filters-detail {
-  grid-template-columns: 120px minmax(220px, 1fr) minmax(180px, 220px) 140px repeat(2, minmax(170px, 200px)) 140px;
-}
-
-.field,
-.checkbox-line {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ─── Checkbox label ─── */
+.checkbox-line {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
-  transition: opacity 0.2s ease;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #345a94;
+  }
+
+  span {
+    font-size: 16px;
+    font-weight: 700;
+    color: #303846;
+  }
+}
+
+/* ─── Date range wrapper ─── */
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
   &.disabled {
     opacity: 0.5;
     pointer-events: none;
   }
+
+  .field {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: auto;
+  }
 }
 
-.field span,
-.checkbox-line span {
-  color: #6b7280;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+/* ─── Field ─── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  span {
+    color: #818892;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  input,
+  select {
+    width: 180px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #d6dbe2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #2e3642;
+    font-size: 15px;
+    outline: none;
+
+    &:focus {
+      border-color: #6b7f9e;
+      box-shadow: 0 0 0 2px rgba(52, 90, 148, 0.12);
+    }
+  }
 }
 
-.checkbox-line {
-  flex-direction: row;
+.search-field input {
+  width: 220px;
+}
+
+/* ─── Action buttons container ─── */
+.actions {
+  display: flex;
   align-items: center;
-  padding-top: 28px;
+  gap: 8px;
 }
 
-.checkbox-line input {
-  width: 18px;
-  height: 18px;
-}
-
-.checkbox-line span {
-  margin: 0;
-  font-size: 14px;
-  letter-spacing: 0;
-  text-transform: none;
-  color: #334155;
-}
-
-input,
-select {
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid #d6dde8;
-  border-radius: 14px;
-  background: #fff;
-  color: #0f172a;
-  font-size: 16px;
-  outline: none;
-}
-
-input:focus,
-select:focus {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
-}
-
-.primary-btn,
-.ghost-btn {
-  height: 44px;
-  padding: 0 18px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
+/* ─── Primary button (Search) ─── */
 .primary-btn {
-  border: none;
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
-  color: #fff;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid #1d4ed8;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.primary-btn:hover {
-  transform: translateY(-1px);
-}
-
+/* ─── Ghost button (View Details / Back) ─── */
 .ghost-btn {
-  border: 1px solid #d6dde8;
-  background: #fff;
-  color: #334155;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid #cfd5dd;
+  border-radius: 8px;
+  background: #f8f9fb;
+  color: #3e4754;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &.small {
+    height: 32px;
+    padding: 0 14px;
+    font-size: 14px;
+    border-radius: 8px;
+    background: #ffffff;
+  }
 }
 
-.ghost-btn:hover {
-  border-color: #0ea5e9;
-  color: #0369a1;
-}
-
-.detail-header {
+/* ─── Table card header ─── */
+.table-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e1e5ea;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2f3845;
+  }
+
+  p {
+    margin: 2px 0 0;
+    color: #6f7782;
+    font-size: 13px;
+  }
 }
 
-.detail-header h2 {
-  margin: 0;
-  font-size: 28px;
-  color: #0f172a;
+.header-main {
+  display: flex;
+  flex-direction: column;
 }
 
-.detail-header p {
-  margin: 6px 0 0;
-  color: #64748b;
-  font-size: 15px;
-}
-
+/* ─── Table wrapper ─── */
 .table-wrap {
+  position: relative;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 75vh;
 }
 
+/* ─── Table ─── */
 table {
   width: 100%;
   border-collapse: collapse;
+
+  th,
+  td {
+    border-right: 1px solid #e4e8ee;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    padding: 12px 10px;
+    text-align: left;
+    background: #eceff3;
+    color: #404854;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 1px solid #d8dde5;
+  }
+
+  tbody td {
+    padding: 10px;
+    font-size: 16px;
+    color: #2f3743;
+    border-bottom: 1px solid #e4e8ee;
+    vertical-align: middle;
+  }
 }
 
-thead th {
-  padding: 18px 20px;
-  text-align: left;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #64748b;
-  background: #f8fafc;
-}
-
-tbody td {
-  padding: 18px 20px;
-  border-top: 1px solid #edf2f7;
-  color: #1e293b;
-  vertical-align: top;
-}
-
-.action-col {
-  text-align: right;
-  width: 160px;
+/* ─── Cell variants ─── */
+.source-cell,
+.name-cell {
+  font-weight: 700;
+  color: #2f3743;
 }
 
 .count-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 38px;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: #e0f2fe;
-  color: #0369a1;
+  display: inline;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
   font-weight: 700;
 }
 
 .tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #f1f5f9;
-  color: #334155;
-  font-size: 13px;
+  display: inline;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #2f3743;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.name-cell {
-  color: #0369a1;
-  font-weight: 700;
+.action-col {
+  width: 150px;
+  text-align: center;
+}
+
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  color: #6f7782;
+  font-style: normal;
 }
 
 .status-cell {
-  color: #b45309;
   font-weight: 700;
+  color: #2f3743;
 }
 
 .remark-cell {
@@ -212,41 +272,40 @@ tbody td {
   font-style: italic;
 }
 
-.empty-state {
-  padding: 28px 20px;
-  text-align: center;
-  color: #64748b;
-}
-
-@media (max-width: 1280px) {
-  .filters-summary,
-  .filters-detail {
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-  }
-}
-
+/* ─── Responsive ─── */
 @media (max-width: 768px) {
-  .filter-card {
-    padding: 18px;
+  .filters {
+    align-items: stretch;
   }
 
-  .filters-summary,
-  .filters-detail {
-    grid-template-columns: 1fr;
-  }
-
-  .checkbox-line {
-    padding-top: 0;
-  }
-
-  .detail-header {
-    align-items: flex-start;
+  .date-range {
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
+
+    .field {
+      width: 100%;
+    }
   }
 
-  thead th,
-  tbody td {
-    padding: 14px;
+  .field {
+    width: 100%;
+
+    input,
+    select {
+      width: 100%;
+    }
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions .primary-btn,
+  .actions .ghost-btn {
+    flex: 1;
+  }
+
+  .table-wrap {
+    max-height: 68vh;
   }
 }

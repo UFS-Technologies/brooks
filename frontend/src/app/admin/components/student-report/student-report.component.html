@@ -4,30 +4,47 @@
     <section class="container-section">
         <div class="filter-row">
          
-            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[150px] flex-1">
-                <mat-label>Course</mat-label>
-                <mat-select [formControl]="selectedCourse" (selectionChange)="onCourseSelectionChange()">
-                    <mat-option value="">All Courses</mat-option>
-                    <mat-option *ngFor="let course of courseList" [value]="course.Course_Name">
-                        {{ course.Course_Name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <div class="flex-1 min-w-[200px]">
+                <div class="relative">
+                    <select [formControl]="selectedCourse" (change)="onCourseSelectionChange()"
+                        class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md pr-10 focus:outline-none">
+                        <option value="">All Courses</option>
+                        <option *ngFor="let course of courseList" [value]="course.Course_Name">
+                            {{ course.Course_Name }}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
-            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[150px] flex-1">
-                <mat-label>Student Name / Phone Number</mat-label>
-                <input type="text" matInput [formControl]="selectedStudent" (keyup)="fetchReportData()">
-            </mat-form-field>
+            <div class="flex-1 min-w-[200px]">
+                <input type="text" [formControl]="selectedStudent" (keyup)="fetchReportData()"
+                    placeholder="Search by name or phone"
+                    class="w-full border-2 border-gray-300 rounded-md focus:outline-none">
+            </div>
 
-            <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[150px] flex-1">
-                <mat-label>Batch</mat-label>
-                <mat-select [formControl]="selectedBatch" (selectionChange)="fetchReportData()">
-                    <mat-option value="">All Batches</mat-option>
-                    <mat-option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
-                        {{ batch.Batch_Name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <div class="flex-1 min-w-[200px]">
+                <div class="relative">
+                    <select [formControl]="selectedBatch" (change)="fetchReportData()"
+                        class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md pr-10 focus:outline-none">
+                        <option value="">All Batches</option>
+                        <option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
+                            {{ batch.Batch_Name }}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
 
             <div class="action-group">
@@ -51,20 +68,15 @@
 
             <ng-container *ngIf="showMoreOptions">
                 <!-- From Date -->
-                <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[120px] flex-1">
-                    <mat-label>From Date</mat-label>
-                    <input matInput [formControl]="fromDate" [matDatepicker]="picker" (dateChange)="fetchReportData()">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
+                <div class="flex-1 min-w-[200px]">
+                    <input type="date" [formControl]="fromDate" (change)="fetchReportData()"
+                        class="w-full border-2 border-gray-300 rounded-md focus:outline-none">
+                </div>
 
-                <!-- To Date -->
-                <mat-form-field appearance="fill" subscriptSizing="dynamic" class="min-w-[120px] flex-1">
-                    <mat-label>To Date</mat-label>
-                    <input matInput [formControl]="toDate" [matDatepicker]="picker2" (dateChange)="fetchReportData()">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>
-                </mat-form-field>
+                <div class="flex-1 min-w-[200px]">
+                    <input type="date" [formControl]="toDate" (change)="fetchReportData()"
+                        class="w-full border-2 border-gray-300 rounded-md focus:outline-none">
+                </div>
 
                 <div class="action-group">
                     <button mat-raised-button (click)="exportToExcel()" class="btn-gray">
@@ -87,7 +99,8 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th class="px-2 py-1.5 w-10 text-center">
-                        <mat-checkbox [checked]="isAllSelected" (change)="toggleSelectAll($event)"></mat-checkbox>
+                        <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)"
+                            class="form-checkbox h-4 w-4 text-sky-500 rounded border-gray-300 focus:ring-sky-500">
                     </th>
                     <th *ngFor="let column of displayedColumns" class="px-2 py-1.5 font-semibold tracking-wider text-left">
                         {{ column === 'Action' ? 'Action' : column.replace('_', ' ') }}
@@ -98,7 +111,8 @@
                 <tr *ngFor="let row of tableData" class="bg-white border-b hover:bg-gray-50 transition duration-150"
                     (click)="student_List_Update(row)">
                     <td class="px-2 py-1.5 whitespace-nowrap text-center" (click)="$event.stopPropagation()">
-                        <mat-checkbox [checked]="selectedStudents.has(row)" (change)="toggleSelectStudent(row, $event)"></mat-checkbox>
+                        <input type="checkbox" [checked]="selectedStudents.has(row)" (change)="toggleSelectStudent(row, $event)"
+                            class="form-checkbox h-4 w-4 text-sky-500 rounded border-gray-300 focus:ring-sky-500">
                     </td>
                     <td *ngFor="let column of displayedColumns" class="px-2 py-1.5 whitespace-nowrap">
                         <ng-container *ngIf="column === 'Action'">
@@ -106,7 +120,6 @@
                                 <button (click)="$event.stopPropagation(); openFollowUp(row)"
                                     class="flex items-center px-2 py-1 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105 shadow-sm border border-green-200"
                                     title="Follow-up">
-                                    <span class="material-symbols-outlined text-sm mr-1">follow_the_signs</span>
                                     <span class="text-xs font-medium">Follow-up</span>
                                 </button>
                             </div>

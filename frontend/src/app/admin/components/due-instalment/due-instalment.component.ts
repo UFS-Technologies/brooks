@@ -4,10 +4,6 @@ import { user_Service } from '../../services/user.Service';
 import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { course_Service } from '../../services/course.Service';
@@ -22,8 +18,7 @@ import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-due-instalment',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatInputModule,
-    MatAutocompleteModule, MatDatepickerModule, MatButtonModule, MatIconModule, StudentlistComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatIconModule, StudentlistComponent],
   providers: [provideNativeDateAdapter()],
   templateUrl: './due-instalment.component.html',
   styleUrl: './due-instalment.component.scss'
@@ -33,12 +28,11 @@ export class DueInstalmentComponent   implements OnInit {
   readonly Student = viewChild.required<ElementRef<HTMLInputElement>>('Student');
   readonly Batch = viewChild.required<ElementRef<HTMLInputElement>>('Batch');
   // Form Controls
-  selectedCourse = new FormControl();
-  selectedStudent = new FormControl();
-  selectedBatch = new FormControl();
-  fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-  // fromDate = new FormControl(new Date());
-  toDate = new FormControl(new Date());
+  selectedCourse = new FormControl(null);
+  selectedStudent = new FormControl(null);
+  selectedBatch = new FormControl(null);
+  fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
+  toDate = new FormControl(new Date().toISOString().split('T')[0]);
   private user = inject(user_Service);
   private course = inject(course_Service);
   private student_Service_ = inject(student_Service);
@@ -76,6 +70,7 @@ export class DueInstalmentComponent   implements OnInit {
  Total_Recieved_Amount: any = 0;
   Expense_Amount: any = 0;
   Closing_Amount: any = 0;
+  showMoreOptions = false;
   constructor() { }
 
   ngOnInit() {
@@ -91,6 +86,7 @@ export class DueInstalmentComponent   implements OnInit {
       this.courseDatas = this.coursefilteredOptions = courseNames[0];
       this.studentDatas = this.studentfilteredOptions = students;
       this.BatchDatas = this.bacthfilteredOptions = courseItems[3];
+      this.tempBatchData = [...this.BatchDatas]; // Initialize tempBatchData
       this.fetchReportData();
     });
   }
@@ -100,11 +96,11 @@ export class DueInstalmentComponent   implements OnInit {
 
     this.IsLoaded = false;
     const params = {
-      Student_ID: this.selectedStudent.value?.Student_ID || 0,
-      Batch_ID: this.selectedBatch.value?.Batch_ID || 0,
-      Course_ID: this.selectedCourse.value?.Course_ID || 0,
-      fromDate: this.fromDate.value?.toLocaleDateString('en-CA') || '',
-      toDate: this.toDate.value?.toLocaleDateString('en-CA') || ''
+      Student_ID: (this.selectedStudent.value as any)?.Student_ID || 0,
+      Batch_ID: (this.selectedBatch.value as any)?.Batch_ID || 0,
+      Course_ID: (this.selectedCourse.value as any)?.Course_ID || 0,
+      fromDate: typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA') || '',
+      toDate: typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA') || ''
     };
 // Get_Report_Student
     this.user.Get_Due_installments(
@@ -158,7 +154,7 @@ export class DueInstalmentComponent   implements OnInit {
     switch (type) {
       case 'course':
         this.bacthfilteredOptions = []
-        this.selectedBatch.setValue('')
+        this.selectedBatch.setValue(null)
         filterValue = this.Course().nativeElement.value.toLowerCase();
         dataSource = this.courseDatas;
         filteredArray = this.coursefilteredOptions;
@@ -214,8 +210,8 @@ export class DueInstalmentComponent   implements OnInit {
 
   clearFilters() {
     [this.selectedCourse, this.selectedStudent, this.selectedBatch].forEach(control => control.reset());
-    this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-    this.toDate.setValue(new Date());
+    this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
+    this.toDate.setValue(new Date().toISOString().split('T')[0]);
     // this.fromDate.setValue(new Date());
     this.currentPage = 1;
     this.fetchReportData();
@@ -232,11 +228,11 @@ export class DueInstalmentComponent   implements OnInit {
 
   downloadPDF(): void {
   const params = {
-    Student_ID: this.selectedStudent.value?.Student_ID || 0,
-    Batch_ID: this.selectedBatch.value?.Batch_ID || 0,
-    Course_ID: this.selectedCourse.value?.Course_ID || 0,
-    fromDate: this.fromDate.value?.toLocaleDateString('en-CA') || '',
-    toDate: this.toDate.value?.toLocaleDateString('en-CA') || ''
+    Student_ID: (this.selectedStudent.value as any)?.Student_ID || 0,
+    Batch_ID: (this.selectedBatch.value as any)?.Batch_ID || 0,
+    Course_ID: (this.selectedCourse.value as any)?.Course_ID || 0,
+    fromDate: typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA') || '',
+    toDate: typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA') || ''
   };
 
   // ⚠️ Fetch ALL data (no pagination)
@@ -326,11 +322,11 @@ loadImageAsBase64(url: string): Promise<string> {
 
 exportToExcel(): void {
   const params = {
-    Student_ID: this.selectedStudent.value?.Student_ID || 0,
-    Batch_ID: this.selectedBatch.value?.Batch_ID || 0,
-    Course_ID: this.selectedCourse.value?.Course_ID || 0,
-    fromDate: this.fromDate.value?.toLocaleDateString('en-CA') || '',
-    toDate: this.toDate.value?.toLocaleDateString('en-CA') || ''
+    Student_ID: (this.selectedStudent.value as any)?.Student_ID || 0,
+    Batch_ID: (this.selectedBatch.value as any)?.Batch_ID || 0,
+    Course_ID: (this.selectedCourse.value as any)?.Course_ID || 0,
+    fromDate: typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA') || '',
+    toDate: typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA') || ''
   };
 
   this.user.Get_Due_installments(

@@ -79,34 +79,34 @@ p.selected-income-type {
 }
 
 // Income list table
-table {
-  width: 100%;
-  max-width: 900px;
-  margin: 2rem auto;
-  border-collapse: collapse;
-  font-size: 0.95rem;
+// table {
+//   width: 100%;
+//   max-width: 900px;
+//   margin: 2rem auto;
+//   border-collapse: collapse;
+//   font-size: 0.95rem;
 
-  th,
-  td {
-    padding: 0.75rem 1rem;
-    border: 1px solid #e0e0e0;
-    text-align: left;
-  }
+//   th,
+//   td {
+//     padding: 0.75rem 1rem;
+//     border: 1px solid #e0e0e0;
+//     text-align: left;
+//   }
 
-  th {
-    background-color: #f4f4f4;
-    font-weight: 600;
-    color: #444;
-  }
+//   th {
+//     background-color: #f4f4f4;
+//     font-weight: 600;
+//     color: #444;
+//   }
 
-  tbody tr:nth-child(even) {
-    background-color: #fafafa;
-  }
+//   tbody tr:nth-child(even) {
+//     background-color: #fafafa;
+//   }
 
-  tbody tr:hover {
-    background-color: #f0f8ff;
-  }
-}
+//   tbody tr:hover {
+//     background-color: #f0f8ff;
+//   }
+// }
 .action-button {
   text-align: center;
 
@@ -149,13 +149,13 @@ table {
   z-index: 10;
 }
 
-table {
-  width: 100% !important;
-  max-width: 900px !important;
-  margin: 0rem auto !important;
-  border-collapse: collapse !important;
-  font-size: 0.95rem !important;
-}
+// table {
+//   width: 100% !important;
+//   max-width: 900px !important;
+//   margin: 0rem auto !important;
+//   border-collapse: collapse !important;
+//   font-size: 0.95rem !important;
+// }
 
 .center-container {
   display: flex;

@@ -1,104 +1,126 @@
 <div style="overflow: hidden;">
     @if(!student_edit){
-    <!-- Action Buttons -->
-    <div class="flex justify-end gap-3">
-        <button (click)="fetchReportData()" mat-raised-button
-            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors" style="background-color: blue !important; color: white !important;">
-            <mat-icon class="mr-2">search</mat-icon>
-            Search
-        </button>
-
-        <button (click)="clearFilters()" mat-raised-button
-            class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors">
-            <mat-icon class="mr-2">clear</mat-icon>
-            Clear
-        </button>
-        <button class=" text-white px-4 py-2 rounded " style="background-color: gray;" (click)="exportToExcel()">
-            Export to Excel
-        </button>
-
-        <button (click)="downloadPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-            Download PDF
-        </button>
-    </div>
     <!-- Filters Section -->
     <section class="container-section">
-        <div class="flex flex-wrap gap-4 items-start">
+        <div class="flex flex-wrap gap-4 items-center p-2">
 
             <!-- Course Filter -->
-            <mat-form-field appearance="fill" class="min-w-[10px] flex-1">
-                <mat-label>Course</mat-label>
-                <input #Course type="text" placeholder="Pick one" matInput [formControl]="selectedCourse"
-                    [matAutocomplete]="auto" (input)="filter('course')" (focus)="filter('course')">
-                <mat-autocomplete [displayWith]="displayFn" #auto="matAutocomplete">
-                    <mat-option *ngFor="let option of coursefilteredOptions" [value]="option">
-                        {{option['Course_Name']}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
+            <div class="flex-1 min-w-[200px]">
+                <div class="relative">
+                    <select [formControl]="selectedCourse" (change)="filterBatchData()"
+                        class="w-full h-[42px] appearance-none bg-white border-2 border-gray-300 rounded-md pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option [ngValue]="null">Select Course</option>
+                        <option *ngFor="let course of courseDatas" [ngValue]="course">
+                            {{course.Course_Name}}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
             <!-- Student Filter -->
-            <mat-form-field appearance="fill" class="min-w-[200px] flex-1">
-                <mat-label>Student</mat-label>
-                <input #Student type="text" placeholder="Pick one" matInput [formControl]="selectedStudent"
-                    [matAutocomplete]="auto2" (input)="filter('student')" (focus)="filter('student')">
-                <mat-autocomplete #auto2="matAutocomplete" [displayWith]="displayFn">
-                    @for (option of studentfilteredOptions; track option) {
-                    <mat-option [value]="option">{{option['First_Name']}}</mat-option>
-                    }
-                </mat-autocomplete>
-            </mat-form-field>
+            <div class="flex-1 min-w-[200px]">
+                <div class="relative">
+                    <select [formControl]="selectedStudent"
+                        class="w-full h-[42px] appearance-none bg-white border-2 border-gray-300 rounded-md pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option [ngValue]="null">Select Student</option>
+                        <option *ngFor="let student of studentDatas" [ngValue]="student">
+                            {{student.First_Name}} {{student.Last_Name}}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
             <!-- Batch Filter -->
-            <mat-form-field appearance="fill" class="min-w-[200px] flex-1">
-                <mat-label>Batch</mat-label>
-                <input #Batch type="text" placeholder="Pick one" matInput [formControl]="selectedBatch"
-                    [matAutocomplete]="auto3" (input)="filter('batch')" (focus)="filter('batch')">
-                <mat-autocomplete [displayWith]="displayFn" #auto3="matAutocomplete">
-                    <mat-option *ngFor="let option of bacthfilteredOptions" [value]="option">
-                        {{option['Batch_Name']}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
+            <div class="flex-1 min-w-[200px]">
+                <div class="relative">
+                    <select [formControl]="selectedBatch"
+                        class="w-full h-[42px] appearance-none bg-white border-2 border-gray-300 rounded-md pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option [ngValue]="null">Select Batch</option>
+                        <option *ngFor="let batch of tempBatchData" [ngValue]="batch">
+                            {{batch.Batch_Name}}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
-            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
-                <mat-label>Admission Year</mat-label>
-                <mat-select [formControl]="selectedAdmissionYear">
-                    <mat-option value="">All Years</mat-option>
-                    <mat-option *ngFor="let year of admissionYearOptions" [value]="year">
-                        {{ year }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <!-- Admission Year -->
+            <div class="flex-1 min-w-[180px]">
+                <div class="relative">
+                    <select [formControl]="selectedAdmissionYear"
+                        class="w-full h-[42px] appearance-none bg-white border-2 border-gray-300 rounded-md pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option value="">Admission Year</option>
+                        <option *ngFor="let year of admissionYearOptions" [value]="year">
+                            {{ year }}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
 
-            <!-- Student Status Filter -->
-            <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
-                <mat-label>Student Status</mat-label>
-                <mat-select [formControl]="selectedStudentStatus">
-                    <mat-option value="">All Statuses</mat-option>
-                    <mat-option value="Active">Active</mat-option>
-                    <mat-option value="Dropout">Dropout</mat-option>
-                    <mat-option value="Completed">Completed</mat-option>
-                </mat-select>
-            </mat-form-field>
+            <!-- More Options Toggle (Immediately after Admission Year) -->
+            <button (click)="showMoreOptions = !showMoreOptions"
+                class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold h-[42px] px-6 rounded-md transition duration-300 ease-in-out focus:outline-none"
+                style="background-color: blue !important; color: white !important;">
+                Options
+                <mat-icon class="ml-2">{{ showMoreOptions ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
 
-            <!-- From Date -->
-            <!-- <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
-                <mat-label>From Date</mat-label>
-                <input matInput [formControl]="fromDate" [matDatepicker]="picker">
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field> -->
+            <!-- Conditional Action Group -->
+            <ng-container *ngIf="showMoreOptions">
+                <button (click)="fetchReportData()"
+                    class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold h-[42px] px-6 rounded-md transition duration-300 ease-in-out"
+                    style="background-color: blue !important; color: white !important;">
+                    <mat-icon class="mr-2">search</mat-icon>
+                    Search
+                </button>
 
-            <!-- To Date -->
-            <!-- <mat-form-field appearance="fill" class="min-w-[180px] flex-1">
-                <mat-label>To Date</mat-label>
-                <input matInput [formControl]="toDate" [matDatepicker]="picker2">
-                <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                <mat-datepicker #picker2></mat-datepicker>
-            </mat-form-field> -->
+                <button (click)="exportToExcel()"
+                    class="flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white font-semibold h-[42px] px-6 rounded-md transition duration-300">
+                    Export to Excel
+                </button>
+
+                <button (click)="downloadPDF()"
+                    class="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold h-[42px] px-6 rounded-md transition duration-300">
+                    Download PDF
+                </button>
+            </ng-container>
+
+            <!-- Student Status Filter (Commented out) -->
+            <!-- <div class="flex-1 min-w-[180px]">
+                <div class="relative">
+                    <select [formControl]="selectedStudentStatus"
+                        class="w-full h-[42px] appearance-none bg-white border-2 border-gray-300 rounded-md pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
+                        <option value="">Student Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Dropout">Dropout</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div> -->
         </div>
-
     </section>
 
     <!-- Table Section -->
@@ -141,8 +163,6 @@
         </table>
     </div>
 
-    
-
     <!-- Pagination -->
     <div class="flex items-center justify-between p-4 bg-white border-t">
         <div class="flex items-center space-x-2">
@@ -162,31 +182,14 @@
 
         <div class="px-4 py-2 bg-gray-100 rounded-md shadow-sm border border-gray-300">
             <div class="text-sm text-gray-700 font-medium">
-
-                <!-- <div class="flex items-center space-x-1">
-                    <span class="text-gray-500">Total Received Amount:</span>
-                    <span class="font-semibold text-green-600">
-                        {{ Total_Recieved_Amount }}
-                    </span>
-                </div>
-
-                <div class="flex items-center space-x-1">
-                    <span class="text-gray-500">Total Expense Amount:</span>
-                    <span class="font-semibold text-red-600">
-                        {{ Expense_Amount}}
-                    </span>
-                </div> -->
-
                 <div class="flex items-center space-x-1">
                     <span class="text-gray-500">Total :</span>
                     <span class="font-semibold text-blue-600">
                         {{ Closing_Amount }}
                     </span>
                 </div>
-
             </div>
         </div>
-
 
         <div class="flex items-center space-x-4">
             <button (click)="onPageChange({pageIndex: currentPage - 2, pageSize: pageSize})"
@@ -208,9 +211,6 @@
     @else if(student_edit){
     <app-studentlist [followUps]="student_Details" [mode]="'list'" (cancel)="onCancelEdit()"
         (save)="onSaveStudent($event)">
-        <!--  [totalFollowUps]="totalFollowUps"
-  [missedFollowUps]="missedFollowUps" -->
-
     </app-studentlist>
     }
 </div>

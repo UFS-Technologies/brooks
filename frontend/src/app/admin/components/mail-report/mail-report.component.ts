@@ -47,9 +47,9 @@ export class MailReportComponent implements OnInit {
   isLoaded: boolean = false;
 
   // Filters
-  sentOn: boolean = false;
-  fromDate: any = null;
-  toDate: any = null;
+  sentOn: boolean = true;
+  fromDate: any = new Date();
+  toDate: any = new Date();
   selectedTemplateId: number | null = null;
 
   ngOnInit() {
@@ -101,9 +101,9 @@ export class MailReportComponent implements OnInit {
   }
 
   resetFilters() {
-    this.sentOn = false;
-    this.fromDate = null;
-    this.toDate = null;
+    this.sentOn = true;
+    this.fromDate = new Date();
+    this.toDate = new Date();
     this.selectedTemplateId = null;
     this.fetchReportData();
   }

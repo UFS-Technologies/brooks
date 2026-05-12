@@ -34,17 +34,9 @@
 
     <div class="flex gap-4 justify-between">
       <div class="w-4/12">
-        <div class="flex justify-between items-center">
-          <span class="col-span-2 xl:col-span-2 lg:col-span-4 font-medium textName">Name</span>
-          <span class="col-span-12 xl:col-span-3 text-base  leading-6">{{ item.First_Name }} {{item.Last_Name}}</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="col-span-2 xl:col-span-2 lg:col-span-4 font-medium textName">Email</span>
-          <span class="col-span-12 xl:col-span-3 text-base  leading-6">{{ item.Email }}</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="col-span-2 xl:col-span-2 lg:col-span-4 font-medium textName">Phone Number</span>
-          <span class="col-span-12 xl:col-span-3 text-base  leading-6">{{ item.PhoneNumber || '' }}</span>
+        <div class="flex items-center gap-6">
+          <span class="text-base leading-6">{{ item.First_Name }} {{item.Last_Name}}</span>
+          <span class="text-base leading-6 text-gray-500">{{ item.PhoneNumber || '' }}</span>
         </div>
         @if(item.User_Type_Id == 3 ){
         <div class="flex  justify-between items-center">

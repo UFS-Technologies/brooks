@@ -985,7 +985,13 @@ router.get('/Followup_status_Dropdown/', async (req, res, next) => {
 
 router.get('/Get_Enquiry_Summary/', async (req, res, next) => {
     try {
-        const { fromDate, toDate } = req.query;
+        let { fromDate, toDate } = req.query;
+
+        // Ensure the entire end day is included by appending time
+        if (toDate && toDate.trim() !== '') {
+            toDate = `${toDate} 23:59:59`;
+        }
+
         const rows = await student.Get_Enquiry_Summary(fromDate, toDate);
         res.json(rows);
     } catch (e) {

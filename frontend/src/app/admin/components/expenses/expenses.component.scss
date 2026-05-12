@@ -80,34 +80,34 @@ p.selected-expense-type {
 }
 
 // Expense list table
-table {
-  width: 100%;
-  max-width: 900px;
-  margin: 2rem auto;
-  border-collapse: collapse;
-  font-size: 0.95rem;
+// table {
+//   width: 100%;
+//   max-width: 900px;
+//   margin: 2rem auto;
+//   border-collapse: collapse;
+//   font-size: 0.95rem;
 
-  th,
-  td {
-    padding: 0.75rem 1rem;
-    border: 1px solid #e0e0e0;
-    text-align: left;
-  }
+//   th,
+//   td {
+//     padding: 0.75rem 1rem;
+//     border: 1px solid #e0e0e0;
+//     text-align: left;
+//   }
 
-  th {
-    background-color: #f4f4f4;
-    font-weight: 600;
-    color: #444;
-  }
+//   th {
+//     background-color: #f4f4f4;
+//     font-weight: 600;
+//     color: #444;
+//   }
 
-  tbody tr:nth-child(even) {
-    background-color: #fafafa;
-  }
+//   tbody tr:nth-child(even) {
+//     background-color: #fafafa;
+//   }
 
-  tbody tr:hover {
-    background-color: #f0f8ff;
-  }
-}
+//   tbody tr:hover {
+//     background-color: #f0f8ff;
+//   }
+// }
 .action-button {
   text-align: center;
 
@@ -149,13 +149,13 @@ table {
   background: white;
   z-index: 10;
 }
-table {
-  width: 100% !important;
-  max-width: 900px !important;
-  margin: 0rem auto !important;
-  border-collapse: collapse !important;
-  font-size: 0.95rem !important;
-}
+// table {
+//   width: 100% !important;
+//   max-width: 900px !important;
+//   margin: 0rem auto !important;
+//   border-collapse: collapse !important;
+//   font-size: 0.95rem !important;
+// }
 
 .center-container {
   display: flex;
@@ -172,40 +172,40 @@ table {
   max-width: 400px;
 }
 
-.table-container {
-  max-height: 400px;
-  overflow-y: auto;
-  border: 1px solid #e5e7eb; // Tailwind gray-200
+// .table-container {
+//   max-height: 400px;
+//   overflow-y: auto;
+//   border: 1px solid #e5e7eb; // Tailwind gray-200
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+//   table {
+//     width: 100%;
+//     border-collapse: collapse;
+//   }
 
-  .sticky-header {
-    position: sticky;
-    top: 0;
-    background-color: white;
-    z-index: 10;
-  }
+//   .sticky-header {
+//     position: sticky;
+//     top: 0;
+//     background-color: white;
+//     z-index: 10;
+//   }
 
-  thead {
-    border-bottom: none !important; // remove header table border
-  }
+//   thead {
+//     border-bottom: none !important; // remove header table border
+//   }
 
-  .scrollable-body {
-    max-height: 300px;
-    overflow-y: auto;
-  }
+//   .scrollable-body {
+//     max-height: 300px;
+//     overflow-y: auto;
+//   }
 
-  .scrollable-body table {
-    border-top: none !important; // remove body table top border
-  }
+//   .scrollable-body table {
+//     border-top: none !important; // remove body table top border
+//   }
 
-  th, td {
-    border: 1px solid #e5e7eb;
-  }
-}
+//   th, td {
+//     border: 1px solid #e5e7eb;
+//   }
+// }
 
 /* Optional: smooth scrollbar for overflow */
 .overflow-y-auto::-webkit-scrollbar {

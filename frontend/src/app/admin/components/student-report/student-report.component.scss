@@ -7,19 +7,12 @@
 
 // Section Containers
 section {
-  margin-top: 0;
+  margin-top: 1rem;
   background-color: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 0.4rem;
-  margin-bottom: 0.1rem;
-}
-
-// Filters
-.mat-form-field {
-  width: 100%;
-  background-color: #f9fafb;
-  border-radius: 0.375rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 // Autocomplete Panel Fix
@@ -27,7 +20,44 @@ section {
   max-height: 300px;
   overflow-y: auto;
   border-radius: 0.375rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+// Filter Section Styling
+.filter-row { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 0.75rem; 
+  align-items: center; 
+  
+  // Target all filter inputs and selects for consistent sizing
+  select, input[type="text"], input[type="date"] {
+    height: 42px !important;
+    padding: 0 1rem !important;
+    font-size: 0.9rem !important;
+    line-height: normal !important; // Allow browser to center text
+    box-sizing: border-box !important;
+    border-radius: 6px !important;
+    background-clip: padding-box;
+    
+    &:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+      outline: none !important;
+    }
+  }
+
+  // Ensure select specific styling for the arrow
+  .relative {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+.action-group { 
+  display: flex; 
+  gap: 1rem; 
+  align-items: center; 
 }
 
 // Table Styling
@@ -36,13 +66,14 @@ table {
   border-collapse: collapse;
 
   thead {
-    background-color: #f3f4f6;
+    background-color: #f9fafb;
     text-transform: uppercase;
     font-size: 0.75rem;
-    color: #374151;
+    color: #4b5563;
+    border-bottom: 2px solid #e5e7eb;
 
     th {
-      padding: 0.5rem 0.75rem;
+      padding: 0.75rem;
       text-align: left;
       font-weight: 600;
       letter-spacing: 0.05em;
@@ -51,27 +82,18 @@ table {
 
   tbody {
     tr {
-      border-bottom: 1px solid #e5e7eb;
-      transition: background-color 0.2s;
+      border-bottom: 1px solid #f3f4f6;
+      transition: all 0.2s;
 
       &:hover {
         background-color: #f9fafb;
       }
 
       td {
-        padding: 0.25rem 0.75rem;
+        padding: 0.5rem 0.75rem;
         white-space: nowrap;
-        color: #4b5563;
+        color: #374151;
         font-size: 0.875rem;
-      }
-    }
-
-    tr.no-data-row {
-      td {
-        text-align: center;
-        padding: 1rem;
-        color: #9ca3af;
-        font-style: italic;
       }
     }
   }
@@ -98,117 +120,112 @@ table {
       box-shadow: 0 0 0 1px #3b82f6;
     }
   }
-
-  button {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border: 1px solid #d1d5db;
-    background-color: #ffffff;
-    color: #374151;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: #f3f4f6;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
 }
 
-// Buttons
+// Modern Buttons
 button.mat-raised-button {
   text-transform: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
-  font-weight: 500;
-  font-size: 0.7rem;
-  height: 28px;
-  padding: 0 0.4rem !important;
-  min-width: auto !important;
-  line-height: 1 !important;
-  border-radius: 4px;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  height: 42px !important; // Match filter elements height
+  padding: 0 1.5rem !important;
+  border-radius: 6px !important;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 
   ::ng-deep .mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    margin-right: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin: 0;
   }
 }
 
 .btn-blue-modern { 
   background-color: #0000ff !important; 
   color: white !important;
-  border-radius: 4px;
-  font-weight: 600;
-  padding: 0 1rem !important;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   
-  ::ng-deep .mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+  &:hover {
+    background-color: #0000cc !important;
   }
 }
-.btn-orange { background-color: #ff9800 !important; color: white !important; }
-.btn-gray { background-color: #757575 !important; color: white !important; }
-.btn-red { background-color: #d32f2f !important; color: white !important; }
 
-.filter-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: flex-end; }
-.action-group { 
-  display: flex; 
-  gap: 1.5rem; 
-  align-items: center; 
+.btn-orange { 
+  background-color: #f97316 !important; 
+  color: white !important; 
+  
+  &:hover {
+    background-color: #ea580c !important;
+  }
 }
 
+.btn-gray { 
+  background-color: #6b7280 !important; 
+  color: white !important; 
+  
+  &:hover {
+    background-color: #4b5563 !important;
+  }
+}
+
+.btn-red { 
+  background-color: #ef4444 !important; 
+  color: white !important; 
+  
+  &:hover {
+    background-color: #dc2626 !important;
+  }
+}
+
+// Icons Action Group
 .icon-actions {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   align-items: center;
+  padding: 0 0.5rem;
 }
 
 .icon-btn {
   cursor: pointer;
-  color: #333;
-  transition: all 0.2s ease;
+  color: #4b5563;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    color: #000;
-    transform: scale(1.1);
+    color: #111827;
+    transform: scale(1.15);
   }
 
   &.material-symbols-outlined {
-    font-size: 28px;
+    font-size: 26px;
   }
 
-  &.whatsapp-icon {
-    svg {
-      width: 28px;
-      height: 28px;
-    }
+  &.whatsapp-icon svg {
+    width: 24px;
+    height: 24px;
   }
 }
 
-// Duration Display
+// Duration & Totals Display
 .total-duration {
   text-align: right;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  padding-top: 1rem;
+  font-weight: 600;
+  color: #111827;
+  padding: 1rem 0;
 }

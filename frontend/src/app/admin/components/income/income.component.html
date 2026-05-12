@@ -91,35 +91,35 @@
     <!-- Income List Table -->
     @if (!showForm) {
     @if (IncomeList && IncomeList.length > 0) {
-    <div class="overflow-y-auto max-h-[500px] border border-gray-200 rounded-md">
-      <table class="min-w-full bg-white border-collapse table-auto">
-        <thead class="sticky top-0 z-10 bg-white">
-          <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-            <th class="py-3 px-6 text-center" style="width: 90px;">ID</th>
-            <th class="py-3 px-6 text-center" style="width: 250px;">Date</th>
-            <th class="py-3 px-6 text-center" style="width: 170px;">Amount</th>
-            <th class="py-3 px-6 text-center" style="width: 295px;">Description</th>
-            <th class="py-3 px-6 text-center" style="width: 200px;">Account</th>
-            <th class="py-3 px-6 text-center" style="width: 150px;">User</th>
-            <th class="py-3 px-6 text-center" style="width: 150px;">Expense Type</th>
-            <th class="py-3 px-6 text-center">Action</th>
+    <div class="overflow-x-auto w-full overflow-y-auto max-h-[500px] border border-gray-200 rounded-md">
+      <table class="min-w-[1024px] w-full text-sm text-gray-800 table-auto border-collapse">
+        <thead class="bg-gray-100 text-left sticky top-0 z-10">
+          <tr>
+            <th class="px-4 py-1 whitespace-nowrap">ID</th>
+            <th class="px-4 py-1 whitespace-nowrap">Date</th>
+            <th class="px-4 py-1 whitespace-nowrap">Amount</th>
+            <th class="px-4 py-1 whitespace-nowrap">Description</th>
+            <th class="px-4 py-1 whitespace-nowrap">Account</th>
+            <th class="px-4 py-1 whitespace-nowrap">User</th>
+            <th class="px-4 py-1 whitespace-nowrap">Expense Type</th>
+            <th class="px-4 py-1 whitespace-nowrap text-center">Action</th>
           </tr>
         </thead>
-        <tbody class="text-gray-600 text-sm font-light">
+        <tbody>
           <tr *ngFor="let income of paginatedIncomes; let i = index"
-            class="border-b border-gray-200 hover:bg-gray-100">
-            <td class="py-3 px-6 text-center">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-            <td class="py-3 px-6 text-center">{{ income.Entry_Date | date: 'dd-MM-yyyy ' }}</td>
-            <td class="py-3 px-6 text-center">{{ income.Amount }}</td>
-            <td class="py-3 px-6 text-center">{{ income.Description }}</td>
-            <td class="py-3 px-6 text-center">
+            class="border-b hover:bg-gray-50 transition">
+            <td class="px-4 py-2 whitespace-nowrap">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td class="px-4 py-2 whitespace-nowrap">{{ income.Entry_Date | date: 'dd-MM-yyyy ' }}</td>
+            <td class="px-4 py-2 whitespace-nowrap">{{ income.Amount }}</td>
+            <td class="px-4 py-2 whitespace-nowrap">{{ income.Description }}</td>
+            <td class="px-4 py-2 whitespace-nowrap">
               {{ income.Account_Name }}
             </td>
-            <td class="py-3 px-6 text-center">{{ income.First_Name }}</td>
-            <td class="py-3 px-6 text-center">
+            <td class="px-4 py-2 whitespace-nowrap">{{ income.First_Name }}</td>
+            <td class="px-4 py-2 whitespace-nowrap">
               {{ income.Expense_Type_Name ? income.Expense_Type_Name : 'N/A' }}
             </td>
-            <td class="py-3 px-6 text-center">
+            <td class="px-4 py-2 whitespace-nowrap text-center">
               <div class="flex gap-2 justify-center">
                 <button  *ngIf="isEdit" (click)="editIncome(income)"
                   class="flex items-center h-10 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-md hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105 whitespace-nowrap">

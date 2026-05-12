@@ -1,25 +1,33 @@
 <div class="work-report-page">
+
+  <!-- Summary Filter -->
   <section class="filter-card" *ngIf="!isDetailView">
-    <div class="filters filters-summary">
+    <div class="filters">
       <label class="checkbox-line">
         <input type="checkbox" [(ngModel)]="useCreatedDate" (change)="loadSummary()" />
         <span>Created On</span>
       </label>
 
-      <label class="field" [class.disabled]="!useCreatedDate">
-        <span>From Date</span>
-        <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
-      </label>
+      <div class="date-range" [class.disabled]="!useCreatedDate">
+        <div class="field">
+          <span>From Date</span>
+          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
+        </div>
+        <div class="field">
+          <span>To Date</span>
+          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useCreatedDate" />
+        </div>
+      </div>
 
-      <label class="field" [class.disabled]="!useCreatedDate">
-        <span>To Date</span>
-        <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useCreatedDate" />
-      </label>
-
-      <button class="primary-btn" (click)="applySummaryFilters()" style="background-color: blue !important; color: white !important;">Search</button>
+      <div class="actions">
+        <button class="primary-btn" (click)="applySummaryFilters()" style="background-color: blue !important; color: white !important;">
+          Search
+        </button>
+      </div>
     </div>
   </section>
 
+  <!-- Summary Table -->
   <section class="table-card" *ngIf="!isDetailView">
     <div class="table-wrap">
       <table>
@@ -37,12 +45,12 @@
           </tr>
           <tr *ngFor="let row of summaryRows">
             <td>{{ row.rowNo }}</td>
-            <td>{{ row.Staff_Name || '-' }}</td>
+            <td class="source-cell">{{ row.Staff_Name || '-' }}</td>
             <td>
               <span class="count-pill">{{ row.Follow_Up_Count || 0 }}</span>
             </td>
             <td class="action-col">
-              <button class="ghost-btn" (click)="openDetails(row)">View Details</button>
+              <button class="ghost-btn small" (click)="openDetails(row)">View Details</button>
             </td>
           </tr>
           <tr *ngIf="!isLoadingSummary && !summaryRows.length">
@@ -53,35 +61,30 @@
     </div>
   </section>
 
-  <section *ngIf="isDetailView">
-    <div class="detail-header">
-      <div>
-        <h2>Work Report</h2>
-        <p>{{ selectedStaff?.Staff_Name }}</p>
-      </div>
-      <button class="ghost-btn" (click)="backToSummary()">Back</button>
-    </div>
+  <!-- Detail View -->
+  <ng-container *ngIf="isDetailView">
 
+    <!-- Detail Filter -->
     <section class="filter-card">
-      <div class="filters filters-detail">
-        <label class="field">
+      <div class="filters">
+        <div class="field">
           <span>Search By</span>
           <select [(ngModel)]="searchBy">
             <option value="name">Name</option>
             <option value="mobile">Mobile</option>
           </select>
-        </label>
+        </div>
 
-        <label class="field search-field">
+        <div class="field search-field">
           <span>Search</span>
           <input
             type="text"
             [(ngModel)]="searchTerm"
             [placeholder]="searchBy === 'mobile' ? 'Search mobile' : 'Search name'"
           />
-        </label>
+        </div>
 
-        <label class="field">
+        <div class="field">
           <span>Department</span>
           <select [(ngModel)]="selectedDepartmentId">
             <option [ngValue]="null">All</option>
@@ -89,28 +92,41 @@
               {{ department.Department_Name }}
             </option>
           </select>
-        </label>
+        </div>
 
         <label class="checkbox-line">
           <input type="checkbox" [(ngModel)]="useEntryDate" (change)="loadDetails()" />
           <span>Entry Date</span>
         </label>
 
-        <label class="field" [class.disabled]="!useEntryDate">
-          <span>From</span>
-          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useEntryDate" />
-        </label>
+        <div class="date-range" [class.disabled]="!useEntryDate">
+          <div class="field">
+            <span>From</span>
+            <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useEntryDate" />
+          </div>
+          <div class="field">
+            <span>To</span>
+            <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useEntryDate" />
+          </div>
+        </div>
 
-        <label class="field" [class.disabled]="!useEntryDate">
-          <span>To</span>
-          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [min]="fromDate" [disabled]="!useEntryDate" />
-        </label>
-
-        <button class="primary-btn" (click)="applyDetailFilters()" style="background-color: blue !important; color: white !important;">Search</button>
+        <div class="actions">
+          <button class="primary-btn" (click)="applyDetailFilters()" style="background-color: blue !important; color: white !important;">
+            Search
+          </button>
+          <button class="ghost-btn" (click)="backToSummary()">Back</button>
+        </div>
       </div>
     </section>
 
+    <!-- Detail Table -->
     <section class="table-card">
+      <div class="table-header">
+        <div class="header-main">
+          <h2>Work Report – {{ selectedStaff?.Staff_Name }}</h2>
+          <p>Follow-up history for this staff member</p>
+        </div>
+      </div>
       <div class="table-wrap">
         <table>
           <thead>
@@ -152,5 +168,6 @@
         </table>
       </div>
     </section>
-  </section>
+
+  </ng-container>
 </div>

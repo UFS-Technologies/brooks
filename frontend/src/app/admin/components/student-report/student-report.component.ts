@@ -3,15 +3,9 @@ import { FormControl } from '@angular/forms';
 import { user_Service } from '../../services/user.Service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { StudentlistComponent } from "../studentlist/studentlist.component";
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSelectModule } from '@angular/material/select';
 import { course_Service } from '../../services/course.Service';
 import jsPDF from 'jspdf';
 // import jsPDF from 'jspdf';
@@ -20,10 +14,8 @@ import * as FileSaver from 'file-saver';
 import autoTable from 'jspdf-autotable';
 
 import { LOCALE_ID } from '@angular/core';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { registerLocaleData } from '@angular/common';
 import localeGb from '@angular/common/locales/en-GB';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { DialogBox_Component } from '../../../shared/components/DialogBox/DialogBox.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EmailTemplateService } from '../../services/email-template.service';
@@ -49,12 +41,8 @@ export const MY_DATE_FORMATS = {
 @Component({
   selector: 'app-student-report',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatInputModule,
-    MatDatepickerModule, MatButtonModule, MatIconModule, StudentlistComponent,
-  MatCheckboxModule, MatNativeDateModule, MatSelectModule],
-  providers: [provideNativeDateAdapter(), { provide: LOCALE_ID, useValue: 'en-GB' }, // for dd-MM-yyyy support
-      { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
-      { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatButtonModule, MatIconModule, StudentlistComponent],
+  providers: [{ provide: LOCALE_ID, useValue: 'en-GB' }],
   templateUrl: './student-report.component.html',
   styleUrls: ['./student-report.component.scss'],
 })
@@ -62,8 +50,8 @@ export class StudentReportComponent implements OnInit {
   selectedCourse = new FormControl('');
   selectedStudent = new FormControl('');
   selectedBatch = new FormControl('');
-  fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-  toDate = new FormControl(new Date());
+  fromDate = new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
+  toDate = new FormControl(new Date().toISOString().split('T')[0]);
   private user = inject(user_Service);
   private courseService = inject(course_Service);
   private emailTemplateService = inject(EmailTemplateService);
@@ -174,8 +162,8 @@ const params = {
   studentSearch: this.selectedStudent.value?.trim() || '',
   batchSearch: this.selectedBatch.value?.trim() || '',
   courseSearch: this.selectedCourse.value?.trim() || '',
-  fromDate: hasValidDates ? this.fromDate.value?.toLocaleDateString('en-CA') ?? '' : '',
-  toDate: hasValidDates ? this.toDate.value?.toLocaleDateString('en-CA') ?? '' : '',
+  fromDate: hasValidDates ? (typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA')) ?? '' : '',
+  toDate: hasValidDates ? (typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA')) ?? '' : '',
 };
 
 console.log("params", params,this.currentPage,
@@ -468,8 +456,8 @@ console.log("params", params,this.currentPage,
   clearFilters() {
     [this.selectedCourse, this.selectedStudent, this.selectedBatch].forEach(control => control.reset());
     this.batchList = [];
-    this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-    this.toDate.setValue(new Date());
+    this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
+    this.toDate.setValue(new Date().toISOString().split('T')[0]);
     this.showMoreOptions = false;
     this.currentPage = 1;
     this.selectedStudents.clear();
@@ -496,8 +484,8 @@ downloadPDF(): void {
     studentSearch: this.selectedStudent.value?.trim() || '',
     batchSearch: this.selectedBatch.value?.trim() || '',
     courseSearch: this.selectedCourse.value?.trim() || '',
-    fromDate: hasValidDates ? this.fromDate.value?.toLocaleDateString('en-CA') ?? '' : '',
-  toDate: hasValidDates ? this.toDate.value?.toLocaleDateString('en-CA') ?? '' : '',
+    fromDate: hasValidDates ? (typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA')) ?? '' : '',
+    toDate: hasValidDates ? (typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA')) ?? '' : '',
   };
 
   this.user.Get_Report_Student(
@@ -643,8 +631,8 @@ exportToExcel(): void {
     studentSearch: this.selectedStudent.value?.trim() || '',
     batchSearch: this.selectedBatch.value?.trim() || '',
     courseSearch: this.selectedCourse.value?.trim() || '',
-    fromDate: hasValidDates ? this.fromDate.value?.toLocaleDateString('en-CA') ?? '' : '',
-    toDate: hasValidDates ? this.toDate.value?.toLocaleDateString('en-CA') ?? '' : ''
+    fromDate: hasValidDates ? (typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA')) ?? '' : '',
+    toDate: hasValidDates ? (typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA')) ?? '' : '',
   };
 
   this.user.Get_Report_Student(

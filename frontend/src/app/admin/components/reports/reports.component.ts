@@ -7,11 +7,12 @@ import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
   selector: 'app-reports',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.scss',
 })
@@ -34,6 +35,7 @@ export class ReportsComponent {
   Total_Fine_Amount: any;
   showAllInPDF: boolean = false;
    branchName:string=""
+  showMoreOptions = false;
 
 
   constructor(

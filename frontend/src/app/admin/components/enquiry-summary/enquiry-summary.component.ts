@@ -29,6 +29,10 @@ export class EnquirySummaryComponent implements OnInit {
   toDateFilter = '';
 
   ngOnInit(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.isDateFilterEnabled = true;
+    this.fromDateFilter = today;
+    this.toDateFilter = today;
     this.loadData();
   }
 

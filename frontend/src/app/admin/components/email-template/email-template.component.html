@@ -20,13 +20,9 @@
       @for(item of emailTemplates; track item.Template_ID) {
       <div class="border border-gray-200 p-5 rounded-xl hover:shadow-lg transition duration-300 bg-gray-50 flex justify-between items-center">
         <div class="w-full">
-          <div class="flex items-center gap-4 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-1 rounded">Template</span>
-            <h3 class="text-lg font-bold text-gray-800">{{ item.Template_Name }}</h3>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-            <p><span class="font-semibold">Subject:</span> {{ item.Subject }}</p>
-            <p><span class="font-semibold">Created:</span> {{ item.Created_At | date:'mediumDate' }}</p>
+          <div class="flex flex-wrap items-center gap-x-8 gap-y-2">
+            <p class="text-sm text-gray-800"><span class="font-bold uppercase mr-1">Template:</span> {{ item.Template_Name }}</p>
+            <p class="text-sm text-gray-600"><span class="font-semibold text-gray-800">Subject:</span> {{ item.Subject }}</p>
           </div>
         </div>
         <div class="flex gap-3 ml-4">
