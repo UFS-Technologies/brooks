@@ -21,17 +21,6 @@ import { EmailTemplate } from '../../../core/models/email_template';
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatCheckboxModule,
     FormsModule
   ],
   templateUrl: './mail-report.component.html',
@@ -48,12 +37,14 @@ export class MailReportComponent implements OnInit {
 
   // Filters
   sentOn: boolean = true;
-  fromDate: any = new Date();
-  toDate: any = new Date();
+  fromDate: string = '';
+  toDate: string = '';
   selectedTemplateId: number | null = null;
 
   ngOnInit() {
     console.log('MailReportComponent initialized');
+    this.fromDate = this.formatDate(new Date());
+    this.toDate = this.formatDate(new Date());
     this.fetchTemplates();
     this.fetchReportData();
   }
@@ -102,8 +93,8 @@ export class MailReportComponent implements OnInit {
 
   resetFilters() {
     this.sentOn = true;
-    this.fromDate = new Date();
-    this.toDate = new Date();
+    this.fromDate = this.formatDate(new Date());
+    this.toDate = this.formatDate(new Date());
     this.selectedTemplateId = null;
     this.fetchReportData();
   }

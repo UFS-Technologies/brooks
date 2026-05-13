@@ -178,18 +178,18 @@ table {
     position: sticky;
     top: 0;
     z-index: 6;
-    padding: 12px 10px;
+    padding: 4px 10px;
     text-align: left;
     background: #eceff3;
     color: #404854;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     border-bottom: 1px solid #d8dde5;
   }
 
   tbody td {
-    padding: 10px;
+    padding: 2px 10px;
     font-size: 16px;
     color: #2f3743;
     border-bottom: 1px solid #e4e8ee;
@@ -199,7 +199,7 @@ table {
 
 /* ─── Column helpers ─── */
 .source-cell {
-  font-weight: 700;
+  font-weight: 400;
   color: #2f3743;
 }
 
@@ -218,7 +218,7 @@ table {
   padding: 2px 12px;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .badge-yes {

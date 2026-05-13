@@ -1,5 +1,6 @@
 .container {
   padding: 1rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
 }
@@ -111,8 +112,8 @@ p.selected-income-type {
   text-align: center;
 
   button {
-    padding: 0.7rem 1.5rem;
-    font-size: 1.1rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     background-color: #28a745;
     color: #fff;

@@ -126,10 +126,10 @@
   cursor: pointer;
 
   &.small {
-    height: 32px;
-    padding: 0 14px;
-    font-size: 14px;
-    border-radius: 8px;
+    height: 24px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 6px;
     background: #ffffff;
   }
 }
@@ -215,18 +215,18 @@ table {
     position: sticky;
     top: 0;
     z-index: 6;
-    padding: 12px 10px;
+    padding: 4px 10px;
     text-align: left;
     background: #eceff3;
     color: #404854;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     border-bottom: 1px solid #d8dde5;
   }
 
   tbody td {
-    padding: 10px;
+    padding: 2px 10px;
     font-size: 16px;
     color: #2f3743;
     border-bottom: 1px solid #e4e8ee;
@@ -237,7 +237,7 @@ table {
     position: sticky;
     bottom: 0;
     z-index: 5;
-    padding: 11px 10px;
+    padding: 4px 10px;
     font-size: 16px;
     font-weight: 800;
     color: #1f2732;
@@ -248,7 +248,7 @@ table {
 
 .source-cell,
 .name-cell {
-  font-weight: 700;
+  font-weight: 400;
   color: #2f3743;
 }
 
@@ -261,7 +261,7 @@ table {
   background: transparent;
   color: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
 
   &.total,
   &.percent {

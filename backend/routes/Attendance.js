@@ -67,4 +67,53 @@ router.get('/Get_Attendance_History', async (req, res) => {
     }
 });
 
+router.get('/Get_Attendance_Summary_Report', async (req, res) => {
+    try {
+        const { studentId, courseId, batchId, fromDate, toDate, teacherId, status } = req.query;
+        const results = await Attendance.Get_Attendance_Summary_Report(
+            parseInt(studentId) || 0,
+            parseInt(courseId) || 0,
+            parseInt(batchId) || 0,
+            fromDate || '',
+            toDate || '',
+            parseInt(teacherId) || 0,
+            status !== undefined ? parseInt(status) : -1
+        );
+        res.json({ 
+            success: true, 
+            data: results[0] || [], 
+            summary: results[1] ? results[1][0] : null 
+        });
+    } catch (error) {
+        console.error('Get_Attendance_Summary_Report Error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch attendance summary report', error: error.message });
+    }
+});
+
+router.post('/Delete_Attendance', async (req, res) => {
+    try {
+        const { courseId, batchId, date } = req.body;
+        await Attendance.Delete_Attendance(courseId, batchId, date);
+        res.json({ success: true, message: 'Attendance record deleted successfully.' });
+    } catch (error) {
+        console.error('Delete_Attendance Error:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete attendance record', error: error.message });
+    }
+});
+
+router.get('/Get_Attendance_Details_By_Session', async (req, res) => {
+    try {
+        const { courseId, batchId, date } = req.query;
+        const results = await Attendance.Get_Attendance_Details_By_Session(
+            parseInt(courseId) || 0,
+            parseInt(batchId) || 0,
+            date || ''
+        );
+        res.json({ success: true, data: results || [] });
+    } catch (error) {
+        console.error('Get_Attendance_Details_By_Session Error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch attendance details', error: error.message });
+    }
+});
+
 module.exports = router;

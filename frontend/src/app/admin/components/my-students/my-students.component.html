@@ -6,7 +6,7 @@
           
             <!-- Course Filter -->
             <div class="flex-1 min-w-[200px]">
-                <label class="block text-xs font-medium text-gray-600 mb-0.5">Course</label>
+                <!-- <label class="block text-xs font-medium text-gray-600 mb-0.5">Course</label> -->
                 <div class="relative">
                     <select [formControl]="selectedCourse" (change)="onCourseSelectionChange()"
                         class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
@@ -26,7 +26,7 @@
 
             <!-- Search Input -->
             <div class="flex-1 min-w-[250px]">
-                <label class="block text-xs font-medium text-gray-600 mb-0.5">Student Name / Phone Number</label>
+                <!-- <label class="block text-xs font-medium text-gray-600 mb-0.5">Student Name / Phone Number</label> -->
                 <div class="relative">
                     <input type="text" [formControl]="selectedStudent" (keyup)="fetchReportData()"
                         placeholder="Search name or phone"
@@ -36,7 +36,7 @@
 
             <!-- Batch Filter -->
             <div class="flex-1 min-w-[200px]">
-                <label class="block text-xs font-medium text-gray-600 mb-0.5">Batch</label>
+                <!-- <label class="block text-xs font-medium text-gray-600 mb-0.5">Batch</label> -->
                 <div class="relative">
                     <select [formControl]="selectedBatch" (change)="fetchReportData()"
                         class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">

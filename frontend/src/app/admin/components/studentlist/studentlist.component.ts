@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StudentDocumentsComponent } from '../student-documents/student-documents.component';
+import { AttendanceService } from '../../services/attendance.service';
 import { AddExpenseDialogComponent } from '../add-expense-dialog/add-expense-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
@@ -171,6 +172,15 @@ export class StudentlistComponent {
   callLogDate: string = new Date().toISOString().split('T')[0];
   callLogRemark: string = '';
   isSavingCallLog: boolean = false;
+  
+  // Attendance Summary
+  attendanceFromDate: string = new Date().toISOString().split('T')[0];
+  attendanceToDate: string = new Date().toISOString().split('T')[0];
+  attendanceTeacherId: number = 0;
+  attendanceStatus: number = -1; // -1 for all
+  attendanceSummary: any = null;
+  attendanceHistory: any[] = [];
+  attendanceLoading: boolean = false;
 
   private currentSubscription?: Subscription;
   private courseSubscription?: Subscription;
@@ -178,6 +188,7 @@ export class StudentlistComponent {
   student_Service_ = inject(student_Service);
   private user = inject(user_Service);
   private emailTemplateService = inject(EmailTemplateService);
+  private attendanceService = inject(AttendanceService);
   private fb = inject(FormBuilder);
   private url = inject(ActivatedRoute);
   totals: any;
@@ -482,6 +493,42 @@ export class StudentlistComponent {
         });
       }
     });
+  }
+
+  fetchAttendanceSummaryReport() {
+    const studentId = this.student_Form.get('Student_ID')?.value || this.followUps?.Student_ID;
+    if (!studentId) return;
+
+    this.attendanceLoading = true;
+    this.attendanceService.getAttendanceSummaryReport(
+      studentId,
+      0, // courseId
+      0, // batchId
+      this.attendanceFromDate,
+      this.attendanceToDate,
+      this.attendanceTeacherId,
+      this.attendanceStatus
+    ).subscribe({
+      next: (res: any) => {
+        this.attendanceHistory = res.data || [];
+        this.attendanceSummary = res.summary || null;
+        this.attendanceLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to fetch attendance summary:', err);
+        this.attendanceLoading = false;
+      }
+    });
+  }
+
+  getStatusLabel(status: number): string {
+    switch (status) {
+      case 1: return 'Present';
+      case 0: return 'Absent';
+      case 2: return 'Leave';
+      case 3: return 'Late';
+      default: return 'Unknown';
+    }
   }
 
   loadImageAsBase64(url: string): Promise<string> {

@@ -55,12 +55,10 @@ export class MarkAttendanceComponent implements OnInit {
   selectedCourse = new FormControl('');
   selectedBatch = new FormControl('');
   attendanceDate = new FormControl(new Date());
-  selectedSession = new FormControl('');
 
   courseList: any[] = [];
   batchList: any[] = [];
   studentList: any[] = [];
-  sessionList: string[] = [];
 
   // Status: 1 = Present, 0 = Absent, 2 = Leave, 3 = Late
   attendanceStatuses: Map<number, number> = new Map();
@@ -71,7 +69,6 @@ export class MarkAttendanceComponent implements OnInit {
 
   ngOnInit() {
     this.loadCourses();
-    this.generateSessionSlots();
   }
 
   loadCourses() {
@@ -83,25 +80,6 @@ export class MarkAttendanceComponent implements OnInit {
     });
   }
 
-  generateSessionSlots() {
-    // Generate hourly session slots from 8 AM to 6 PM
-    this.sessionList = [];
-    for (let h = 8; h < 18; h++) {
-      const startHour = h > 12 ? h - 12 : h;
-      const endHour = (h + 1) > 12 ? (h + 1) - 12 : (h + 1);
-      const startPeriod = h >= 12 ? 'PM' : 'AM';
-      const endPeriod = (h + 1) >= 12 ? 'PM' : 'AM';
-      const startStr = `${startHour === 0 ? 12 : startHour}`;
-      const endStr = `${endHour === 0 ? 12 : endHour}`;
-      this.sessionList.push(`${startStr}:00 ${startPeriod} – ${endStr}:00 ${endPeriod}`);
-    }
-    // Auto-select current session
-    const now = new Date();
-    const currentHour = now.getHours();
-    if (currentHour >= 8 && currentHour < 18) {
-      this.selectedSession.setValue(this.sessionList[currentHour - 8]);
-    }
-  }
 
   onCourseChange() {
     const selectedCourseName = this.selectedCourse.value;
@@ -227,7 +205,6 @@ export class MarkAttendanceComponent implements OnInit {
       html: `
         <div style="text-align: left; font-size: 14px;">
           <p><strong>Date:</strong> ${dateStr}</p>
-          <p><strong>Session:</strong> ${this.selectedSession.value || 'N/A'}</p>
           <p style="color: green;"><strong>Present:</strong> ${presentCount}</p>
           <p style="color: red;"><strong>Absent:</strong> ${absentCount}</p>
           <p style="color: orange;"><strong>Leave:</strong> ${leaveCount}</p>

@@ -1811,7 +1811,7 @@ console.log('this.feesForm', this.batch_Data);
     ];
     const labels = {
       students: 'Students',
-      list: 'Course List',
+      list: '',
       CourseName: CourseName,
       content_list: 'Content Details',
       exam_students: 'Exam Students',

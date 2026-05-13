@@ -38,7 +38,7 @@
       <div class="flex-1 min-w-[200px]">
         <label class="block text-xs font-medium text-gray-600 mb-0.5">Batch</label>
         <div class="relative">
-          <select [formControl]="selectedBatch"
+          <select [formControl]="selectedBatch" (change)="fetchHistory()"
             class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
             <option value="">All</option>
             <option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
@@ -58,8 +58,8 @@
       <div class="flex-1 min-w-[180px]">
         <label class="block text-xs font-medium text-gray-600 mb-0.5">From Date</label>
         <div class="relative">
-          <input type="date" [formControl]="fromDate"
-            class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300 h-[42px]">
+          <input type="date" [formControl]="fromDate" (change)="fetchHistory()"
+            class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
         </div>
       </div>
 
@@ -67,14 +67,14 @@
       <div class="flex-1 min-w-[180px]">
         <label class="block text-xs font-medium text-gray-600 mb-0.5">To Date</label>
         <div class="relative">
-          <input type="date" [formControl]="toDate"
-            class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300 h-[42px]">
+          <input type="date" [formControl]="toDate" (change)="fetchHistory()"
+            class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50 transition duration-300">
         </div>
       </div>
 
       <button (click)="fetchHistory()"
         style="background-color: #1a65c2 !important;"
-        class="h-[42px] px-8 text-white font-semibold rounded-md shadow-sm transition-all hover:scale-105 flex items-center justify-center whitespace-nowrap">
+        class="px-8 text-white font-semibold rounded-md shadow-sm transition-all hover:scale-105 flex items-center justify-center whitespace-nowrap">
         Search
       </button>
     </div>
@@ -102,7 +102,7 @@
             <th>Date</th>
             <th>Course</th>
             <th>Batch</th>
-            <th>Session</th>
+            <!-- <th>Session</th> -->
             <th>Marked By</th>
             <th>Status</th>
             <th>Action</th>
@@ -113,11 +113,18 @@
             <td>{{ record.Attendance_Date | date:'dd-MM-yyyy' }}</td>
             <td>{{ record.Course_Name || 'N/A' }}</td>
             <td>{{ record.Batch_Name || 'N/A' }}</td>
-            <td>{{ record.Session || '1' }}</td>
+            <!-- <td>{{ record.Session || '1' }}</td> -->
             <td>{{ record.Marked_By_Name || 'John Doe' }}</td>
             <td><span class="status-completed">Completed</span></td>
             <td>
-              <button class="btn-view" (click)="viewAttendanceDetails(record)">View</button>
+              <div class="action-buttons">
+                <button class="btn-action view" (click)="viewAttendanceDetails(record)" title="View Details">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+                <!-- <button class="btn-action delete" (click)="deleteAttendanceRecord(record)" title="Delete Record">
+                  <span class="material-symbols-outlined">delete</span>
+                </button> -->
+              </div>
             </td>
           </tr>
         </tbody>

@@ -50,3 +50,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;    backgrou
     border-top-width: 3px !important;
   }
 }
+
+/* Global Form Element Consistency */
+input:not([type="checkbox"]):not([type="radio"]):not(.mat-mdc-input-element),
+select:not(.mat-mdc-select),
+.btn-standard,
+button:not(.btn-action):not(.mat-icon-button):not(.back-btn):not(.mat-mdc-icon-button):not(.pagination-buttons button):not(.mat-mdc-button):not(.btn-xs) {
+  height: 42px !important;
+  box-sizing: border-box;
+}
+
+select {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}

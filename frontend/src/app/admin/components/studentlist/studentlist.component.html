@@ -38,6 +38,12 @@
                     <span class="student-tab__label">Call Log</span>
                 </button>
 
+                <button (click)="view = 'attendance_summary'; fetchAttendanceSummaryReport()" title="Attendance Summary"
+                    class="student-tab" [class.student-tab--active]="view === 'attendance_summary'">
+                    <span class="material-symbols-outlined student-tab__icon">how_to_reg</span>
+                    <span class="student-tab__label">Attendance</span>
+                </button>
+
                 <button *ngIf="isDelete" (click)="Delete_student(followUps)" title="Delete Student"
                     class="student-tab student-tab--delete">
                     <span class="material-symbols-outlined student-tab__icon">delete</span>
@@ -114,7 +120,125 @@
             </table>
         </div>
     </div>
-    }@else if (view == 'Call_Log') {
+    }
+    @else if (view === 'attendance_summary') {
+    <div class="bg-white rounded-lg shadow-md p-6 mt-4">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Attendance Summary</h2>
+        
+        <!-- Filters Section -->
+        <div class="flex flex-wrap gap-4 items-end mb-6">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">From Date</label>
+                <input type="date" [(ngModel)]="attendanceFromDate" (change)="fetchAttendanceSummaryReport()"
+                    class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 transition duration-300 h-[42px]">
+            </div>
+            
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">To Date</label>
+                <input type="date" [(ngModel)]="attendanceToDate" (change)="fetchAttendanceSummaryReport()"
+                    class="w-full px-4 py-1.5 border-2 border-gray-300 rounded-md focus:outline-none focus:border-sky-500 transition duration-300 h-[42px]">
+            </div>
+
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">Teacher</label>
+                <div class="relative">
+                    <select [(ngModel)]="attendanceTeacherId" (change)="fetchAttendanceSummaryReport()"
+                        class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 transition duration-300 h-[42px]">
+                        <option [ngValue]="0">All Teachers</option>
+                        <option *ngFor="let staff of staffData" [ngValue]="staff.User_ID">
+                            {{ staff.First_Name }}
+                        </option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-600 mb-0.5">Status</label>
+                <div class="relative">
+                    <select [(ngModel)]="attendanceStatus" (change)="fetchAttendanceSummaryReport()"
+                        class="w-full appearance-none bg-white border-2 border-gray-300 rounded-md py-1.5 pl-4 pr-10 focus:outline-none focus:border-sky-500 transition duration-300 h-[42px]">
+                        <option [ngValue]="-1">All Statuses</option>
+                        <option [ngValue]="1">Present</option>
+                        <option [ngValue]="0">Absent (Incl. Leave)</option>
+                        <option [ngValue]="2">Leave Only</option>
+                        <option [ngValue]="3">Late</option>
+                    </select>
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Boxes -->
+        <div *ngIf="attendanceSummary" class="p-4 bg-gray-100 rounded-md shadow-sm border border-gray-300 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-700 font-medium text-center">
+                <div class="flex flex-col items-center p-2 bg-white rounded border border-gray-200">
+                    <span class="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Present</span>
+                    <span class="text-2xl font-bold text-green-600">{{ attendanceSummary.Total_Present || 0 }}</span>
+                </div>
+                <div class="flex flex-col items-center p-2 bg-white rounded border border-gray-200">
+                    <span class="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Absent</span>
+                    <span class="text-2xl font-bold text-red-600">{{ attendanceSummary.Total_Absent || 0 }}</span>
+                </div>
+                <div class="flex flex-col items-center p-2 bg-white rounded border border-gray-200">
+                    <span class="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Records</span>
+                    <span class="text-2xl font-bold text-sky-600">{{ attendanceSummary.Total_Records || 0 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed List Table -->
+        <div *ngIf="attendanceLoading" class="flex justify-center py-8">
+            <mat-icon class="animate-spin text-sky-500">refresh</mat-icon>
+            <span class="ml-2 text-gray-600">Loading attendance data...</span>
+        </div>
+
+        <div *ngIf="!attendanceLoading && attendanceHistory.length === 0" class="text-center py-8 text-gray-500">
+            No attendance records found for the selected criteria.
+        </div>
+
+        <div *ngIf="!attendanceLoading && attendanceHistory.length > 0" class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded shadow text-sm">
+                <thead class="bg-gray-100 text-left text-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 border-b">Date</th>
+                        <th class="px-4 py-2 border-b">Student</th>
+                        <th class="px-4 py-2 border-b">Course</th>
+                        <th class="px-4 py-2 border-b">Batch</th>
+                        <th class="px-4 py-2 border-b">Marked By</th>
+                        <th class="px-4 py-2 border-b">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr *ngFor="let record of attendanceHistory" class="hover:bg-gray-50 transition duration-150">
+                        <td class="px-4 py-2">{{ record.Attendance_Date | date:'dd-MM-yyyy' }}</td>
+                        <td class="px-4 py-2 font-medium">{{ record.Student_Name }}</td>
+                        <td class="px-4 py-2 text-gray-600">{{ record.Course_Name }}</td>
+                        <td class="px-4 py-2 text-gray-600">{{ record.Batch_Name }}</td>
+                        <td class="px-4 py-2 text-gray-600">{{ record.Marked_By_Name }}</td>
+                        <td class="px-4 py-2">
+                            <span [ngClass]="{
+                                'bg-green-100 text-green-700': record.Status === 1,
+                                'bg-red-100 text-red-700': record.Status === 0,
+                                'bg-orange-100 text-orange-700': record.Status === 2,
+                                'bg-indigo-100 text-indigo-700': record.Status === 3
+                            }" class="px-2 py-1 rounded-full text-xs font-semibold">
+                                {{ getStatusLabel(record.Status) }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    }
+    @else if (view == 'Call_Log') {
     <div class="bg-white rounded-lg shadow-md p-6 mt-4">
         <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Add Call Log</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

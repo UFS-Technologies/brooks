@@ -24,4 +24,36 @@ export class AttendanceService {
       }
     });
   }
+
+  getAttendanceSummaryReport(studentId: number, courseId: number, batchId: number, fromDate: string, toDate: string, teacherId: number, status: number): Observable<any> {
+    return this.http.get(this.baseUrl + 'Get_Attendance_Summary_Report', {
+      params: {
+        studentId: studentId.toString(),
+        courseId: courseId.toString(),
+        batchId: batchId.toString(),
+        fromDate: fromDate || '',
+        toDate: toDate || '',
+        teacherId: teacherId.toString(),
+        status: status.toString()
+      }
+    });
+  }
+
+  deleteAttendance(courseId: number, batchId: number, date: string): Observable<any> {
+    return this.http.post(this.baseUrl + 'Delete_Attendance', {
+      courseId,
+      batchId,
+      date
+    });
+  }
+
+  getAttendanceDetailsBySession(courseId: number, batchId: number, date: string): Observable<any> {
+    return this.http.get(this.baseUrl + 'Get_Attendance_Details_By_Session', {
+      params: {
+        courseId: courseId.toString(),
+        batchId: batchId.toString(),
+        date: date || ''
+      }
+    });
+  }
 }

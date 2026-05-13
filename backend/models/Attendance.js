@@ -16,6 +16,31 @@ const Attendance = {
       staffId || 0,
     ]);
   },
+  Get_Attendance_Summary_Report: async function (studentId, courseId, batchId, fromDate, toDate, teacherId, status) {
+    return getmultipleSP("Get_Attendance_Summary_Report", [
+      studentId || 0,
+      courseId || 0,
+      batchId || 0,
+      fromDate || '',
+      toDate || '',
+      teacherId || 0,
+      status === undefined || status === null ? -1 : status,
+    ]);
+  },
+  Delete_Attendance: async function (courseId, batchId, date) {
+    return executeTransaction("Delete_Attendance", [
+      courseId || 0,
+      batchId || 0,
+      date || '',
+    ]);
+  },
+  Get_Attendance_Details_By_Session: async function (courseId, batchId, date) {
+    return executeTransaction("Get_Attendance_Details_By_Session", [
+      courseId || 0,
+      batchId || 0,
+      date || '',
+    ]);
+  },
 };
 
 module.exports = Attendance;

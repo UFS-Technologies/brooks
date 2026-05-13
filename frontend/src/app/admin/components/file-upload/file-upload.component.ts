@@ -141,10 +141,9 @@ export class FileUploadComponent {
     reader.onload = (e) => {
       this.arrayBuffer = reader.result;
       const data = new Uint8Array(this.arrayBuffer);
-      const arr = Array.from(data, (byte) => String.fromCharCode(byte));
-      const bstr = arr.join('');
-
-      const workbook = XLSX.read(bstr, { type: 'binary' });
+      
+      // ✅ More efficient way to read workbook from ArrayBuffer
+      const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       const rawData: any[] = XLSX.utils.sheet_to_json(worksheet, {
@@ -153,12 +152,26 @@ export class FileUploadComponent {
 
       if (rawData.length > 0) {
         this.excelHeaders = Object.keys(rawData[0]);
+      } else {
+        this.isUploading = false;
+        alert('The Excel file appears to be empty.');
+        return;
       }
       console.log('rawData', rawData);
 
       const cleanedData = rawData
         .map((row: any) => {
-          const fullName = row['Student Name'] || '';
+          // 🔁 Helper to get value from row with flexible header matching
+          const getVal = (possibleHeaders: string[]): any => {
+            const keys = Object.keys(row);
+            const foundKey = keys.find(key => {
+              const normalizedKey = key.toLowerCase().replace(/[\s_.]/g, '');
+              return possibleHeaders.some(h => h.toLowerCase().replace(/[\s_.]/g, '') === normalizedKey);
+            });
+            return foundKey ? row[foundKey] : undefined;
+          };
+
+          const fullName = getVal(['Student Name', 'Full Name', 'Name']) || '';
           let First_Name = '';
           let Last_Name = '';
           if (fullName) {
@@ -166,16 +179,17 @@ export class FileUploadComponent {
             First_Name = parts[0];
             Last_Name = parts.slice(1).join(' ');
           } else {
-            First_Name = row['First Name'] || '';
-            Last_Name = row['Last Name'] || '';
+            First_Name = getVal(['First Name', 'FirstName']) || '';
+            Last_Name = getVal(['Last Name', 'LastName']) || '';
           }
+
           // 🔁 Shared phone number cleaning function
-          const cleanPhone = (raw: string): string => {
-            if (!raw) return '';
+          const cleanPhone = (raw: any): string => {
+            if (raw === undefined || raw === null) return '';
             const cleaned = raw.toString().replace(/[^\d,]/g, '');
             const numbers = cleaned
               .split(',')
-              .map((num) => num.trim())
+              .map((num: string) => num.trim())
               .filter(Boolean);
 
             const normalizeNumber = (num: string): string => {
@@ -196,156 +210,137 @@ export class FileUploadComponent {
             return normalizeNumber(numbers[0] || '');
           };
 
+          // 🔁 Helper to normalize date to YYYY-MM-DD
+          const normalizeDate = (val: any): string => {
+            if (!val) return '';
+            const str = val.toString().trim();
+            if (!str) return '';
+
+            // If already YYYY-MM-DD, return as is
+            if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+
+            // Handle DD-MM-YYYY or DD/MM/YYYY
+            const dmy = str.split(/[-/]/);
+            if (dmy.length === 3) {
+              if (dmy[0].length === 4) return `${dmy[0]}-${dmy[1].padStart(2, '0')}-${dmy[2].padStart(2, '0')}`; // YYYY-MM-DD
+              return `${dmy[2]}-${dmy[1].padStart(2, '0')}-${dmy[0].padStart(2, '0')}`; // DD-MM-YYYY -> YYYY-MM-DD
+            }
+
+            return str;
+          };
+
           return {
             First_Name: First_Name || '',
             Last_Name: Last_Name || '',
-            Email: (row['Email ID'] || row['Email'] || '').trim(),
-            Country_Code_Name: row['Country Code Name'] || row['Country_Code_Name'] || '',
-            Country_Code: row['Country Code'] || row['Country_Code'] || '',
-            Phone_Number: cleanPhone(row['Contact Number'] || row['Phone Number']),
-            Course_Name: row['Course Name'] || row['Course'] || '',
-            Batch_Name: row['Batches'] || row['Batch'] || '',
-            Status: row['Student Status'] || row['Status'] || '',
-            Admission_Date: row['Admission Date'] || '',
+            Email: (getVal(['Email ID', 'Email', 'Mail']) || '').toString().trim(),
+            Country_Code_Name: getVal(['Country Code Name', 'Country']) || '',
+            Country_Code: getVal(['Country Code']) || '',
+            Phone_Number: cleanPhone(getVal(['Contact Number', 'Phone Number', 'Mobile', 'Contact'])),
+            Course_Name: getVal(['Course Name', 'Course']) || '',
+            Batch_Name: getVal(['Batches', 'Batch']) || '',
+            Status: getVal(['Student Status', 'Status']) || '',
+            Admission_Date: normalizeDate(getVal(['Admission Date', 'Date'])),
             Branch_Name: this.Search_Branch.Branch_Name,
             Branch_Id: this.Search_Branch.Branch_Id,
-            Assigned_To: row['Created By'] || row['Assigned To'] || '',
-            Source: row['Source'] || '',
-            Follow_Up_Date: row['Follow up Date'] || row['Follow Up Date'] || '',
-            Follow_Up_Status: row['Follow up Status'] || row['Follow Up Status'] || '',
-            Remarks: row['Note'] || row['Remarks'] || '',
-            Roll_No: row['Roll No.'] || row['Roll No'] || '',
-            Address: row['Address'] || '',
-            Father: row['Father'] || '',
-            Mother: row['Mother'] || '',
-            GuardianNO: cleanPhone(row['Guardian Contact Number'] || row['Guardian Contact']),
-            QUALIFICATION: row['QUALIFICATION'] || row['Qualification'] || '',
-            Total_Amount: row['Total Amount'] || '',
-            Paid_Amount: row['Paid Amount'] || '',
-            Due_Date: row['Instalment 1'] || '',
-            Payment_Mode: row['Details'] || '',
+            Branch_ID: this.Search_Branch.Branch_Id, // redundant but safer
+            Assigned_To: getVal(['Created By', 'Assigned To', 'Staff']) || '',
+            Source: getVal(['Source', 'Lead Source']) || '',
+            Follow_Up_Date: normalizeDate(getVal(['Follow up Date', 'Follow Up Date', 'Next Followup'])),
+            Next_Follow_Up_Date: normalizeDate(getVal(['Follow up Date', 'Follow Up Date', 'Next Followup'])),
+            Follow_Up_Status: getVal(['Follow up Status', 'Follow Up Status']) || '',
+            Remarks: getVal(['Note', 'Remarks', 'Remark', 'Comment']) || '',
+            Roll_No: getVal(['Roll No.', 'Roll No', 'ID']) || '',
+            Address: getVal(['Address']) || '',
+            Father: getVal(['Father', 'Father Name']) || '',
+            Mother: getVal(['Mother', 'Mother Name']) || '',
+            GuardianNO: cleanPhone(getVal(['Guardian Contact Number', 'Guardian Contact', 'Guardian Phone'])),
+            QUALIFICATION: getVal(['QUALIFICATION', 'Qualification']) || '',
+            Created_By: Number(localStorage.getItem('User_ID')) || 0,
+            Active_Status: 'Active',
+            Delete_Status: 0,
+            Student_ID: 0,
+            Total_Amount: (() => {
+              const val = getVal(['Total Amount', 'Fees', 'Amount']);
+              if (val === undefined || val === null || val === '') return 0;
+              return parseFloat(val.toString().replace(/Rs\.?/i, '').replace(/,/g, '').trim()) || 0;
+            })(),
+            Paid_Amount: (() => {
+              const val = getVal(['Paid Amount', 'Paid']);
+              if (val === undefined || val === null || val === '') return 0;
+              return parseFloat(val.toString().replace(/Rs\.?/i, '').replace(/,/g, '').trim()) || 0;
+            })(),
+            Due_Date: normalizeDate(getVal(['Instalment 1', 'Installment 1'])),
+            Payment_Mode: getVal(['Details', 'Payment Mode']) || '',
+            
             // ✅ Dynamic Installments
-  Installments: (() => {
-  const installments: Installment[] = [];
+            Installments: (() => {
+              const installments: Installment[] = [];
+              let notPaidTotal = 0;
+              let paidInstallments: any[] = [];
 
-  let notPaidTotal = 0;
-  let paidInstallments: any[] = [];
+              for (let i = 0; i < 19; i++) {
+                const idx = i === 0 ? '' : `_${i}`;
+                const parseAmount = (val: any): number => {
+                  if (val === undefined || val === null || val === '') return 0;
+                  const cleaned = val.toString().replace(/Rs\.?/i, '').replace(/,/g, '').trim();
+                  return parseFloat(cleaned) || 0;
+                };
 
-  for (let i = 0; i < 19; i++) {
-    const idx = i === 0 ? '' : `_${i}`;
+                const dueDate = normalizeDate(getVal([`Instalment ${i + 1}`, `Installment ${i + 1}`]));
+                const rawAmount = row[`Amount${idx}`] || getVal([`Amount ${i + 1}`]);
+                const isPaid = (row[`Is Paid?${idx}`] || getVal([`Is Paid ${i + 1}`]) || '').toString().toUpperCase();
+                const taxApplied = row[`Tax Applied${idx}`];
+                const rawTaxAmount = row[`Tax Amount${idx}`];
+                const paymentMode = row[`Payment Mode${idx}`];
+                const paymentStatus = row[`Payment Status${idx}`];
+                const details = row[`Details${idx}`];
 
-    const parseAmount = (val: string): number => {
-      if (!val) return 0;
-      const cleaned = val
-        .toString()
-        .replace(/Rs\.?/i, '')
-        .replace(/,/g, '')
-        .trim();
-      return parseFloat(cleaned) || 0;
-    };
+                const amount = parseAmount(rawAmount);
 
-    const dueDate = row[`Instalment ${i + 1}`];
-    const rawAmount = row[`Amount${idx}`];
-    const isPaid = (row[`Is Paid?${idx}`] || '').toUpperCase();
-    const taxApplied = row[`Tax Applied${idx}`];
-    const rawTaxAmount = row[`Tax Amount${idx}`];
-    const paymentMode = row[`Payment Mode${idx}`];
-    const paymentStatus = row[`Payment Status${idx}`];
-    const details = row[`Details${idx}`];
+                if (!dueDate && !rawAmount && !isPaid) continue;
 
-    const amount = parseAmount(rawAmount);
+                const installment = {
+                  Index: i + 1,
+                  DueDate: dueDate || '',
+                  IsPaid: isPaid,
+                  Amount: amount,
+                  TaxApplied: taxApplied || '',
+                  TaxAmount: parseAmount(rawTaxAmount),
+                  PaymentMode: paymentMode || '',
+                  PaymentStatus: paymentStatus || '',
+                  Details: details || '',
+                  installment_amount: 0
+                };
 
-    if (!dueDate && !rawAmount && !isPaid) continue;
+                if (isPaid === 'NOT PAID') {
+                  installment.installment_amount = amount;
+                  notPaidTotal += amount;
+                } else if (isPaid === 'PAID') {
+                  paidInstallments.push(installment);
+                }
+                installments.push(installment);
+              }
 
-    const installment = {
-      Index: i + 1,
-      DueDate: dueDate || '',
-      IsPaid: isPaid,
-      Amount: amount,
-      TaxApplied: taxApplied || '',
-      TaxAmount: parseAmount(rawTaxAmount),
-      PaymentMode: paymentMode || '',
-      PaymentStatus: paymentStatus || '',
-      Details: details || '',
-      installment_amount: 0 // placeholder
-    };
+              const paidAmount = parseFloat(getVal(['Paid Amount', 'Paid'])) || 0;
+              const remainingPaidAmount = paidAmount - notPaidTotal;
+              const perInstallmentAmount = paidInstallments.length > 0 ? Math.ceil(remainingPaidAmount / paidInstallments.length) : 0;
 
-    if (isPaid === 'NOT PAID') {
-      installment.installment_amount = amount;
-      notPaidTotal += amount;
-    } else if (isPaid === 'PAID') {
-      paidInstallments.push(installment);
-    }
-
-    installments.push(installment);
-  }
-
-  const paidAmount = parseFloat(row['Paid Amount']) || 0;
-  const remainingPaidAmount = paidAmount - notPaidTotal;
-
-  const perInstallmentAmount =
-    paidInstallments.length > 0
-      ? Math.ceil(remainingPaidAmount / paidInstallments.length)
-      : 0;
-
-  for (const inst of paidInstallments) {
-    inst.installment_amount = Math.max(inst.Amount, perInstallmentAmount);
-  }
-
-  return installments;
-})()
-
-
-
-            // Installments: Array.from({ length: 19 }, (_, i) => {
-            //   const idx = i === 0 ? '' : `_${i}`;
-
-            //   const parseAmount = (val: string): number => {
-            //     if (!val) return 0;
-            //     // ✅ Remove Rs, whitespace, and commas explicitly
-            //     const cleaned = val
-            //       .toString()
-            //       .replace(/Rs\.?/i, '') // Remove 'Rs' or 'Rs.'
-            //       .replace(/,/g, '') // Remove commas
-            //       .trim();
-            //     return parseFloat(cleaned) || 0;
-            //   };
-
-            //   const dueDate = row[`Instalment ${i + 1}`];
-            //   const rawAmount = row[`Amount${idx}`];
-            //   const isPaid = row[`Is Paid?${idx}`];
-            //   const taxApplied = row[`Tax Applied${idx}`];
-            //   const rawTaxAmount = row[`Tax Amount${idx}`];
-            //   const paymentMode = row[`Payment Mode${idx}`];
-            //   const paymentStatus = row[`Payment Status${idx}`];
-            //   const details = row[`Details${idx}`];
-
-            //   if (!dueDate && !rawAmount && !isPaid) return null;
-
-            //   return {
-            //     Index: i + 1,
-            //     DueDate: dueDate || '',
-            //     IsPaid: isPaid || '',
-            //     Amount: parseAmount(rawAmount), // 👈 Rs. removed and parsed to float
-            //     TaxApplied: taxApplied || '',
-            //     TaxAmount: parseAmount(rawTaxAmount),
-            //     PaymentMode: paymentMode || '',
-            //     PaymentStatus: paymentStatus || '',
-            //     Details: details || '',
-            //   };
-            // }).filter(Boolean),
+              for (const inst of paidInstallments) {
+                inst.installment_amount = Math.max(inst.Amount, perInstallmentAmount);
+              }
+              return installments;
+            })()
           };
         })
-        // ❗ Filter rows where at least First_Name, Roll_No, Email OR Phone_Number exists
         .filter((student) => student.First_Name || student.Roll_No || student.Email || student.Phone_Number);
 
-      this.Student_Import_Details_Data = cleanedData;
+      if (cleanedData.length === 0) {
+        alert('No valid student data found in the Excel file. Please check if the column headers match (e.g., Student Name, Email, Contact Number).');
+      }
 
+      this.Student_Import_Details_Data = cleanedData;
       this.isUploading = false;
-      console.log(
-        'Filtered & Imported Data:',
-        this.Student_Import_Details_Data
-      );
+      console.log('Filtered & Imported Data:', this.Student_Import_Details_Data);
     };
 
     reader.onerror = (error) => {
@@ -398,11 +393,7 @@ export class FileUploadComponent {
     this.isLoading = true;
     this.isSaving = true;
 
-    const payload = {
-      students: this.Student_Import_Details_Data,
-    };
-
-    this.student_Service_.saveStudentsImport(payload).subscribe(
+    this.student_Service_.saveStudentsImport(this.Student_Import_Details_Data).subscribe(
       (response) => {
         this.isSaving = false;
         this.isLoading = false;

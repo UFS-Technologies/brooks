@@ -54,8 +54,8 @@ export class AttendanceHistoryComponent implements OnInit {
 
   selectedCourse = new FormControl('');
   selectedBatch = new FormControl('');
-  fromDate = new FormControl(new Date(new Date().setDate(new Date().getDate() - 7)));
-  toDate = new FormControl(new Date());
+  fromDate = new FormControl(new Date().toISOString().split('T')[0]);
+  toDate = new FormControl(new Date().toISOString().split('T')[0]);
 
   courseList: any[] = [];
   batchList: any[] = [];
@@ -87,12 +87,14 @@ export class AttendanceHistoryComponent implements OnInit {
         next: (res: any) => {
           this.batchList = res || [];
           this.selectedBatch.setValue('');
+          this.fetchHistory();
         },
         error: (err) => console.error('Error loading batches', err)
       });
     } else {
       this.batchList = [];
       this.selectedBatch.setValue('');
+      this.fetchHistory();
     }
   }
 
@@ -133,12 +135,120 @@ export class AttendanceHistoryComponent implements OnInit {
   }
 
   viewAttendanceDetails(record: any) {
-    // Navigating to a details page (Not requested explicitly but good to have a placeholder or a simple modal/alert)
-    Swal.fire({
-      title: 'Attendance Details',
-      text: `View details for attendance on ${new Date(record.Attendance_Date).toLocaleDateString()} for batch ${record.Batch_Name || 'N/A'}. This functionality is not fully implemented yet.`,
-      icon: 'info'
+    this.isLoadingHistory = true;
+    // record.Attendance_Date is now a YYYY-MM-DD string from the DB
+    const dateStr = record.Attendance_Date;
+    
+    // Use the new dedicated session details API
+    this.attendanceService.getAttendanceDetailsBySession(
+      record.Course_ID || 0,
+      record.Batch_ID || 0,
+      dateStr
+    ).subscribe({
+      next: (res: any) => {
+        this.isLoadingHistory = false;
+        if (res.success && res.data && res.data.length > 0) {
+          const studentRows = res.data.map((s: any, idx: number) => `
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #eee;">${idx + 1}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">${s.Student_Name || s.Name || 'N/A'}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                <span style="padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; 
+                  ${s.Status === 1 ? 'background: #dcfce7; color: #166534;' : 
+                    s.Status === 0 ? 'background: #fee2e2; color: #991b1b;' : 
+                    s.Status === 2 ? 'background: #fef3c7; color: #92400e;' : 
+                    'background: #eef2ff; color: #3730a3;'}">
+                  ${this.getStatusLabel(s.Status)}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+
+          Swal.fire({
+            title: `Attendance Details`,
+            html: `
+              <div style="text-align: left; margin-bottom: 15px; font-size: 14px;">
+                <p><strong>Course:</strong> ${record.Course_Name || 'N/A'}</p>
+                <p><strong>Batch:</strong> ${record.Batch_Name || 'N/A'}</p>
+                <p><strong>Date:</strong> ${dateStr}</p>
+              </div>
+              <div style="max-height: 400px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                  <thead>
+                    <tr style="background: #f9fafb; text-align: left;">
+                      <th style="padding: 8px; border-bottom: 2px solid #eee;">#</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #eee;">Student Name</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #eee;">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${studentRows}
+                  </tbody>
+                </table>
+              </div>
+            `,
+            width: '600px',
+            confirmButtonText: 'Close',
+            confirmButtonColor: '#4338ca'
+          });
+        } else {
+          Swal.fire('No Data', 'No student details found for this record.', 'info');
+        }
+      },
+      error: (err) => {
+        this.isLoadingHistory = false;
+        console.error('Error fetching attendance details', err);
+        Swal.fire('Error', 'Failed to load attendance details.', 'error');
+      }
     });
+  }
+
+  deleteAttendanceRecord(record: any) {
+    const dateStr = new Date(record.Attendance_Date).toISOString().split('T')[0];
+    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete the attendance record for ${record.Batch_Name} on ${dateStr}. This action cannot be undone!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoadingHistory = true;
+        this.attendanceService.deleteAttendance(
+          record.Course_ID || 0,
+          record.Batch_ID || 0,
+          dateStr
+        ).subscribe({
+          next: (res: any) => {
+            this.isLoadingHistory = false;
+            Swal.fire(
+              'Deleted!',
+              'Attendance record has been deleted.',
+              'success'
+            );
+            this.fetchHistory(); // Refresh the list
+          },
+          error: (err) => {
+            this.isLoadingHistory = false;
+            console.error('Error deleting attendance', err);
+            Swal.fire('Error', 'Failed to delete attendance record.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  getStatusLabel(status: number): string {
+    switch (status) {
+      case 1: return 'Present';
+      case 0: return 'Absent';
+      case 2: return 'Leave';
+      case 3: return 'Late';
+      default: return 'Unknown';
+    }
   }
 
   goBack() {
