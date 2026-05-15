@@ -341,4 +341,11 @@ Delete_StudentDocument(student_Id) {
     if (toDate) params = params.set('toDate', toDate);
     return this.http.get(environment.BasePath + 'student/Get_Enquiry_Summary/', { params });
   }
+
+  Get_Status_Report(fromDate?: string, toDate?: string): Observable<any> {
+    let params = new HttpParams();
+    if (fromDate) params = params.set('fromDate', fromDate);
+    if (toDate) params = params.set('toDate', toDate);
+    return this.http.get(environment.BasePath + 'student/Get_Status_Report/', { params });
+  }
 }

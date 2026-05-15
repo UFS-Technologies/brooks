@@ -1,9 +1,6 @@
 .container-section {
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    background: transparent;
 }
 
 .mat-form-field {
@@ -19,12 +16,13 @@ th {
     background-color: #f1f5f9;
     color: #475569;
     text-transform: uppercase;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 18px !important;
+    font-weight: normal !important;
 }
 
 td {
     color: #64748b;
+    font-size: 17px !important;
 }
 
 tr:hover {

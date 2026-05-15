@@ -18,8 +18,14 @@ export class IncomeService {
     return this.http.post(environment.BasePath + 'Income/Save_Income/', incomePayload);
   }
 
-  Get_IncomeList(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.BasePath}Income/Get_IncomeList`);
+  Get_IncomeList(page: number = 1, pageSize: number = 10, filters: any = {}): Observable<any> {
+    let params: any = { page: page.toString(), pageSize: pageSize.toString() };
+    if (filters.fromDate) params.fromDate = filters.fromDate;
+    if (filters.toDate) params.toDate = filters.toDate;
+    if (filters.accountId) params.accountId = filters.accountId;
+    if (filters.expenseTypeId) params.expenseTypeId = filters.expenseTypeId;
+
+    return this.http.get(`${environment.BasePath}Income/Get_IncomeList`, { params });
   }
 
   Delete_Income(Income_Id: number): Observable<any> {

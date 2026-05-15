@@ -54,7 +54,7 @@ export class MarkAttendanceComponent implements OnInit {
 
   selectedCourse = new FormControl('');
   selectedBatch = new FormControl('');
-  attendanceDate = new FormControl(new Date());
+  attendanceDate = new FormControl(new Date().toISOString().split('T')[0]);
 
   courseList: any[] = [];
   batchList: any[] = [];

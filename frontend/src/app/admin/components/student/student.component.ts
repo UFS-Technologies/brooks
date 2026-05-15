@@ -103,8 +103,7 @@ interface InstallmentEntry {
     StudentlistComponent,
   ],
   templateUrl: './student.component.html',
-  styleUrl: './student.component.scss',
-  encapsulation: ViewEncapsulation.None,
+  styleUrl: './student.component.scss'
 })
 export class StudentComponent implements OnInit {
   preferredCountryCodes: string[] = ['in', 'ae'];

@@ -999,4 +999,15 @@ router.get('/Get_Enquiry_Summary/', async (req, res, next) => {
     }
 });
 
+router.get('/Get_Status_Report/', async (req, res, next) => {
+    try {
+        const { fromDate, toDate } = req.query;
+        const rows = await student.Get_Status_Count_Report(fromDate, toDate);
+        res.json(rows);
+    }
+    catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get status report', error: e.message });
+    }
+});
+
 module.exports = router;

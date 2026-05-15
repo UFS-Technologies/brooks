@@ -2,7 +2,7 @@
     @if(!student_edit){
     <!-- Filters Section -->
     <section class="container-section">
-        <div class="flex flex-wrap gap-4 items-end bg-white p-3 rounded-lg shadow-sm mb-4">
+        <div class="flex flex-wrap gap-4 items-end bg-white p-3 rounded-lg shadow-sm mb-3 mt-4">
           
             <!-- Course Filter -->
             <div class="flex-1 min-w-[200px]">
@@ -118,11 +118,11 @@
   
     <!-- Table Section -->
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <table class="w-full text-lg text-left ">
+            <thead class="bg-gray-50">
                 <tr>
 
-                    <th *ngFor="let column of displayedColumns" class="px-2 py-1.5 font-semibold tracking-wider text-left">
+                    <th *ngFor="let column of displayedColumns" class="px-2 py-1.5 tracking-wider text-left">
                         {{ column === 'Action' ? 'Action' : column.replace('_', ' ') }}
                     </th>
 
@@ -138,7 +138,7 @@
                                 <button (click)="$event.stopPropagation(); openFollowUp(row)"
                                     class="flex items-center px-2 py-1 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-all duration-300 transform hover:scale-105 shadow-sm border border-green-200"
                                     title="Follow-up">
-                                    <span class="text-xs font-medium">Follow-up</span>
+                                    <span class="text-md font-family: roboto">Follow-up</span>
                                 </button>
                             </div>
                         </ng-container>

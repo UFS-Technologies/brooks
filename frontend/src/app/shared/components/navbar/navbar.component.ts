@@ -102,7 +102,7 @@ export class NavbarComponent implements OnInit {
       'Account Reports',
       'Work Report',
       'Enquiry Conversion',
-      'Status',
+      'Status Report',
     ];
 
     this.user_Service.Get_user_Menus(User_Id).subscribe({
@@ -130,6 +130,19 @@ export class NavbarComponent implements OnInit {
             Menu_ID: 'fallback-mail-report',
             Menu_Name: 'Mail Report',
             Route: '/admin/Mail_Report',
+          });
+        }
+
+        // ✅ 👉 Ensure Status Report is always present
+        const statusReportExists = items.some(
+          (item: any) => item.Menu_Name === 'Status Report'
+        );
+
+        if (!statusReportExists) {
+          items.push({
+            Menu_ID: 'fallback-status-report',
+            Menu_Name: 'Status Report',
+            Route: '/admin/Status_Report',
           });
         }
 
@@ -165,6 +178,11 @@ export class NavbarComponent implements OnInit {
             Menu_ID: 'fallback-mail-report',
             Menu_Name: 'Mail Report',
             Route: '/admin/Mail_Report',
+          },
+          {
+            Menu_ID: 'fallback-status-report',
+            Menu_Name: 'Status Report',
+            Route: '/admin/Status_Report',
           },
         ];
       },

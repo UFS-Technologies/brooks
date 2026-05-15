@@ -66,9 +66,17 @@ Get_Tax_Reports(
     return this.http.post(environment.BasePath + 'Expense/Save_Expense/', expensePayload);
   }
   // Get_ExpenseList
-  Get_ExpenseList() {
-    return this.http.get<any[]>(
-      `${environment.BasePath}Expense/Get_ExpenseList`);
+  Get_ExpenseList(page: number = 1, pageSize: number = 10, filters: any = {}) {
+    let params: any = { page: page.toString(), pageSize: pageSize.toString() };
+    if (filters.fromDate) params.fromDate = filters.fromDate;
+    if (filters.toDate) params.toDate = filters.toDate;
+    if (filters.accountId) params.accountId = filters.accountId;
+    if (filters.expenseTypeId) params.expenseTypeId = filters.expenseTypeId;
+
+    return this.http.get<any>(
+      `${environment.BasePath}Expense/Get_ExpenseList`, {
+        params: params
+      });
   }
   // Get_Student ExpenseList
   Get_ExpenseList_Student_ID(Student_ID: number) {

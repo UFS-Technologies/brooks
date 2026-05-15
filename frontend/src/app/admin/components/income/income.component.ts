@@ -36,6 +36,12 @@ export class IncomeComponent implements OnInit {
   selectedTemplateId: number | null = null;
   url = inject(ActivatedRoute);
 
+  // Filter variables
+  filterFromDate: string = '';
+  filterToDate: string = '';
+  filterAccountId: string = '';
+  filterExpenseTypeId: string = '';
+
   constructor(
     private incomeApi: IncomeService,
     private feesService: StudentFeesService,
@@ -44,6 +50,10 @@ export class IncomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const today = new Date().toISOString().split('T')[0];
+    this.filterFromDate = today;
+    this.filterToDate = today;
+
     this.Get_IncomeList();
     this.Get_Expense_Type();
     this.getAccounts();
@@ -59,6 +69,8 @@ export class IncomeComponent implements OnInit {
 
     this.loadEmailTemplates();
   }
+
+  totalRecords: number = 0;
 
   loadEmailTemplates() {
     this.emailTemplateService.searchTemplates('').subscribe((res) => {
@@ -111,9 +123,31 @@ export class IncomeComponent implements OnInit {
   }
 
   Get_IncomeList() {
-    this.incomeApi.Get_IncomeList().subscribe((incomelist: any[]) => {
-      this.IncomeList = incomelist;
+    const filters = {
+      fromDate: this.filterFromDate,
+      toDate: this.filterToDate,
+      accountId: this.filterAccountId,
+      expenseTypeId: this.filterExpenseTypeId
+    };
+
+    this.incomeApi.Get_IncomeList(this.currentPage, this.pageSize, filters).subscribe((res: any) => {
+      this.IncomeList = res[1] || [];
+      this.totalRecords = res[0]?.[0]?.total_count || 0;
     });
+  }
+
+  applyFilters() {
+    this.currentPage = 1;
+    this.Get_IncomeList();
+  }
+
+  resetFilters() {
+    const today = new Date().toISOString().split('T')[0];
+    this.filterFromDate = today;
+    this.filterToDate = today;
+    this.filterAccountId = '';
+    this.filterExpenseTypeId = '';
+    this.applyFilters();
   }
 
   saveSelectedIncome() {
@@ -203,24 +237,29 @@ export class IncomeComponent implements OnInit {
   currentPage: number = 1;
 
   get totalPages(): number {
-    return Math.ceil(this.IncomeList.length / this.pageSize) || 1;
+    return Math.ceil(this.totalRecords / this.pageSize) || 1;
   }
 
   get paginatedIncomes() {
-    if (!this.IncomeList) return [];
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.IncomeList.slice(start, start + this.pageSize);
+    return this.IncomeList;
   }
 
   prevPage(): void {
-    if (this.currentPage > 1) this.currentPage--;
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.Get_IncomeList();
+    }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) this.currentPage++;
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.Get_IncomeList();
+    }
   }
 
   onPageSizeChange(): void {
     this.currentPage = 1;
+    this.Get_IncomeList();
   }
 }

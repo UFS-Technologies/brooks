@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Pipe, PipeTransform } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -20,6 +20,16 @@ import localeGb from '@angular/common/locales/en-GB';
 
 registerLocaleData(localeGb);
 
+@Pipe({
+  name: 'minValue',
+  standalone: true
+})
+export class MinValuePipe implements PipeTransform {
+  transform(value: number, min: number): number {
+    return Math.min(value, min);
+  }
+}
+
 export const MY_DATE_FORMATS = {
   parse: { dateInput: 'dd-MM-yyyy' },
   display: {
@@ -36,7 +46,8 @@ export const MY_DATE_FORMATS = {
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     MatFormFieldModule, MatInputModule, MatDatepickerModule,
-    MatButtonModule, MatIconModule, MatSelectModule, MatNativeDateModule
+    MatButtonModule, MatIconModule, MatSelectModule, MatNativeDateModule,
+    MinValuePipe
   ],
   providers: [
     provideNativeDateAdapter(),
@@ -61,6 +72,12 @@ export class AttendanceHistoryComponent implements OnInit {
   batchList: any[] = [];
   historyList: any[] = [];
   isLoadingHistory: boolean = false;
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalRecords: number = 0;
+  pageSizeOptions: number[] = [10, 25, 50, 100];
 
   ngOnInit() {
     this.loadCourses();
@@ -117,21 +134,52 @@ export class AttendanceHistoryComponent implements OnInit {
     const fromDateStr = this.fromDate.value ? new Date(this.fromDate.value).toISOString().split('T')[0] : '';
     const toDateStr = this.toDate.value ? new Date(this.toDate.value).toISOString().split('T')[0] : '';
 
-    this.attendanceService.getAttendanceHistory(courseId, batchId, fromDateStr, toDateStr).subscribe({
+    this.attendanceService.getAttendanceHistory(courseId, batchId, fromDateStr, toDateStr, this.currentPage, this.pageSize).subscribe({
       next: (res: any) => {
         if (res.success && res.data) {
           this.historyList = res.data;
+          this.totalRecords = res.totalRecords || 0;
         } else {
           this.historyList = [];
+          this.totalRecords = 0;
         }
         this.isLoadingHistory = false;
       },
       error: (err) => {
         console.error('Error loading history', err);
         this.historyList = [];
+        this.totalRecords = 0;
         this.isLoadingHistory = false;
       }
     });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalRecords / this.pageSize) || 1;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.fetchHistory();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.fetchHistory();
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.fetchHistory();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.fetchHistory();
   }
 
   viewAttendanceDetails(record: any) {

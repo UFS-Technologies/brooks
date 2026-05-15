@@ -39,6 +39,7 @@ import { AttendanceHistoryComponent } from './components/attendance-history/atte
 import { EmailTemplateComponent } from './components/email-template/email-template.component';
 import { MailReportComponent } from './components/mail-report/mail-report.component';
 import { CampaignComponent } from './components/campaign/campaign.component';
+import { StatusReportComponent } from './components/status-report/status-report.component';
 
 export const ADMIN_ROUTES: Routes = [
 
@@ -257,6 +258,9 @@ export const ADMIN_ROUTES: Routes = [
     component: CampaignComponent,
     data: { breadcrumb: 'Campaign' }
   },
-
+  {
+    path: 'Status_Report',
+    component: StatusReportComponent,
+    data: { breadcrumb: 'Status Report' }
+  }
 ];
-

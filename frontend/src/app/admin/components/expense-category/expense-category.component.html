@@ -73,16 +73,16 @@
     <table class="min-w-full w-full text-sm text-gray-800 table-auto border-collapse">
       <thead class="bg-gray-100 text-left sticky top-0 z-10">
         <tr>
-          <th class="px-6 py-1 whitespace-nowrap font-semibold">NO.</th>
-          <th class="px-6 py-1 whitespace-nowrap font-semibold">Expense Category</th>
-          <th *ngIf="isEdit || isDelete"  class="px-6 py-1 whitespace-nowrap font-semibold text-center">Actions</th>
+          <th class="px-6 py-2 whitespace-nowrap font-semibold">NO.</th>
+          <th class="px-6 py-2 whitespace-nowrap font-semibold">Expense Category</th>
+          <th *ngIf="isEdit || isDelete"  class="px-6 py-2 whitespace-nowrap font-semibold text-center">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white">
         <tr *ngFor="let list of filteredExpCategory; let i = index"  class="border-b hover:bg-gray-50 transition duration-200">
-          <td class="px-6 py-0.5 whitespace-nowrap">{{ i + 1 }}</td>
-          <td class="px-6 py-0.5 break-words">{{ list.Expense_Category_Name }}</td>
-          <td *ngIf="isEdit || isDelete" class="px-6 py-0.5 whitespace-nowrap">
+          <td class="px-6 py-2 whitespace-nowrap">{{ i + 1 }}</td>
+          <td class="px-6 py-2 break-words">{{ list.Expense_Category_Name }}</td>
+          <td *ngIf="isEdit || isDelete" class="px-6 py-2 whitespace-nowrap">
             <div class="flex gap-3 justify-center">
               <button *ngIf="isEdit" (click)="editExpenseCategory(list)"
                 class="flex items-center p-1.5 bg-yellow-50 text-yellow-600 rounded-md hover:bg-yellow-100 transition-colors" title="Edit">

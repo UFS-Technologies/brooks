@@ -14,13 +14,15 @@ export class AttendanceService {
     return this.http.post(this.baseUrl + 'Save_Attendance', payload);
   }
 
-  getAttendanceHistory(courseId: number, batchId: number, fromDate: string, toDate: string): Observable<any> {
+  getAttendanceHistory(courseId: number, batchId: number, fromDate: string, toDate: string, page: number = 1, pageSize: number = 10): Observable<any> {
     return this.http.get(this.baseUrl + 'Get_Attendance_History', {
       params: {
         courseId: courseId.toString(),
         batchId: batchId.toString(),
         fromDate: fromDate || '',
-        toDate: toDate || ''
+        toDate: toDate || '',
+        page: page.toString(),
+        pageSize: pageSize.toString()
       }
     });
   }

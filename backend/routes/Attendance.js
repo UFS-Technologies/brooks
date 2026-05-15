@@ -52,15 +52,21 @@ router.post('/Save_Attendance', async (req, res) => {
 
 router.get('/Get_Attendance_History', async (req, res) => {
     try {
-        const { courseId, batchId, fromDate, toDate } = req.query;
-        const rows = await Attendance.Get_Attendance_History(
+        const { courseId, batchId, fromDate, toDate, page = 1, pageSize = 10 } = req.query;
+        const results = await Attendance.Get_Attendance_History(
             parseInt(courseId) || 0,
             parseInt(batchId) || 0,
             fromDate,
             toDate,
-            req.userId
+            req.userId,
+            parseInt(page),
+            parseInt(pageSize)
         );
-        res.json({ success: true, data: Array.isArray(rows) ? rows : [] });
+        res.json({ 
+            success: true, 
+            data: results[1] || [], 
+            totalRecords: results[0]?.[0]?.total_count || 0 
+        });
     } catch (error) {
         console.error('Get_Attendance_History Error:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch attendance history', error: error.message });

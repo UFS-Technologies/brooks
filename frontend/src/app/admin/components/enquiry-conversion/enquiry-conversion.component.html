@@ -1,32 +1,41 @@
 <div class="enquiry-conversion-page">
-  <div class="filter-card">
-    <div class="filters" [class.filters-summary]="!isDetailView" [class.filters-detail]="isDetailView">
-      <label class="checkbox-line">
-        <input type="checkbox" [(ngModel)]="useCreatedDate" (change)="applyFilters()" />
-        <span>Created On</span>
-      </label>
-
-      <div class="date-range" [class.disabled]="!useCreatedDate">
-        <div class="field">
-          <span>From Date</span>
-          <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
-        </div>
-        <div class="field">
-          <span>To Date</span>
-          <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate" />
-        </div>
+  <div class="bg-white rounded shadow-sm border border-gray-100 p-2 mt-3 transition-all duration-300 hover:shadow-md">
+    <div class="flex flex-wrap items-center gap-3" [class.filters-summary]="!isDetailView" [class.filters-detail]="isDetailView">
+      <!-- Checkbox -->
+      <div class="flex items-center gap-2 group cursor-pointer">
+        <input type="checkbox" id="createdOn" [(ngModel)]="useCreatedDate" (change)="applyFilters()"
+               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 transition-colors cursor-pointer">
+        <label for="createdOn" class="text-sm font-semibold text-gray-700 cursor-pointer group-hover:text-blue-600 transition-colors">
+          Created On
+        </label>
       </div>
 
-      <div class="actions">
-        <button class="primary-btn" (click)="applyFilters()" style="background-color: blue !important; color: white !important;">
-          Search
-        </button>
-        <button *ngIf="isDetailView" class="ghost-btn" (click)="backToSummary()">
-          Back to Summary
-        </button>
+      <!-- From Date -->
+      <div class="flex items-center gap-3">
+        <label for="fromDate" class="text-xs font-medium text-gray-500 uppercase tracking-wider">From Date</label>
+        <input type="date" id="fromDate" [(ngModel)]="fromDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate"
+               class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-400">
       </div>
 
-      <div class="view-toggle" *ngIf="!isDetailView">
+      <!-- To Date -->
+      <div class="flex items-center gap-3">
+        <label for="toDate" class="text-xs font-medium text-gray-500 uppercase tracking-wider">To Date</label>
+        <input type="date" id="toDate" [(ngModel)]="toDate" (change)="onDateRangeChanged()" [disabled]="!useCreatedDate"
+               class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-400">
+      </div>
+
+      <!-- Search Button -->
+      <button (click)="applyFilters()" 
+              class="flex items-center gap-1 px-3 py-1 bg-blue hover:bg-blue-hover text-white rounded-lg text-sm font-semibold shadow-sm shadow-blue-200 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none" style="background-color: blue !important; color: white !important;">
+        <span class="material-symbols-outlined text-lg">search</span>
+        Search
+      </button>
+
+      <button *ngIf="isDetailView" class="ghost-btn ml-auto" (click)="backToSummary()">
+        Back to Summary
+      </button>
+
+      <div class="view-toggle ml-auto" *ngIf="!isDetailView">
         <button class="ghost-btn toggle-btn table-btn" [class.active]="selectedView === 'table'" (click)="selectedView = 'table'">
           Table
         </button>

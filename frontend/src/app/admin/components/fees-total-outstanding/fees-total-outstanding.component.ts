@@ -150,7 +150,6 @@ export class FeesTotalOutstandingComponent implements OnInit {
   }
 
   fetchReportData() {
-    this.currentPage = 1;
     this.IsLoaded = false;
     const params = {
       Student_ID: (this.selectedStudent.value as any)?.Student_ID || 0,
@@ -159,37 +158,28 @@ export class FeesTotalOutstandingComponent implements OnInit {
       fromDate: this.fromDate.value && typeof this.fromDate.value === 'string' ? this.fromDate.value : (this.fromDate.value as any)?.toLocaleDateString('en-CA') || '',
       toDate: this.toDate.value && typeof this.toDate.value === 'string' ? this.toDate.value : (this.toDate.value as any)?.toLocaleDateString('en-CA') || ''
     };
-// Get_Report_Student
+
     this.user.Get_Outstanding_Student(
       params.Student_ID,
       params.Batch_ID,
       params.Course_ID,
       params.fromDate,
       params.toDate,
-      1,
-      10000
+      this.currentPage,
+      this.pageSize
     ).subscribe({
       next: (res: any[]) => {
-        const [, data] = res;
-        this.rawTableData = (data || []).map(item => {
-          let batchYear = '';
-          if (this.BatchDatas) {
-            const batch = this.BatchDatas.find((b: any) => 
-               (item.Batch_ID && b.Batch_ID == item.Batch_ID) || 
-               (item.Batch_Name && b.Batch_Name === item.Batch_Name)
-            );
-            if (batch && batch.Start_Date) {
-              batchYear = this.extractYearFromDate(batch.Start_Date);
-            }
-          }
-          return {
-            ...item,
-            Name: `${item.First_Name} ${item.Last_Name}`.trim(),
-            Admission_Start_Year: batchYear || '',
-            Active_Status: item.Active_Status || this.studentStatusMap.get(Number(item.Student_ID)) || ''
-          };
-        });
-        this.refreshFilteredData();
+        const [countResult, data] = res;
+        this.totalRecords = countResult?.[0]?.totalRecords || 0;
+        this.Total_Recieved_Amount = countResult?.[0]?.Total_Amount || 0;
+        this.Expense_Amount = countResult?.[0]?.Total_Paid_Amount || 0;
+        this.Closing_Amount = countResult?.[0]?.Outstanding_Amount || 0;
+        
+        this.tableData = (data || []).map(item => ({
+          ...item,
+          Name: `${item.First_Name} ${item.Last_Name}`.trim(),
+          Active_Status: item.Active_Status || this.studentStatusMap.get(Number(item.Student_ID)) || ''
+        }));
       },
       complete: () => this.IsLoaded = true
     });
@@ -280,7 +270,6 @@ export class FeesTotalOutstandingComponent implements OnInit {
     this.selectedStudentStatus.reset('');
     this.fromDate.setValue(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
     this.toDate.setValue(new Date().toISOString().split('T')[0]);
-    // this.fromDate.setValue(new Date());
     this.currentPage = 1;
     this.fetchReportData();
   }
@@ -288,7 +277,7 @@ export class FeesTotalOutstandingComponent implements OnInit {
   onPageChange(event: { pageIndex: number, pageSize: number }) {
     this.currentPage = event.pageIndex + 1;
     this.pageSize = event.pageSize;
-    this.updatePagedTableData();
+    this.fetchReportData();
   }
   get totalPages(): number {
     return Math.ceil(this.totalRecords / this.pageSize) || 1;
@@ -340,20 +329,11 @@ export class FeesTotalOutstandingComponent implements OnInit {
   }
 
   private refreshFilteredData(): void {
-    let filtered = this.applyAdmissionYearFilter(this.rawTableData);
-    filtered = this.applyStudentStatusFilter(filtered);
-    this.allTableData = filtered;
-    this.totalRecords = this.allTableData.length;
-    this.Total_Recieved_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Amount || 0), 0);
-    this.Expense_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Total_Paid_Amount || 0), 0);
-    this.Closing_Amount = this.allTableData.reduce((sum, item) => sum + Number(item.Outstanding_Amount || 0), 0);
-    this.updatePagedTableData();
+    this.fetchReportData();
   }
 
   private updatePagedTableData(): void {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.tableData = this.allTableData.slice(startIndex, endIndex);
+    this.fetchReportData();
   }
 
 downloadPDF(): void {

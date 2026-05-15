@@ -90,8 +90,10 @@ router.post('/Save_Income', async (req, res) => {
 
 router.get('/Get_IncomeList', async (req, res) => {
     try {
-        const result = await Income.Get_IncomeList();
-        res.json(result[0]);
+        const { page = 1, pageSize = 10, fromDate, toDate, accountId, expenseTypeId } = req.query;
+        const filters = { fromDate, toDate, accountId, expenseTypeId };
+        const result = await Income.Get_IncomeList(parseInt(page), parseInt(pageSize), filters);
+        res.json(result);
     } catch (e) {
         console.error('Get Income list Error:', e);
         res.status(500).json({ success: false, message: 'Failed to get income list', error: e.message });

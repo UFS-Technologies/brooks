@@ -739,5 +739,24 @@ enroleCourseFromAdmin: async function (course) {
   Get_Enquiry_Summary: async function (fromDate, toDate) {
     return getmultipleSP("Get_Enquiry_Summary", [fromDate || null, toDate || null]);
   },
+  Get_Status_Count_Report: async function (fromDate, toDate) {
+    const sql = `
+      SELECT 
+        fs.Status_Id,
+        fs.Status_Name, 
+        fs.Status_Color,
+        COUNT(s.Student_ID) as RecordCount
+      FROM followup_status fs
+      LEFT JOIN student s ON fs.Status_Id = s.Status_Id 
+        AND IFNULL(s.Delete_Status, 0) = 0
+        ${fromDate && toDate ? 'AND s.Entry_Date BETWEEN ? AND ?' : ''}
+      WHERE IFNULL(fs.Delete_Status, 0) = 0
+      GROUP BY fs.Status_Id, fs.Status_Name, fs.Status_Color
+      ORDER BY fs.Display_Order;
+    `;
+    const params = fromDate && toDate ? [fromDate, toDate] : [];
+    const [rows] = await db.promise().query(sql, params);
+    return rows;
+  },
 };
 module.exports = student;

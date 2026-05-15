@@ -114,6 +114,7 @@ export class StudentLeadComponent implements OnInit {
   followUpForm: FormGroup;
   selectedCountryCode: string = 'IN'; // <-- Required for initial selection
   student_Service_ = inject(student_Service);
+
   StudentFees_Service_ = inject(StudentFeesService);
   private fb = inject(FormBuilder);
   private emailTemplateService = inject(EmailTemplateService);
@@ -178,7 +179,7 @@ export class StudentLeadComponent implements OnInit {
 
   Total_Entries: number = 0;
   currentPage: number = 1;
-  pageSize: number = 20;
+  pageSize: number = 10;
   view = 'list';
   searchTerm: string = '';
   searchTimeout: any;
@@ -264,7 +265,7 @@ export class StudentLeadComponent implements OnInit {
       First_Name: ['', Validators.required],
       Last_Name: ['', Validators.required],
       Email: [''],
-      Country_Code_Name: ['in'], // 🇮🇳 Default to India
+      Country_Code_Name: ['in'], // ðŸ‡®ðŸ‡³ Default to India
       Country_Code: ['+91'],
       Profile_Photo_Path: [''],
       Profile_Photo_Name: [''],
@@ -443,7 +444,7 @@ export class StudentLeadComponent implements OnInit {
     this.selectedReceipt = receipt;
     console.log('receipt', receipt);
 
-    // Convert dd-MM-yyyy ➡ yyyy-MM-dd for input[type="date"]
+    // Convert dd-MM-yyyy âž¡ yyyy-MM-dd for input[type="date"]
     const paymentDate =
       receipt.Payment_Date || receipt.Entry_Date || new Date().toISOString();
 
@@ -467,7 +468,7 @@ export class StudentLeadComponent implements OnInit {
     const missingKeys = Object.keys(incoming).filter(
       (k) => !formKeys.includes(k)
     );
-    console.warn('❗Missing form controls:', missingKeys); // dev helper
+    console.warn('â—Missing form controls:', missingKeys); // dev helper
     this.isEditingFees = true;
     this.feesForm.patchValue(incoming);
 
@@ -488,7 +489,7 @@ export class StudentLeadComponent implements OnInit {
 
     const formValue = this.receiptForm.value;
 
-    // Convert yyyy-MM-dd ➡ dd-MM-yyyy for storage/display
+    // Convert yyyy-MM-dd âž¡ dd-MM-yyyy for storage/display
     const dateParts = formValue.Entry_Date.split('-');
     const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 
@@ -931,14 +932,14 @@ onCancelEdit(): void {
         (blob) =>
           new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string); // ✅ Base64 string with prefix
+            reader.onloadend = () => resolve(reader.result as string); // âœ… Base64 string with prefix
             reader.onerror = () => reject('Failed to convert image');
             reader.readAsDataURL(blob);
           })
       );
   }
 
-  // Utility: Convert Date ISO → dd MMM yyyy
+  // Utility: Convert Date ISO â†’ dd MMM yyyy
   formatDate(date: any): string {
     const d = new Date(date);
     return d.toLocaleDateString('en-GB', {
@@ -954,7 +955,7 @@ onCancelEdit(): void {
       currency: 'INR',
       maximumFractionDigits: 0,
     });
-    return formatter.format(amount).replace('₹', '').trim() + ' (in rupees)';
+    return formatter.format(amount).replace('â‚¹', '').trim() + ' (in rupees)';
   }
   getRoundedInstallments(
     total: number,
@@ -988,16 +989,24 @@ onCancelEdit(): void {
     }
   }
   compareBranch(o1: any, o2: any): boolean {
-    return o1 && o2 ? (o1.Branch_Id || o1.Branch_ID) === (o2.Branch_Id || o2.Branch_ID) : o1 === o2;
+    const id1 = o1?.Branch_Id || o1?.Branch_ID;
+    const id2 = o2?.Branch_Id || o2?.Branch_ID;
+    return id1 !== undefined && id2 !== undefined ? String(id1) === String(id2) : o1 === o2;
   }
   compareDepartment(o1: any, o2: any): boolean {
-    return o1 && o2 ? (o1.Department_Id || o1.Department_ID) === (o2.Department_Id || o2.Department_ID) : o1 === o2;
+    const id1 = o1?.Department_Id || o1?.Department_ID;
+    const id2 = o2?.Department_Id || o2?.Department_ID;
+    return id1 !== undefined && id2 !== undefined ? String(id1) === String(id2) : o1 === o2;
   }
   compareStaff(o1: any, o2: any): boolean {
-    return o1 && o2 ? o1.User_ID === o2.User_ID : o1 === o2;
+    const id1 = o1?.User_ID;
+    const id2 = o2?.User_ID;
+    return id1 !== undefined && id2 !== undefined ? String(id1) === String(id2) : o1 === o2;
   }
   compareStatus(o1: any, o2: any): boolean {
-    return o1 && o2 ? (o1.Status_Id || o1.Status_ID) === (o2.Status_Id || o2.Status_ID) : o1 === o2;
+    const id1 = o1?.Status_Id || o1?.Status_ID;
+    const id2 = o2?.Status_Id || o2?.Status_ID;
+    return id1 !== undefined && id2 !== undefined ? String(id1) === String(id2) : o1 === o2;
   }
   initForm(): void {
     this.feesForm = this.fb.group({
@@ -1217,7 +1226,7 @@ onCancelEdit(): void {
     }
     if (!this.Search_Department_Data?.length) {
       this.Department_Dropdown();
-    }
+}
     if (!this.staffData?.length) {
       this.User_Dropdown();
     }
@@ -1227,13 +1236,10 @@ onCancelEdit(): void {
   }
 
   Branch_Dropdown() {
-    ;
     this.student_Service_.Branch_Dropdown().subscribe(
       (Rows) => {
-        ;
         console.log('Raw Branch Response:', Rows);
 
-        // If Rows is an object, try:
         if (Rows && Array.isArray(Rows[0])) {
           this.Search_Branch_Data = Rows[0];
         } else if (Array.isArray(Rows)) {
@@ -1245,15 +1251,68 @@ onCancelEdit(): void {
         }
 
         // Add "Select Branch" on top
-        const defaultOption = { Branch_ID: 0, Branch_Name: 'Select Branch' };
-        this.Search_Branch_Data.unshift(defaultOption);
-        this.Search_Branch = defaultOption;
+        const defaultOption = { Branch_Id: 0, Branch_ID: 0, Branch_Name: 'Select Branch' };
+        if (!this.Search_Branch_Data.find(b => (b.Branch_Id || b.Branch_ID) === 0)) {
+          this.Search_Branch_Data.unshift(defaultOption);
+        }
+
+        // Only set default if not already set by openFollowUp matching logic
+        if (!this.Search_Branch || (this.Search_Branch.Branch_Id || this.Search_Branch.Branch_ID) === 0) {
+          this.Search_Branch = defaultOption;
+        }
+
+        // Re-run matching logic if we're in followup view
+        if (this.view === 'followup' && this.selectedStudentForFollowup) {
+          this.matchDropdownsFromStudent(this.selectedStudentForFollowup);
+        }
       },
       (err) => {
         console.error('Failed to fetch branch data:', err);
       }
     );
   }
+
+  Department_Dropdown() {
+    this.student_Service_.Department_Dropdown().subscribe(
+      (Rows) => {
+        console.log('Raw Department Response:', Rows);
+
+        if (Rows && Array.isArray(Rows[0])) {
+          this.Search_Department_Data = Rows[0];
+        } else if (Array.isArray(Rows)) {
+          this.Search_Department_Data = Rows;
+        } else {
+          console.error('Unexpected Department data format:', Rows);
+          this.Search_Department_Data = [];
+          return;
+        }
+
+        const defaultOption = {
+          Department_Id: 0,
+          Department_ID: 0,
+          Department_Name: 'Select Department',
+        };
+        if (!this.Search_Department_Data.find(d => (d.Department_Id || d.Department_ID) === 0)) {
+          this.Search_Department_Data.unshift(defaultOption);
+        }
+
+        // Only set default if not already set by openFollowUp matching logic
+        if (!this.Search_Department || (this.Search_Department.Department_Id || this.Search_Department.Department_ID) === 0) {
+          const admissionDept = this.Search_Department_Data.find(d => d.Department_Name === "Admission");
+          this.Search_Department = admissionDept || defaultOption;
+        }
+
+        // Re-run matching logic if we're in followup view
+        if (this.view === 'followup' && this.selectedStudentForFollowup) {
+          this.matchDropdownsFromStudent(this.selectedStudentForFollowup);
+        }
+      },
+      (err) => {
+        console.error('Failed to fetch department data:', err);
+      }
+    );
+  }
+
   Followup_status_Dropdown() {
     this.student_Service_.Get_Followup_Status().subscribe(
       (res: any) => {
@@ -1283,6 +1342,11 @@ onCancelEdit(): void {
           }
         }
         
+        // Re-run matching logic if we're in followup view
+        if (this.view === 'followup' && this.selectedStudentForFollowup) {
+          this.matchDropdownsFromStudent(this.selectedStudentForFollowup);
+        }
+        
         console.log('Follow-up statuses loaded from DB (Dynamic):', this.followUpStatusData);
       },
       (err) => {
@@ -1308,47 +1372,12 @@ onCancelEdit(): void {
       }
     );
   }
-  Department_Dropdown() {
-    ;
-    this.student_Service_.Department_Dropdown().subscribe(
-      (Rows) => {
-        ;
-        console.log('Raw Departtment Response:', Rows);
-
-        // If Rows is an object, try:
-        if (Rows && Array.isArray(Rows[0])) {
-          this.Search_Department_Data = Rows[0];
-        } else if (Array.isArray(Rows)) {
-          this.Search_Department_Data = Rows;
-        } else {
-          console.error('Unexpected Branch data format:', Rows);
-          this.Search_Department_Data = [];
-          return;
-        }
-
-        const defaultOption = {
-          Department_ID: 0,
-          Department_Name: 'Select Department',
-        };
-        this.Search_Department_Data.unshift(defaultOption);
-        this.Search_Department = defaultOption;
-        const admissionDept = this.Search_Department_Data.find(d => d.Department_Name === "Admission");
-        if (admissionDept) this.Search_Department = admissionDept;
-      },
-      (err) => {
-        console.error('Failed to fetch branch data:', err);
-      }
-    );
-  }
 
   User_Dropdown() {
-    ;
     this.student_Service_.User_Dropdown().subscribe(
       (Rows) => {
-        ;
         console.log('Raw user Response:', Rows);
 
-        // If Rows is an object, try:
         if (Rows && Array.isArray(Rows[0])) {
           this.staffData = Rows[0];
         } else if (Array.isArray(Rows)) {
@@ -1360,15 +1389,23 @@ onCancelEdit(): void {
         }
 
         const defaultOption = { User_ID: 0, First_Name: 'Select Staff' };
-        this.staffData.unshift(defaultOption);
-        this.Search_staff = defaultOption;
-        if (this.loggedInUserId) {
+        if (!this.staffData.find(s => s.User_ID === 0)) {
+          this.staffData.unshift(defaultOption);
+        }
+
+        // Only set default if not already set by openFollowUp matching logic
+        if (!this.Search_staff || this.Search_staff.User_ID === 0) {
           const currentUser = this.staffData.find(s => s.User_ID === this.loggedInUserId);
-          if (currentUser) this.Search_staff = currentUser;
+          this.Search_staff = currentUser || defaultOption;
+        }
+
+        // Re-run matching logic if we're in followup view
+        if (this.view === 'followup' && this.selectedStudentForFollowup) {
+          this.matchDropdownsFromStudent(this.selectedStudentForFollowup);
         }
       },
       (err) => {
-        console.error('Failed to fetch branch data:', err);
+        console.error('Failed to fetch user data:', err);
       }
     );
   }
@@ -1874,24 +1911,11 @@ onCancelEdit(): void {
             )
           ).subscribe({
             next: (enrichedRows: any[]) => {
-              this.student_Data = enrichedRows;
-
-               if (this.selectedStudentStatusFilter !== 'all') {
-                this.student_Data = this.student_Data.filter(
-                  (student: any) => this.getStudentStatusValue(student) === this.selectedStudentStatusFilter
-                );
-              }
+              this.student_Data = this.getCurrentPageRows(enrichedRows);
               this.isLoading = false;
             },
             error: () => {
-              this.student_Data = rows;
-
-               if (this.selectedStudentStatusFilter !== 'all') {
-                this.student_Data = this.student_Data.filter(
-                  (student: any) => this.getStudentStatusValue(student) === this.selectedStudentStatusFilter
-                );
-              }
-
+              this.student_Data = this.getCurrentPageRows(rows);
               this.isLoading = false;
             },
           });
@@ -1904,6 +1928,18 @@ onCancelEdit(): void {
           });
         }
       );
+  }
+
+  private getCurrentPageRows(rows: any[]): any[] {
+    const filteredRows =
+      this.selectedStudentStatusFilter !== 'all'
+        ? rows.filter(
+            (student: any) =>
+              this.getStudentStatusValue(student) === this.selectedStudentStatusFilter
+          )
+        : rows;
+
+    return filteredRows.slice(0, this.pageSize);
   }
 
   private normalizeCurrentFollowup(response: any): any {
@@ -3432,38 +3468,11 @@ private getStudentStatusValue(student: any): string {
     // Ensure dropdown data is loaded
     this.loadFollowupData();
 
-    // Reset the form (optional if you're clearing previous session)
+    // Reset the form but keep the student's data in mind
     this.resetFollowUpForm();
 
-    // 🔽 Populate follow-up form fields if data is present
-    const studentBranchId = student.Branch_Id || student.Branch_ID || student.Branch_id;
-    console.log('Branch matching - studentBranchId:', studentBranchId, 'student keys:', Object.keys(student).filter(k => k.toLowerCase().includes('branch')));
-    console.log('Search_Branch_Data:', this.Search_Branch_Data);
-    const matchedBranch = this.Search_Branch_Data.find(
-      (b) => {
-        const branchId = b.Branch_Id || b.Branch_ID;
-        return branchId && studentBranchId && String(branchId) === String(studentBranchId);
-      }
-    );
-    console.log('Matched branch:', matchedBranch);
-    this.Search_Branch = matchedBranch || this.Search_Branch_Data[0];
-
-    const studentDeptId = student.Department_Id || student.Department_ID;
-    this.Search_Department = this.Search_Department_Data.find(
-      (d) => (d.Department_Id || d.Department_ID) == studentDeptId
-    ) || this.Search_Department_Data[0];
-
-    this.Search_staff = this.staffData.find(
-      (s) => s.User_ID == student.Assigned_Staff_ID || s.First_Name === student.To_User_Name || s.First_Name === student.Assigned_Staff_Name || s.First_Name === student.To_User_Name
-    ) || this.staffData[0];
-
-    const studentStatusId = student.Status_Id || student.Follow_Up_Status_ID || student.Followup_Status || student.Status_ID;
-    const initialStatus = this.followUpStatusData.find(
-      (s) => s.Status_Name?.toLowerCase() === 'initial'
-    );
-    this.Search_status = this.followUpStatusData.find(
-      (s) => (s.Status_Id || s.Status_ID) == studentStatusId
-    ) || initialStatus || this.followUpStatusData[0];
+    // Try to match dropdowns immediately if data is already loaded
+    this.matchDropdownsFromStudent(this.selectedStudentForFollowup);
 
     // Priority: Follow_Up_Date (from student table) -> Next_Follow_Up_Date (from followup table) -> today
     this.nextFollowUpDate = student.Follow_Up_Date
@@ -3475,9 +3484,93 @@ private getStudentStatusValue(student: any): string {
     // Load history
     this.loadFollowupHistoryList();
     console.log('=== openFollowUp completed ===');
-    
-    
   }
+
+  /**
+   * Matches the Branch, Department, Staff, and Status dropdowns based on student data.
+   * Can be called multiple times (e.g., when dropdown data arrives asynchronously).
+   */
+  matchDropdownsFromStudent(student: any): void {
+    if (!student || this.view !== 'followup') return;
+
+    // 1. Branch Match
+    const studentBranchId = student.Branch_Id || student.Branch_ID || student.Branch_id || student.Registered_Branch_Id;
+    const studentBranchName = student.Branch_Name || student.branch_name;
+    if (this.Search_Branch_Data.length > 0) {
+      let matchedBranch = this.Search_Branch_Data.find(b => {
+        const bId = b.Branch_Id || b.Branch_ID;
+        return bId && studentBranchId && String(bId) === String(studentBranchId);
+      });
+
+      if (!matchedBranch && studentBranchName) {
+        matchedBranch = this.Search_Branch_Data.find(b => 
+          b.Branch_Name?.toLowerCase() === studentBranchName.toLowerCase()
+        );
+      }
+
+      if (matchedBranch) {
+        this.Search_Branch = matchedBranch;
+        console.log('Matched Branch from Student:', matchedBranch);
+      }
+    }
+
+    // 2. Department Match
+    const studentDeptId = student.Department_Id || student.Department_ID;
+    const studentDeptName = student.Department_Name || student.department_name;
+
+    if (this.Search_Department_Data.length > 0) {
+      let matchedDept = this.Search_Department_Data.find(d => {
+        const dId = d.Department_Id || d.Department_ID;
+        return dId && studentDeptId && String(dId) === String(studentDeptId);
+      });
+
+      if (!matchedDept && studentDeptName) {
+        matchedDept = this.Search_Department_Data.find(d => 
+          d.Department_Name?.toLowerCase() === studentDeptName.toLowerCase()
+        );
+      }
+
+      if (matchedDept) {
+        this.Search_Department = matchedDept;
+        console.log('Matched Department from Student:', matchedDept);
+      }
+    }
+
+    // 3. Staff Match
+    if (this.staffData.length > 0) {
+      const matchedStaff = this.staffData.find(s => 
+        s.User_ID == student.Assigned_Staff_ID || 
+        s.First_Name === student.To_User_Name || 
+        s.First_Name === student.Assigned_Staff_Name
+      );
+      if (matchedStaff) {
+        this.Search_staff = matchedStaff;
+        console.log('Matched Staff from Student:', matchedStaff);
+      }
+    }
+
+    // 4. Status Match
+    const studentStatusId = student.Status_Id || student.Follow_Up_Status_ID || student.Followup_Status || student.Status_ID;
+    const studentStatusName = student.Status_Name || student.Status_name || student.Followup_Status_Name;
+
+    if (this.followUpStatusData.length > 0) {
+      let matchedStatus = this.followUpStatusData.find(s => 
+        (s.Status_Id || s.Status_ID) && studentStatusId && String(s.Status_Id || s.Status_ID) === String(studentStatusId)
+      );
+
+      if (!matchedStatus && studentStatusName) {
+        matchedStatus = this.followUpStatusData.find(s => 
+          s.Status_Name?.toLowerCase() === studentStatusName.toLowerCase()
+        );
+      }
+
+      if (matchedStatus) {
+        this.Search_status = matchedStatus;
+        console.log('Matched Status from Student:', matchedStatus);
+      }
+    }
+  }
+
   formatDateForInput(date: string): string {
     if (!date) return this.getCurrentDate();
     const d = new Date(date);

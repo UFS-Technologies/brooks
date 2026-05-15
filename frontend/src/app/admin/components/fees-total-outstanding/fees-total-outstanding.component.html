@@ -128,7 +128,7 @@
         <table class="w-full text-sm text-left text-gray-500">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
-                    <th *ngFor="let column of displayedColumns" class="px-2 py-1 font-semibold tracking-wider">
+                    <th *ngFor="let column of displayedColumns" class="px-2 py-2 font-semibold tracking-wider">
                         {{ getColumnLabel(column) }}
                     </th>
                 </tr>
@@ -138,7 +138,7 @@
                     (click)="student_List_Update(row)">
                     <ng-container *ngFor="let column of displayedColumns">
                         <!-- Status column with color-coded badge -->
-                        <td *ngIf="column === 'Active_Status'" class="px-2 py-0.5 whitespace-nowrap">
+                        <td *ngIf="column === 'Active_Status'" class="px-2 py-2 whitespace-nowrap">
                             <span [ngClass]="{
                                 'text-green-600 font-semibold': row[column] === 'Active',
                                 'text-red-600 font-semibold':   row[column] === 'Dropout',
@@ -148,7 +148,7 @@
                             </span>
                         </td>
                         <!-- All other columns -->
-                        <td *ngIf="column !== 'Active_Status'" class="px-2 py-0.5 whitespace-nowrap">
+                        <td *ngIf="column !== 'Active_Status'" class="px-2 py-2 whitespace-nowrap">
                             {{ column === 'Entry_Date' ? (row[column] | date:'dd-MM-yyyy') : row[column] }}
                         </td>
                     </ng-container>

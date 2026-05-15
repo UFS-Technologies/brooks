@@ -1,4 +1,5 @@
 const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
+const db = require("../config/dbconnection");
 const Income = {
   Save_Income_Type: async (data) => {
     const result = await executeTransaction("Save_Income_Type", [
@@ -42,9 +43,55 @@ const Income = {
     const result = await getmultipleSP("Get_Income_Type", []);
     return result;
   },
-  Get_IncomeList: async () => {
-    const result = await getmultipleSP("Get_IncomeList", []);
-    return result;
+  Get_IncomeList: async (page = 1, pageSize = 10, filters = {}) => {
+    const offset = (page - 1) * pageSize;
+    const { fromDate, toDate, accountId, expenseTypeId } = filters;
+
+    let whereClause = `WHERE i.Delete_Status = 0`;
+    let params = [];
+
+    if (fromDate) {
+      whereClause += ` AND i.Entry_Date >= ?`;
+      params.push(fromDate);
+    }
+    if (toDate) {
+      whereClause += ` AND i.Entry_Date <= ?`;
+      params.push(toDate);
+    }
+    if (accountId) {
+      whereClause += ` AND i.Account_Id = ?`;
+      params.push(accountId);
+    }
+    if (expenseTypeId) {
+      whereClause += ` AND i.Expense_Type_Id = ?`;
+      params.push(expenseTypeId);
+    }
+
+    const countSql = `SELECT COUNT(*) as total_count FROM income i ${whereClause}`;
+    const dataSql = `
+        SELECT
+            i.Income_Id,
+            i.Expense_Type_Id,
+            i.User_Id,
+            i.Entry_Date,
+            i.Amount,
+            i.Account_Id,
+            i.Account_Name,
+            i.Description,
+            us.First_Name,
+            et.Expense_Type_Name
+        FROM income i
+        LEFT JOIN expense_type et ON i.Expense_Type_Id = et.Expense_Type_Id
+        LEFT JOIN users us ON i.User_Id = us.User_ID
+        ${whereClause}
+        ORDER BY i.Entry_Date DESC
+        LIMIT ? OFFSET ?
+    `;
+
+    const [countRes] = await db.promise().query(countSql, params);
+    const [dataRes] = await db.promise().query(dataSql, [...params, pageSize, offset]);
+
+    return [countRes, dataRes];
   },
   Delete_Income_Type: async (id) => {
     const result = await executeTransaction("Delete_Income_Type", [id]);

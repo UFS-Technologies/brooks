@@ -114,8 +114,14 @@ router.post('/Save_Expense', async (req, res) => {
 // Get_ExpenseList
 router.get('/Get_ExpenseList', async (req, res) => {
     try {
-        const result = await Expense.Get_ExpenseList();
-        res.json(result[0]); // Return the first result set
+        const { page = 1, pageSize = 10, fromDate, toDate, accountId, expenseTypeId } = req.query;
+        const result = await Expense.Get_ExpenseList(parseInt(page), parseInt(pageSize), {
+            fromDate,
+            toDate,
+            accountId,
+            expenseTypeId
+        });
+        res.json(result);
     } catch (e) {
         console.error('Get Expense Error:', e);
         res.status(500).json({ success: false, message: 'Failed to get expense', error: e.message });

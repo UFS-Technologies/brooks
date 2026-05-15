@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
+const db = require("../config/dbconnection");
 const Expense = {
   Save_Expense_Type: async (data) => {
     console.log("data", data);
@@ -55,9 +56,61 @@ Save_Expense_Category: async (data) => {
     const result = await getmultipleSP("Get_Expense_Type", []);
     return result;
   },
-  Get_ExpenseList: async () => {
-    const result = await getmultipleSP("Get_ExpenseList", []);
-    return result;
+
+  Get_ExpenseList: async (page = 1, pageSize = 10, filters = {}) => {
+    const offset = (page - 1) * pageSize;
+    const { fromDate, toDate, accountId, expenseTypeId } = filters;
+
+    let whereClause = `WHERE e.Delete_Status = 0`;
+    let params = [];
+
+    if (fromDate) {
+      whereClause += ` AND e.Entry_Date >= ?`;
+      params.push(fromDate);
+    }
+    if (toDate) {
+      whereClause += ` AND e.Entry_Date <= ?`;
+      params.push(toDate);
+    }
+    if (accountId) {
+      whereClause += ` AND e.Account_Id = ?`;
+      params.push(accountId);
+    }
+    if (expenseTypeId) {
+      whereClause += ` AND e.Expense_Type_Id = ?`;
+      params.push(expenseTypeId);
+    }
+
+    const countSql = `SELECT COUNT(*) as total_count FROM Expense e ${whereClause}`;
+    const dataSql = `
+        SELECT 
+            e.Expense_Id,
+            e.Expense_Type_Id,
+            e.User_Id,
+            e.Entry_Date,
+            e.Amount,
+            e.Account_Id,
+            e.Account_Name,
+            e.Description,
+            e.StudentName,
+            us.First_Name,
+            exty.Expense_Type_Name
+        FROM 
+            Expense e
+        LEFT JOIN 
+            expense_type exty ON e.Expense_Type_Id = exty.Expense_Type_Id
+        LEFT JOIN 
+            users us ON e.User_Id = us.User_ID
+        ${whereClause}
+        ORDER BY 
+            Entry_Date DESC
+        LIMIT ? OFFSET ?
+    `;
+
+    const [countRes] = await db.promise().query(countSql, params);
+    const [dataRes] = await db.promise().query(dataSql, [...params, pageSize, offset]);
+
+    return [countRes, dataRes];
   },
   Get_ExpenseList_Student_ID: async (Student_ID) => {
     const result = await getmultipleSP("Get_ExpenseList_Student_ID", [Student_ID]);

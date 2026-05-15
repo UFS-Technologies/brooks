@@ -36,6 +36,13 @@ export class ExpensesComponent implements OnInit {
   isSave: boolean = false;
   isDelete: boolean = false;
   url=inject(ActivatedRoute)
+  totalRecords: number = 0;
+  
+  // Filter variables
+  filterFromDate: string = '';
+  filterToDate: string = '';
+  filterAccountId: string = '';
+  filterExpenseTypeId: string = '';
 
   constructor(
     private expenseApi: ExpenseTypeService,
@@ -43,6 +50,10 @@ export class ExpensesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const today = new Date().toISOString().split('T')[0];
+    this.filterFromDate = today;
+    this.filterToDate = today;
+
     this.Get_ExpenseList();
     this.Get_Expense_Type();
     this.getAccounts();
@@ -82,14 +93,35 @@ export class ExpensesComponent implements OnInit {
   }
 
   Get_ExpenseList() {
-    this.expenseApi.Get_ExpenseList().subscribe((explist: any[]) => {
-      this.ExpenseList = explist;
-      console.log('Full List:', explist);
+    const filters = {
+      fromDate: this.filterFromDate,
+      toDate: this.filterToDate,
+      accountId: this.filterAccountId,
+      expenseTypeId: this.filterExpenseTypeId
+    };
+
+    this.expenseApi.Get_ExpenseList(this.currentPage, this.pageSize, filters).subscribe((res: any) => {
+      this.ExpenseList = res[1] || [];
+      this.totalRecords = res[0]?.[0]?.total_count || 0;
+      
       this.uniqueExpenseTypes = [
-        ...new Set(explist.map((item) => item.Expense_Type_Name)),
+        ...new Set(this.ExpenseList.map((item) => item.Expense_Type_Name)),
       ];
-      console.log('Unique Expense Types:', this.uniqueExpenseTypes);
     });
+  }
+
+  applyFilters() {
+    this.currentPage = 1;
+    this.Get_ExpenseList();
+  }
+
+  resetFilters() {
+    const today = new Date().toISOString().split('T')[0];
+    this.filterFromDate = today;
+    this.filterToDate = today;
+    this.filterAccountId = '';
+    this.filterExpenseTypeId = '';
+    this.applyFilters();
   }
 
   saveSelectedExpense() {
@@ -185,7 +217,7 @@ export class ExpensesComponent implements OnInit {
   currentPage: number = 1;
 
   get totalPages(): number {
-    return Math.ceil(this.ExpenseList.length / this.pageSize) || 1;
+    return Math.ceil(this.totalRecords / this.pageSize) || 1;
   }
 
   getPagesArray(): number[] {
@@ -193,20 +225,25 @@ export class ExpensesComponent implements OnInit {
   }
 
   get paginatedExpenses() {
-    if (!this.ExpenseList) return [];
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.ExpenseList.slice(start, start + this.pageSize);
+    return this.ExpenseList;
   }
 
   prevPage(): void {
-    if (this.currentPage > 1) this.currentPage--;
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.Get_ExpenseList();
+    }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) this.currentPage++;
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.Get_ExpenseList();
+    }
   }
 
   onPageSizeChange(): void {
-    this.currentPage = 1; // Reset to first page when size changes
+    this.currentPage = 1;
+    this.Get_ExpenseList();
   }
 }

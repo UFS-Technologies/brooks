@@ -6,47 +6,48 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       <div class="header-title">
-        <mat-icon class="title-icon">how_to_reg</mat-icon>
+        <!-- <mat-icon class="title-icon">how_to_reg</mat-icon> -->
         <h2>Attendance Marking Page</h2>
       </div>
     </div>
   </div>
 
   <!-- Filters Section -->
-  <div class="filters-card">
-    <div class="filters-grid">
+  <section class="container-section">
+    <div class="filter-row">
       <!-- Course Dropdown -->
-      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
-        <mat-label>Course</mat-label>
-        <mat-select [formControl]="selectedCourse" (selectionChange)="onCourseChange()">
-          <mat-option value="">-- Select Course --</mat-option>
-          <mat-option *ngFor="let course of courseList" [value]="course.Course_Name">
-            {{ course.Course_Name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="flex-1">
+        <div class="relative">
+          <select [formControl]="selectedCourse" (change)="onCourseChange()" class="w-full">
+            <option value="">-- Select Course --</option>
+            <option *ngFor="let course of courseList" [value]="course.Course_Name">
+              {{ course.Course_Name }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <!-- Batch Dropdown -->
-      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
-        <mat-label>Batch</mat-label>
-        <mat-select [formControl]="selectedBatch" (selectionChange)="onBatchChange()">
-          <mat-option value="">-- Select Batch --</mat-option>
-          <mat-option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
-            {{ batch.Batch_Name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="flex-1">
+        <div class="relative">
+          <select [formControl]="selectedBatch" (change)="onBatchChange()" class="w-full">
+            <option value="">-- Select Batch --</option>
+            <option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
+              {{ batch.Batch_Name }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <!-- Date Picker -->
-      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="filter-field">
-        <mat-label>Date</mat-label>
-        <input matInput [formControl]="attendanceDate" [matDatepicker]="datePicker">
-        <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
-        <mat-datepicker #datePicker></mat-datepicker>
-      </mat-form-field>
+      <div class="flex-1">
+        <div class="relative">
+          <input type="date" [formControl]="attendanceDate" class="w-full">
+        </div>
+      </div>
 
     </div>
-  </div>
+  </section>
 
   <!-- Student Attendance Table -->
   <div class="table-card">
