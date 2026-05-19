@@ -1,5 +1,5 @@
 <!-- Add Expense Button -->
-<div class="container">
+<div class="expenses-container">
   <div class="w-full flex justify-end mb-4" *ngIf="showForm">
     <button (click)="toggleForm()" style="background-color: blue !important; color: white !important; padding: 0.5rem 1.5rem; border-radius: 6px; font-weight: 700;">
       Back
@@ -11,7 +11,7 @@
     <!-- Expense Form (shown only if showForm is true) -->
     @if (showForm) {
     <div class="w-full max-w-2xl mx-auto">
-      <h2 class="text-lg font-semibold mb-6 text-center">{{ isEditMode ? 'Edit Expense' : 'Add Expense' }}</h2>
+      <h2 class="font-semibold mb-6 text-center" style="font-size: 29px !important;">{{ isEditMode ? 'Edit Expense' : 'Add Expense' }}</h2>
 
       <form (ngSubmit)="saveSelectedExpense()" #expenseForm="ngForm" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -184,7 +184,7 @@
       <div class="flex items-center gap-2 text-sm text-gray-700">
         <label for="pageSizeSelect">Rows per page:</label>
         <select id="pageSizeSelect" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
-          class="border rounded px-2 py-1 focus:outline-none" style="width: 60px;">
+          class="border rounded px-2 py-1 focus:outline-none" style="width: 80px;">
           <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
         </select>
       </div>
@@ -205,7 +205,10 @@
 
     <!-- No data fallback -->
     @if (ExpenseList && ExpenseList.length === 0) {
-    <p>No expenses found.</p>
+    <div class="flex flex-col items-center justify-center py-16 text-gray-500 w-full">
+      <span class="material-symbols-outlined text-5xl mb-3 text-gray-400">info</span>
+      <p class="text-base font-semibold">No expenses found.</p>
+    </div>
     }
 
     }

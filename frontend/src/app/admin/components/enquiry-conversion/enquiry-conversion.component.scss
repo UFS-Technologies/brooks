@@ -10,12 +10,17 @@
 .table-card {
   background: #ffffff;
   border: 1px solid #e1e5ea;
-  border-radius: 10px;
+  border-radius: 15px !important;
   box-shadow: none;
+
+    padding: 2px 7px 2px 7px;
 }
 
 .filter-card {
-  padding: 10px 12px;
+  padding: 13px 15px;
+    margin-top: 12px;
+  
+
 }
 
 .filters {
@@ -126,7 +131,7 @@
   cursor: pointer;
 
   &.small {
-    height: 24px;
+        height: 33px;
     padding: 0 10px;
     font-size: 12px;
     border-radius: 6px;
@@ -233,11 +238,11 @@ table {
     position: sticky;
     top: 0;
     z-index: 6;
-    padding: 0.375rem 0.5rem;
+    padding: 0.375rem 0.5rem !important;
     text-align: left;
     background: #f1f5f9;
     color: #475569;
-    font-size: 0.75rem;
+    font-size: 0.875rem !important;
     font-weight: 700;
     text-transform: capitalize;
     letter-spacing: 0.05em;
@@ -253,8 +258,8 @@ table {
       cursor: pointer;
     }
     td {
-      padding: 0.375rem 0.5rem;
-      font-size: 0.875rem;
+      padding: 0.275rem 0.5rem !important;
+      font-size: 0.830rem !important;
       color: #64748b;
       white-space: nowrap;
       vertical-align: middle;
@@ -265,8 +270,8 @@ table {
     position: sticky;
     bottom: 0;
     z-index: 5;
-    padding: 0.375rem 0.5rem;
-    font-size: 0.875rem;
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.875rem !important;
     font-weight: 800;
     color: #1f2732;
     background: #f1f5f9;
@@ -289,7 +294,7 @@ table {
   border-radius: 0;
   background: transparent;
   color: inherit;
-  font-size: 16px;
+  font-size: inherit;
   font-weight: 400;
 
   &.total,
@@ -305,7 +310,7 @@ table {
   border-radius: 0;
   background: transparent;
   color: #2f3743;
-  font-size: 16px;
+  font-size: inherit;
   font-weight: 600;
 }
 

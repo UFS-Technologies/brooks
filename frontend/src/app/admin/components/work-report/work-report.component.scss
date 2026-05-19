@@ -17,7 +17,8 @@
 }
 
 .filter-card {
-  padding: 10px 12px;
+ padding: 11px 12px;
+    margin-top: 11px;
 }
 
 /* ─── Filter row ─── */
@@ -77,12 +78,13 @@
 
   span {
     color: #818892;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     letter-spacing: 0.03em;
     text-transform: uppercase;
     white-space: nowrap;
-  }
+}
+  
 
   input,
   select {
@@ -93,7 +95,7 @@
     border-radius: 8px;
     background: #ffffff;
     color: #2e3642;
-    font-size: 15px;
+    font-size: 17px;
     outline: none;
 
     &:focus {
@@ -192,7 +194,7 @@
     border-radius: 4px;
   }
   &::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #ffffff;
     border-radius: 4px;
     border: 2px solid #F1F5F9;
     &:hover {
@@ -218,11 +220,11 @@ table {
     position: sticky;
     top: 0;
     z-index: 6;
-    padding: 0.375rem 0.5rem;
+    padding: 0.875rem;
     text-align: left;
     background: #f1f5f9;
     color: #475569;
-    font-size: 0.75rem;
+    font-size: 0.89rem;
     font-weight: 700;
     text-transform: capitalize;
     letter-spacing: 0.05em;
@@ -238,7 +240,7 @@ table {
       cursor: pointer;
     }
     td {
-      padding: 0.375rem 0.5rem;
+       padding: 8px 10px !important;
       font-size: 0.875rem;
       color: #64748b;
       white-space: nowrap;

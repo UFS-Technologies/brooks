@@ -1283,26 +1283,28 @@ doc.text(
 
     return {
       Branch_Id:
+        this.Search_Branch?.Branch_Id ||
         this.currentFollowUpData.Branch_ID ||
         this.currentFollowUpData.Branch_Id ||
         null,
-      Branch_Name: this.currentFollowUpData.Branch_Name || '',
+      Branch_Name: this.Search_Branch?.Branch_Name || this.currentFollowUpData.Branch_Name || "",
       Department_Id:
+        this.Search_Department?.Department_Id ||
         this.currentFollowUpData.Department_ID ||
         this.currentFollowUpData.Department_Id ||
         null,
-      Department_Name: this.currentFollowUpData.Department_Name || '',
-      Assigned_Staff_ID: this.currentFollowUpData.Assigned_Staff_ID || null,
-      Assigned_Staff_Name: this.currentFollowUpData.Assigned_Staff_Name || '',
-      Follow_Up_Status_ID: this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
+      Department_Name: this.Search_Department?.Department_Name || this.currentFollowUpData.Department_Name || "",
+      Assigned_Staff_ID: this.Search_staff?.User_ID || this.currentFollowUpData.Assigned_Staff_ID || null,
+      Assigned_Staff_Name: this.Search_staff?.First_Name || this.currentFollowUpData.Assigned_Staff_Name || "",
+      Follow_Up_Status_ID: this.Search_status?.Status_Id || this.currentFollowUpData.Follow_Up_Status_ID || this.currentFollowUpData.Status_ID || null,
       Follow_Up_Status_Name:
-        this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || '',
-      Status_ID: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
-      Followup_Status: this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
-      Status_Name: this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || '',
+        this.Search_status?.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || this.currentFollowUpData.Status_Name || "",
+      Status_ID: this.Search_status?.Status_Id || this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Followup_Status: this.Search_status?.Status_Id || this.currentFollowUpData.Status_ID || this.currentFollowUpData.Follow_Up_Status_ID || null,
+      Status_Name: this.Search_status?.Status_Name || this.currentFollowUpData.Status_Name || this.currentFollowUpData.Follow_Up_Status_Name || "",
       Next_Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Next_Follow_Up_Date || this.currentFollowUpData.Follow_Up_Date || null)?.toString().split('T')[0],
       Follow_Up_Date: this.nextFollowUpDate ? this.nextFollowUpDate.toString().split('T')[0] : (this.currentFollowUpData.Follow_Up_Date || this.currentFollowUpData.Next_Follow_Up_Date || null)?.toString().split('T')[0],
-      Remark: this.currentFollowUpData.Remark || '',
+      Remark: this.remark || this.currentFollowUpData.Remark || "",
       Created_Date:
         this.currentFollowUpData.Created_Date ||
         new Date().toISOString().split('T')[0],
@@ -1656,6 +1658,11 @@ doc.text(
 
     // For follow-up view, always save if there's any data
     if (this.view === 'followup') {
+      return hasFollowUpData;
+    }
+
+    // For unregistered students (leads), save the follow-up history if there is follow-up data
+    if (!this.registration_Status) {
       return hasFollowUpData;
     }
 

@@ -14,12 +14,12 @@
                             {{course.Course_Name}}
                         </option>
                     </select>
-                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                    <!-- <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                             clip-rule="evenodd" />
-                    </svg>
+                    </svg> -->
                 </div>
             </div>
 
@@ -33,12 +33,12 @@
                             {{student.First_Name}} {{student.Last_Name}}
                         </option>
                     </select>
-                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                    <!-- <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                             clip-rule="evenodd" />
-                    </svg>
+                    </svg> -->
                 </div>
             </div>
 
@@ -52,12 +52,12 @@
                             {{batch.Batch_Name}}
                         </option>
                     </select>
-                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                    <!-- <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                             clip-rule="evenodd" />
-                    </svg>
+                    </svg> -->
                 </div>
             </div>
 
@@ -123,7 +123,7 @@
         <div class="flex items-center space-x-2">
             <label>per page</label>
             <select [(ngModel)]="pageSize" (change)="onPageChange({ pageIndex: 0, pageSize: pageSize })"
-                style="width: 60px;" class="border rounded px-2 py-1 text-sm">
+                style="width: 80px; padding-right: 8px;" class="border rounded px-2 py-1 text-sm">
                 <option [value]="10">10</option>
                 <option [value]="25">25</option>
                 <option [value]="50">50</option>

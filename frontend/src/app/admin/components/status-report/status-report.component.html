@@ -41,7 +41,7 @@
           <tr>
             <th>No</th>
             <th>Status Name</th>
-            <th class="text-center">Record Count</th>
+            <th>Record Count</th>
           </tr>
         </thead>
         <tbody>
@@ -51,7 +51,7 @@
               <td class="name-cell">
                 {{ item.Status_Name }}
               </td>
-              <td class="text-center">
+              <td>
                 <span class="count-pill">{{ item.RecordCount }}</span>
               </td>
             </tr>
@@ -66,7 +66,7 @@
         <tfoot *ngIf="!isLoading && statusData.length > 0">
           <tr class="total-row">
             <td colspan="2" class="total-label">Grand Total</td>
-            <td class="text-center">
+            <td>
               <span class="count-pill total">{{ totalRecords }}</span>
             </td>
           </tr>

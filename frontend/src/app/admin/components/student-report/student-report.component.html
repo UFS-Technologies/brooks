@@ -145,7 +145,7 @@
         <div class="flex items-center space-x-2">
             <label>per page</label>
             <select [(ngModel)]="pageSize" (change)="onPageChange({ pageIndex: 0, pageSize: pageSize })"
-                style="width: 60px;" class="border rounded px-2 py-1 text-sm">
+                style="width: 80px; padding-right: 8px;" class="border rounded px-2 py-1 text-sm">
                 <option [value]="12">12</option>
                 <option [value]="25">25</option>
                 <option [value]="50">50</option>

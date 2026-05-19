@@ -543,12 +543,21 @@
                             <label class="block text-sm font-medium text-gray-700">Enquiry Source</label>
                             <select formControlName="Enquiry_Source_Id"
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                <option value="">-- Select Enquiry Source --</option>
+                                <option value="">Select Enquiry Source</option>
                                 <option *ngFor="let source of enquirySources" [value]="source.Enquiry_Source_Id">
                                     {{ source.Enquiry_Source_Name }}
                                 </option>
                             </select>
                         </div>
+                        <!-- <div class="mb-1" *ngIf="!registration_Status && student_Form.get('Student_ID')?.value">
+                            <label class="block text-sm font-medium text-gray-700">Follow-up Status</label>
+                            <select [(ngModel)]="Search_status" name="Search_status" [compareWith]="compareStatus" [ngModelOptions]="{standalone: true}"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <option *ngFor="let status of followUpStatusData" [ngValue]="status">
+                                    {{ status.Status_Name }}
+                                </option>
+                            </select>
+                        </div> -->
                         <div class="mb-1">
                             <label for="lead-place" class="block text-sm font-medium text-gray-700">Place</label>
                             <input id="lead-place" type="text" formControlName="District"

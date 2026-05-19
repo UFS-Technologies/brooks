@@ -1,17 +1,19 @@
-.container {
-  padding: 0.5rem 1rem;
+.income-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin: 10px auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 // Form styling
 form {
-  width: 100%;
-  max-width: 500px;
+  width: 64%;
+  // max-width: 500px;
   padding: 2rem;
-  margin-top: 2rem;
+  margin: 2rem auto 0;
   background-color: #fdfdfd;
   border-radius: 12px;
   border: 1px solid #e0e0e0;
@@ -252,6 +254,8 @@ p.selected-expense-type {
 \n
 /* Standardized Table Styling from My Students Page */
 :host {
+  display: block !important;
+  width: 100% !important;
   font-family: 'Inter', sans-serif !important;
 }
 

@@ -67,33 +67,6 @@
     <!-- Detail Filter -->
     <section class="filter-card">
       <div class="filters">
-        <div class="field">
-          <span>Search By</span>
-          <select [(ngModel)]="searchBy">
-            <option value="name">Name</option>
-            <option value="mobile">Mobile</option>
-          </select>
-        </div>
-
-        <div class="field search-field">
-          <span>Search</span>
-          <input
-            type="text"
-            [(ngModel)]="searchTerm"
-            [placeholder]="searchBy === 'mobile' ? 'Search mobile' : 'Search name'"
-          />
-        </div>
-
-        <div class="field">
-          <span>Department</span>
-          <select [(ngModel)]="selectedDepartmentId">
-            <option [ngValue]="null">All</option>
-            <option *ngFor="let department of departments" [ngValue]="department.Department_Id || department.Department_ID">
-              {{ department.Department_Name }}
-            </option>
-          </select>
-        </div>
-
         <label class="checkbox-line">
           <input type="checkbox" [(ngModel)]="useEntryDate" (change)="loadDetails()" />
           <span>Entry Date</span>
@@ -110,6 +83,33 @@
           </div>
         </div>
 
+        <div class="field">
+          <!-- <span>Search By</span> -->
+          <select [(ngModel)]="searchBy">
+            <option value="name">Name</option>
+            <option value="mobile">Mobile</option>
+          </select>
+        </div>
+
+        <div class="field search-field">
+          <!-- <span>Search</span> -->
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            [placeholder]="searchBy === 'mobile' ? 'Search mobile' : 'Search name'"
+          />
+        </div>
+
+        <div class="field">
+          <!-- <span>Department</span> -->
+          <select [(ngModel)]="selectedDepartmentId">
+            <option [ngValue]="null">All Departments</option>
+            <option *ngFor="let department of departments" [ngValue]="department.Department_Id || department.Department_ID">
+              {{ department.Department_Name }}
+            </option>
+          </select>
+        </div>
+
         <div class="actions">
           <button class="primary-btn" (click)="applyDetailFilters()" style="background-color: blue !important; color: white !important;">
             Search
@@ -124,7 +124,7 @@
       <div class="table-header">
         <div class="header-main">
           <h2>Work Report – {{ selectedStaff?.Staff_Name }}</h2>
-          <p>Follow-up history for this staff member</p>
+          <!-- <p>Follow-up history for this staff member</p> -->
         </div>
       </div>
       <div class="table-wrap">
@@ -152,7 +152,7 @@
               <td class="name-cell">{{ row.Student_Name || '-' }}</td>
               <td>{{ row.Mobile || '-' }}</td>
               <td>{{ formatDate(row.Next_Follow_Up_Date) }}</td>
-              <td>{{ formatDate(row.Created_Date, true) }}</td>
+              <td>{{ formatDate(row.Created_Date) }}</td>
               <td>
                 <span class="tag">{{ row.Department_Name || '-' }}</span>
               </td>

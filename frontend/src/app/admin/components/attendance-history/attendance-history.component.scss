@@ -11,10 +11,11 @@
 
 /* ── Header ── */
 .history-header {
-  margin-bottom: 24px;
-  padding: 16px 24px;
-  background: #ffffff; /* Dark purple from image */
-  border-radius: 8px 8px 0 0;
+    margin-bottom: 24px;
+    padding: 10px 10px;
+    background: #ffffff;
+    border-radius: 13px 13px 13px 13px;
+    margin-top: 20px;
 }
 
 .header-left {
@@ -49,8 +50,8 @@
 /* ── Filters Card ── */
 .filters-card {
   background: white;
-  border-radius: 0 0 8px 8px;
-  padding: 20px 24px;
+    border-radius: 12px;
+      padding: 20px 24px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
@@ -256,9 +257,9 @@
 :host th {
   background-color: #f1f5f9 !important;
   color: #475569 !important;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   font-size: 18px !important;
-  font-weight: normal !important;
+  font-weight: 550;
   padding: 0.375rem 0.5rem !important;
   letter-spacing: 0.05em !important;
   text-align: left !important;

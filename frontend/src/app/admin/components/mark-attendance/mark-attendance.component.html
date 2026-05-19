@@ -19,7 +19,7 @@
       <div class="flex-1">
         <div class="relative">
           <select [formControl]="selectedCourse" (change)="onCourseChange()" class="w-full">
-            <option value="">-- Select Course --</option>
+            <option value=""> Select Course</option>
             <option *ngFor="let course of courseList" [value]="course.Course_Name">
               {{ course.Course_Name }}
             </option>
@@ -31,7 +31,7 @@
       <div class="flex-1">
         <div class="relative">
           <select [formControl]="selectedBatch" (change)="onBatchChange()" class="w-full">
-            <option value="">-- Select Batch --</option>
+            <option value="">Select Batch </option>
             <option *ngFor="let batch of batchList" [value]="batch.Batch_Name">
               {{ batch.Batch_Name }}
             </option>
@@ -68,7 +68,7 @@
       <table class="attendance-table">
         <thead>
           <tr>
-            <th class="col-num">#</th>
+            <th class="col-num">Sl No</th>
             <th class="col-name">Student Name</th>
             <th class="col-status">Status</th>
           </tr>
@@ -82,13 +82,7 @@
             <td class="col-num">{{ i + 1 }}</td>
             <td class="col-name">
               <div class="student-info">
-                <div class="student-avatar" 
-                     [style.background]="attendanceStatuses.get(student.Student_ID) === 1 ? 'linear-gradient(135deg, #10b981, #059669)' :
-                                          attendanceStatuses.get(student.Student_ID) === 0 ? 'linear-gradient(135deg, #ef4444, #dc2626)' :
-                                          attendanceStatuses.get(student.Student_ID) === 2 ? 'linear-gradient(135deg, #f59e0b, #d97706)' :
-                                          'linear-gradient(135deg, #6366f1, #4f46e5)'">
-                  {{ (student.First_Name || student.Name || '?')[0] | uppercase }}
-                </div>
+
                 <span class="student-name">{{ student.First_Name ? (student.First_Name + ' ' + (student.Last_Name || '')) : student.Name }}</span>
               </div>
             </td>
@@ -99,7 +93,6 @@
                   <input type="radio" [name]="'status_' + student.Student_ID" [value]="1"
                          [checked]="attendanceStatuses.get(student.Student_ID) === 1"
                          (change)="setAttendanceStatus(student.Student_ID, 1)">
-                  <span class="radio-circle"></span>
                   <span class="radio-label">Present</span>
                 </label>
 
@@ -108,17 +101,7 @@
                   <input type="radio" [name]="'status_' + student.Student_ID" [value]="0"
                          [checked]="attendanceStatuses.get(student.Student_ID) === 0"
                          (change)="setAttendanceStatus(student.Student_ID, 0)">
-                  <span class="radio-circle"></span>
                   <span class="radio-label">Absent</span>
-                </label>
-
-                <label class="radio-option leave"
-                       [class.active]="attendanceStatuses.get(student.Student_ID) === 2">
-                  <input type="radio" [name]="'status_' + student.Student_ID" [value]="2"
-                         [checked]="attendanceStatuses.get(student.Student_ID) === 2"
-                         (change)="setAttendanceStatus(student.Student_ID, 2)">
-                  <span class="radio-circle"></span>
-                  <span class="radio-label">Leave</span>
                 </label>
 
                 <label class="radio-option late"
@@ -126,7 +109,6 @@
                   <input type="radio" [name]="'status_' + student.Student_ID" [value]="3"
                          [checked]="attendanceStatuses.get(student.Student_ID) === 3"
                          (change)="setAttendanceStatus(student.Student_ID, 3)">
-                  <span class="radio-circle"></span>
                   <span class="radio-label">Late</span>
                 </label>
               </div>
@@ -138,14 +120,13 @@
 
     <!-- Action Buttons -->
     <div *ngIf="studentList.length > 0" class="action-bar">
-      <button class="btn btn-mark-all" (click)="markAllPresent()">
-        <mat-icon>done_all</mat-icon>
-        Mark All Present
-      </button>
+
       <button class="btn btn-save" (click)="saveAttendance()" [disabled]="isSavingAttendance">
-        <mat-icon *ngIf="!isSavingAttendance">save</mat-icon>
         <mat-icon *ngIf="isSavingAttendance" class="spin-icon">refresh</mat-icon>
-        {{ isSavingAttendance ? 'Saving...' : 'Save Attendance' }}
+        {{ isSavingAttendance ? 'Saving...' : 'Save' }}
+      </button>
+      <button class="btn btn-cancel" (click)="goBack()">
+        Cancel
       </button>
     </div>
   </div>

@@ -7,12 +7,21 @@
 
 // Section Containers
 section {
-  margin-top: 1rem;
+  margin-top: 1.3rem;
   background-color: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 0.75rem;
   margin-bottom: 1rem;
+}
+font-medium {
+    font-weight: 500 !important;
+    font-size: 16px !important;
+    padding: 1px 9px 3px 9px !important;
+}
+.font-semibold {
+    font-weight: 600 !important;
+    font-size: 18px !important;
 }
 
 // Autocomplete Panel Fix
@@ -190,6 +199,14 @@ button.mat-raised-button {
   }
 }
 
+/* Follow-up button utility */
+.btn-xs {
+  padding: 0.20rem 0.70rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
 // Icons Action Group
 .icon-actions {
   display: flex;
@@ -243,10 +260,9 @@ button.mat-raised-button {
 :host th {
   background-color: #f1f5f9 !important;
   color: #475569 !important;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   font-size: 18px !important;
-  font-weight: normal !important;
-  padding: 0.375rem 0.5rem !important;
+  font-weight: 600px;
   letter-spacing: 0.05em !important;
   text-align: left !important;
   border-bottom: 2px solid #e2e8f0 !important;

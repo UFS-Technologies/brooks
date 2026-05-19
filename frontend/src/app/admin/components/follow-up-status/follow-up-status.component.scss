@@ -178,18 +178,18 @@ table {
     position: sticky;
     top: 0;
     z-index: 6;
-    padding: 4px 10px;
+    padding: 0.85rem !important;
     text-align: left;
     background: #eceff3;
     color: #404854;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 0.89rem !important;
+    font-weight: 700 !important;
     text-transform: capitalize !important;
     border-bottom: 1px solid #d8dde5;
   }
 
   tbody td {
-    padding: 2px 10px;
+    padding: 2px 10px !important;
     font-size: 16px;
     color: #2f3743;
     border-bottom: 1px solid #e4e8ee;
@@ -204,12 +204,12 @@ table {
 }
 
 .center-col {
-  text-align: center;
+  text-align: center !important;
 }
 
 .action-col {
   width: 120px;
-  text-align: center;
+  text-align: center !important;
 }
 
 /* ─── Badge (Yes / No) ─── */
@@ -259,12 +259,18 @@ table {
 
 .edit-btn {
   color: #2563eb;
-  &:hover { background: #eff6ff; }
+
+  &:hover {
+    background: #eff6ff;
+  }
 }
 
 .delete-btn {
   color: #dc2626;
-  &:hover { background: #fef2f2; }
+
+  &:hover {
+    background: #fef2f2;
+  }
 }
 
 /* ─── Empty state ─── */
@@ -304,7 +310,9 @@ table {
     max-height: 68vh;
   }
 }
+
 \n
+
 /* Standardized Table Styling from My Students Page */
 :host {
   font-family: 'Inter', sans-serif !important;
@@ -321,7 +329,7 @@ table {
   text-transform: uppercase !important;
   font-size: 18px !important;
   font-weight: normal !important;
-  padding: 0.375rem 0.5rem !important;
+  padding: 0.75rem !important;
   letter-spacing: 0.05em !important;
   text-align: left !important;
   border-bottom: 2px solid #e2e8f0 !important;
@@ -332,6 +340,7 @@ table {
   font-size: 17px !important;
   padding: 0.375rem 0.5rem !important;
   border-bottom: 1px solid #f1f5f9 !important;
+  text-align: left !important;
 }
 
 :host tr:hover {

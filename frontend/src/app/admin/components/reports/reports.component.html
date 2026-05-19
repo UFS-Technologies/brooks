@@ -174,7 +174,8 @@
                 <div class="flex items-center space-x-2">
                     <!-- <label class="text-sm text-gray-600 font-medium">Rows per page:</label> -->
                     <select [(ngModel)]="pageSize" (change)="onPageSizeChange()"
-                        class="h-8 border-gray-300 rounded-md text-sm focus:ring-blue-500">
+                        style="width: 80px; padding-left: 8px; padding-right: 8px;"
+                        class="h-8 border border-gray-300 rounded-md text-sm focus:ring-blue-500">
                         <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
                     </select>
                 </div>

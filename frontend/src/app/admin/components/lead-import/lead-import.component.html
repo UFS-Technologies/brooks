@@ -5,29 +5,32 @@
       <div class="metadata-grid">
         <div class="form-group">
           <label>Branch</label>
-          <mat-select formControlName="Branch" [compareWith]="compareObjects" class="custom-select">
+          <select formControlName="Branch" [compareWith]="compareObjects" class="custom-select">
+            <option [ngValue]="null" disabled>Select Branch</option>
             @for (branch of branchData; track branch) {
-              <mat-option [value]="branch">{{ branch.Branch_Name }}</mat-option>
+              <option [ngValue]="branch">{{ branch.Branch_Name }}</option>
             }
-          </mat-select>
+          </select>
         </div>
 
         <div class="form-group">
           <label>Department</label>
-          <mat-select formControlName="Department" [compareWith]="compareObjects" class="custom-select">
+          <select formControlName="Department" [compareWith]="compareObjects" class="custom-select">
+            <option [ngValue]="null" disabled>Select Department</option>
             @for (dept of departmentData; track dept) {
-              <mat-option [value]="dept">{{ dept.Department_Name }}</mat-option>
+              <option [ngValue]="dept">{{ dept.Department_Name }}</option>
             }
-          </mat-select>
+          </select>
         </div>
 
         <div class="form-group">
           <label>Assign To Staff</label>
-          <mat-select formControlName="AssignToStaff" [compareWith]="compareObjects" class="custom-select">
+          <select formControlName="AssignToStaff" [compareWith]="compareObjects" class="custom-select">
+            <option [ngValue]="null" disabled>Select Staff</option>
             @for (staff of staffData; track staff) {
-              <mat-option [value]="staff">{{ staff.First_Name }}</mat-option>
+              <option [ngValue]="staff">{{ staff.First_Name }}</option>
             }
-          </mat-select>
+          </select>
         </div>
 
         <div class="form-group">
@@ -41,11 +44,12 @@
 
         <div class="form-group">
           <label>Follow-up Status</label>
-          <mat-select formControlName="FollowUpStatus" [compareWith]="compareObjects" class="custom-select">
+          <select formControlName="FollowUpStatus" [compareWith]="compareObjects" class="custom-select">
+            <option [ngValue]="null" disabled>Select Status</option>
             @for (status of followUpStatusData; track status) {
-              <mat-option [value]="status">{{ status.Status_Name }}</mat-option>
+              <option [ngValue]="status">{{ status.Status_Name }}</option>
             }
-          </mat-select>
+          </select>
         </div>
       </div>
 

@@ -101,7 +101,7 @@
             {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : (item['Next_Follow_Up_Date'] ? (item['Next_Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-') }}
           </td>
           <td class="whitespace-nowrap">
-            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+            <span class="px-2 py-1 rounded-full text-xs  bg-blue-50 text-blue-700">
               {{ item['Status_Name'] || item['Follow_Up_Status_Name'] || '-' }}
             </span>
           </td>

@@ -3,7 +3,7 @@ const dbConfig = {
     host: "localhost",
     user: "root",
     password: "password",
-    database: "brooks_new",
+    database: "brooks_db",
 };
 
 async function checkUserTypes() {
@@ -12,10 +12,7 @@ async function checkUserTypes() {
         connection = await mysql.createConnection(dbConfig);
         console.log("Connected to database.");
 
-        const [types] = await connection.query("SELECT * FROM user_type");
-        console.log("User Types:", types);
-
-        const [users] = await connection.query("SELECT User_ID, Email, User_Type_Id FROM users LIMIT 10");
+        const [users] = await connection.query("SELECT User_ID, Email, password, User_Type_Id FROM users WHERE Delete_Status = 0 LIMIT 10");
         console.log("Recent Users:", users);
 
         await connection.end();
