@@ -151,6 +151,11 @@ Get_Course_Reviews(){
 
 }
 
+Get_Teachers_By_Course_And_Batch(Course_Id: any, Batch_Id: any): Observable<any> {
+  let params: any = { Course_Id, Batch_Id };
+  return this.http.get(`${environment.BasePath}course/Get_Teachers_By_Course_And_Batch`, { params });
+}
+
 
 get_course_Batches(course_Id){
   return this.http.get(environment.BasePath +'course/get_course_Batches/'+course_Id);

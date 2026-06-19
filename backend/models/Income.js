@@ -51,11 +51,11 @@ const Income = {
     let params = [];
 
     if (fromDate) {
-      whereClause += ` AND i.Entry_Date >= ?`;
+      whereClause += ` AND DATE(i.Entry_Date) >= ?`;
       params.push(fromDate);
     }
     if (toDate) {
-      whereClause += ` AND i.Entry_Date <= ?`;
+      whereClause += ` AND DATE(i.Entry_Date) <= ?`;
       params.push(toDate);
     }
     if (accountId) {

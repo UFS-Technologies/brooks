@@ -65,11 +65,11 @@ Save_Expense_Category: async (data) => {
     let params = [];
 
     if (fromDate) {
-      whereClause += ` AND e.Entry_Date >= ?`;
+      whereClause += ` AND DATE(e.Entry_Date) >= ?`;
       params.push(fromDate);
     }
     if (toDate) {
-      whereClause += ` AND e.Entry_Date <= ?`;
+      whereClause += ` AND DATE(e.Entry_Date) <= ?`;
       params.push(toDate);
     }
     if (accountId) {

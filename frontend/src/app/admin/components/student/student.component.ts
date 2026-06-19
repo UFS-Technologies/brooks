@@ -1542,9 +1542,14 @@ onCancelEdit(): void {
         // Sort by created date (newest first)
         if (this.followupHistoryList.length > 0) {
           this.followupHistoryList.sort((a: any, b: any) => {
-            const dateA = new Date(a.Created_Date || a.created_date || '');
-            const dateB = new Date(b.Created_Date || b.created_date || '');
-            return dateB.getTime() - dateA.getTime();
+            const dateA = new Date(a.Created_Date || a.created_date || '').getTime();
+            const dateB = new Date(b.Created_Date || b.created_date || '').getTime();
+            if (dateA !== dateB) {
+              return dateB - dateA;
+            }
+            const idA = a.Follow_Up_ID || a.Followup_ID || a.Follow_up_ID || 0;
+            const idB = b.Follow_Up_ID || b.Followup_ID || b.Follow_up_ID || 0;
+            return idB - idA;
           });
         }
 
@@ -3212,9 +3217,14 @@ onCancelEdit(): void {
         // Sort by created date (newest first)
         if (this.followupHistoryList.length > 0) {
           this.followupHistoryList.sort((a: any, b: any) => {
-            const dateA = new Date(a.Created_Date || a.created_date || '');
-            const dateB = new Date(b.Created_Date || b.created_date || '');
-            return dateB.getTime() - dateA.getTime();
+            const dateA = new Date(a.Created_Date || a.created_date || '').getTime();
+            const dateB = new Date(b.Created_Date || b.created_date || '').getTime();
+            if (dateA !== dateB) {
+              return dateB - dateA;
+            }
+            const idA = a.Follow_Up_ID || a.Followup_ID || a.Follow_up_ID || 0;
+            const idB = b.Follow_Up_ID || b.Followup_ID || b.Follow_up_ID || 0;
+            return idB - idA;
           });
         }
 

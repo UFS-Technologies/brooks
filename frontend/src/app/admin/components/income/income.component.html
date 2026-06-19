@@ -112,7 +112,7 @@
       <!-- Expense Type -->
       <div class="filter-item">
         <select [(ngModel)]="filterExpenseTypeId" class="native-select-input" (change)="applyFilters()">
-          <option value="">All Expense Type</option>
+          <option value="">All Income Type</option>
           <option *ngFor="let type of Expense_Type" [value]="type.Expense_Type_Id">{{ type.Expense_Type_Name }}</option>
         </select>
       </div>

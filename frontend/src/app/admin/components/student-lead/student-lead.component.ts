@@ -140,6 +140,7 @@ export class StudentLeadComponent implements OnInit {
   selectedStaffFilter: number | null = null;
   selectedStudentStatusFilter: string = 'all';
   selectedBranchFilter: number | null = null;
+  selectedEnquirySourceFilter: number | null = null;
 
   Student_Exam_Name: string = '';
   currentStudent: any = null;
@@ -350,19 +351,15 @@ export class StudentLeadComponent implements OnInit {
     this.url.queryParams.subscribe(params => {
     console.log("params",params);
     
+    if (params['status']) {
+      this.followUpStatus = { Status_Name: params['status'] };
+      this.Search_student_lead();
+    }
+
     if (params['item']) {
-    
       const receivedItem = JSON.parse(params['item']);
       console.log('Received Item:', receivedItem);
-
-      
-     
-        this.isSave = receivedItem?.IsSave || false;
-      
-
-        
-      
-   
+      this.isSave = receivedItem?.IsSave || false;
     }
   });
   }
@@ -1651,9 +1648,14 @@ onCancelEdit(): void {
         // Sort by created date (newest first)
         if (this.followupHistoryList.length > 0) {
           this.followupHistoryList.sort((a: any, b: any) => {
-            const dateA = new Date(a.Created_Date || a.created_date || '');
-            const dateB = new Date(b.Created_Date || b.created_date || '');
-            return dateB.getTime() - dateA.getTime();
+            const dateA = new Date(a.Created_Date || a.created_date || '').getTime();
+            const dateB = new Date(b.Created_Date || b.created_date || '').getTime();
+            if (dateA !== dateB) {
+              return dateB - dateA;
+            }
+            const idA = a.Follow_Up_ID || a.Followup_ID || a.Follow_up_ID || 0;
+            const idB = b.Follow_Up_ID || b.Followup_ID || b.Follow_up_ID || 0;
+            return idB - idA;
           });
         }
 
@@ -1842,7 +1844,8 @@ onCancelEdit(): void {
         this.enrollmentStatus,
         followUpStatus,
         this.selectedBranchFilter,
-        this.selectedStaffFilter
+        this.selectedStaffFilter,
+        this.selectedEnquirySourceFilter
       )
       .subscribe(
         (response: any) => {
@@ -3623,9 +3626,14 @@ private getStudentStatusValue(student: any): string {
         // Sort by created date (newest first)
         if (this.followupHistoryList.length > 0) {
           this.followupHistoryList.sort((a: any, b: any) => {
-            const dateA = new Date(a.Created_Date || a.created_date || '');
-            const dateB = new Date(b.Created_Date || b.created_date || '');
-            return dateB.getTime() - dateA.getTime();
+            const dateA = new Date(a.Created_Date || a.created_date || '').getTime();
+            const dateB = new Date(b.Created_Date || b.created_date || '').getTime();
+            if (dateA !== dateB) {
+              return dateB - dateA;
+            }
+            const idA = a.Follow_Up_ID || a.Followup_ID || a.Follow_up_ID || 0;
+            const idB = b.Follow_Up_ID || b.Followup_ID || b.Follow_up_ID || 0;
+            return idB - idA;
           });
         }
 

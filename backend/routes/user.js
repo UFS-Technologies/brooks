@@ -4,8 +4,8 @@ var user = require('../models/user');
 var Login = require('../models/Login');
 const { subscribeToTopic, sendNotifToTopic, sendAppleNotification } = require('../helpers/firebase');
 const { executeTransaction, getmultipleSP } = require('../helpers/sp-caller');
-const nodemailer = require("nodemailer");
 const student = require('../models/student');
+const emailHelper = require('../helpers/email-helper');
 let debounceTimeout;
 
 const axios = require('axios');
@@ -45,43 +45,15 @@ router.post('/Save_user/', async (req, res, next) => {
                  </html>
              `;
 
-      const emailPayload = {
-        sender: {
-          name: 'IGM Academy',
-          email: 'info@IGMacademy.in'
-        },
-        to: [{
-          email: req.body['Email']
-        }],
-        subject: 'Welcome to Track Box - Teacher Account Created Successfully',
-        htmlContent: emailBody
-      };
-
-      let attempts = 0;
-      let maxAttempts = 3;
-      let emailSent = false;
-
-      while (!emailSent && attempts < maxAttempts) {
-        try {
-          const emailResponse = await axios({
-            method: 'post',
-            url: 'https://api.brevo.com/v3/smtp/email',
-            headers: {
-              'accept': 'application/json',
-              'api-key': process.env.BREVO_API_KEY,
-              'content-type': 'application/json'
-            },
-            data: emailPayload
-          });
-          console.log('Email sent successfully:', emailResponse.data);
-          emailSent = true;
-        } catch (error) {
-          attempts++;
-          console.log(`Attempt ${attempts} failed:`, error.message);
-          if (attempts >= maxAttempts) {
-            console.log('Email sending failed after maximum attempts.');
-          }
-        }
+      try {
+        await emailHelper.sendEmail(
+          req.body['Email'],
+          'Welcome to Track Box - Teacher Account Created Successfully',
+          emailBody
+        );
+        console.log('Email sent successfully via Helper');
+      } catch (error) {
+        console.error('Error sending teacher welcome email:', error.message);
       }
     }
 

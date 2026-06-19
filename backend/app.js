@@ -38,9 +38,7 @@ const webhookRouter = require('./routes/webhook');
 const campaignRouter = require('./routes/campaign');
 const facebookLeadRouter = require('./routes/facebook_lead');
 const attendanceRouter = require('./routes/Attendance');
-
-
-
+const MockTestPackageRouter = require('./routes/MockTestPackage');
 
 // Import cron jobs
 require('./helpers/croneJobs'); 
@@ -110,6 +108,8 @@ app.use('/EmailTemplate', EmailTemplateRouter);
 app.use('/Campaign', campaignRouter);
 app.use('/facebooklead', facebookLeadRouter);
 app.use('/Attendance', attendanceRouter);
+app.use('/MockTestPackage', MockTestPackageRouter);
+
 
 
 

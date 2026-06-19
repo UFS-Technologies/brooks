@@ -244,6 +244,11 @@ export const ADMIN_ROUTES: Routes = [
     data: { breadcrumb: 'Enquiry Summary' }
   },
   {
+    path: 'Lead_Summary',
+    loadComponent: () => import('./components/lead-summary/lead-summary.component').then(c => c.LeadSummaryComponent),
+    data: { breadcrumb: 'Lead Summary' }
+  },
+  {
     path: 'email',
     component: EmailTemplateComponent,
     data: { breadcrumb: 'Email' }
@@ -262,5 +267,11 @@ export const ADMIN_ROUTES: Routes = [
     path: 'Status_Report',
     component: StatusReportComponent,
     data: { breadcrumb: 'Status Report' }
+  },
+  {
+    path: 'mock-test-subscribed',
+    loadComponent: () => import('./components/mock-test-subscribed/mock-test-subscribed.component').then(m => m.MockTestSubscribedComponent),
+    data: { breadcrumb: 'Mock Test Subscribed' }
   }
 ];
+

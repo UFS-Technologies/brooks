@@ -158,6 +158,8 @@ export class StudentlistComponent {
   available_Time_Slots: any = [];
   isRegistering: boolean = false;
   registration_Status: boolean = false;
+  tutorsList: any[] = [];
+  mockTestPackages: any[] = [];
 
   isEdit: boolean = false;
   isSave: boolean = false;
@@ -232,12 +234,12 @@ export class StudentlistComponent {
       Religion: [''],
       Aadhaar_Card_Number: [''],
       Blood_Group: [''],
-      Email: [''],
-      Country_Code_Name: ['in'], // 🇮🇳 Default to India
-      Country_Code: ['+91'], // New field for country code
+      Email: ['', Validators.required],
+      Country_Code_Name: ['in', Validators.required], // 🇮🇳 Default to India
+      Country_Code: ['+91', Validators.required], // New field for country code
       Profile_Photo_Path: [''],
       Profile_Photo_Name: [''],
-      Phone_Number: [''],
+      Phone_Number: ['', Validators.required],
       Delete_Status: [0],
       Social_Provider: [''],
       Social_ID: [''],
@@ -261,12 +263,14 @@ export class StudentlistComponent {
       // Height_cm: [0],
       // Weight_kg: [''],
       Admission_Date: [today],
-      Roll_No: [null, [Validators.maxLength(10)]],
+      Roll_No: [Math.floor(10000000 + Math.random() * 90000000).toString(), [Validators.maxLength(10)]],
       Enquiry_Source_Id: [''],
       Branch_Id: [''],
       isRegistering: [false],
       Registered_By:[''],
       Registered_On:[today],
+      Mock_Test_Subscribed: [false],
+      Mock_Test_Package: ['']
 
     });
     this.student_Course = this.fb.group({
@@ -319,6 +323,24 @@ export class StudentlistComponent {
       this.allCourse = res;
     });
     this.Followup_status_Dropdown();
+    this.student_Service_.Get_MockTestPackages().subscribe({
+      next: (res: any) => {
+        let data = Array.isArray(res) && Array.isArray(res[0]) ? res[0] : res;
+        this.mockTestPackages = data || [];
+      },
+      error: (err) => console.error('Error fetching mock test packages', err)
+    });
+
+    this.student_Form.get('Mock_Test_Subscribed')?.valueChanges.subscribe(checked => {
+      const packageControl = this.student_Form.get('Mock_Test_Package');
+      if (checked) {
+        packageControl?.setValidators([Validators.required]);
+      } else {
+        packageControl?.clearValidators();
+        packageControl?.setValue('');
+      }
+      packageControl?.updateValueAndValidity();
+    });
 
     this.courseSubscription?.unsubscribe();
 
@@ -1081,8 +1103,11 @@ doc.text(
         isRegistering: false,
       });
     } else {
+      const currentRollNo = this.student_Form.get('Roll_No')?.value;
+      const newRollNo = currentRollNo ? currentRollNo : Math.floor(10000000 + Math.random() * 90000000).toString();
       this.student_Form.patchValue({
         isRegistering: true,
+        Roll_No: newRollNo,
       });
       const today = new Date().toISOString().split('T')[0];
       this.student_Form.get('Admission_Date')?.setValue(today);
@@ -1755,6 +1780,7 @@ doc.text(
       isRegistered: this.registration_Status ? 1 : 0, // Explicitly add isRegistered for clarity
       Address: this.registration_Status ? this.student_Form.value.Address : (this.student_Form.value.District || this.student_Form.value.Address), 
       ...followUpData,
+      ...this.student_Course.value, // Merge course details like Slot_Id, Course_ID, Batch_ID
       Installments: this.installments,
       Branch_Id: this.student_Form.value.Branch_Id,
       Student_Fees_IDs: this.Student_Fees_IDs,
@@ -2113,9 +2139,14 @@ doc.text(
         // Sort by created date (newest first)
         if (this.followupHistoryList.length > 0) {
           this.followupHistoryList.sort((a: any, b: any) => {
-            const dateA = new Date(a.Created_Date || a.created_date || '');
-            const dateB = new Date(b.Created_Date || b.created_date || '');
-            return dateB.getTime() - dateA.getTime();
+            const dateA = new Date(a.Created_Date || a.created_date || '').getTime();
+            const dateB = new Date(b.Created_Date || b.created_date || '').getTime();
+            if (dateA !== dateB) {
+              return dateB - dateA;
+            }
+            const idA = a.Follow_Up_ID || a.Followup_ID || a.Follow_up_ID || 0;
+            const idB = b.Follow_Up_ID || b.Followup_ID || b.Follow_up_ID || 0;
+            return idB - idA;
           });
         }
 
@@ -2189,9 +2220,26 @@ doc.text(
   }
 
   onBatchChange(event: any) {
-    const selectedBatchId = event.target.value;
+    const batchId = event.target.value;
+    const courseId = this.student_Course.get('Course_ID')?.value;
+    
+    // Fetch Tutors for the selected course and batch
+    if (courseId && batchId) {
+      this.course_Service_.Get_Teachers_By_Course_And_Batch(courseId, batchId).subscribe(
+        (res: any) => {
+          this.tutorsList = res || [];
+        },
+        (err) => {
+          console.error('Failed to load tutors', err);
+          this.tutorsList = [];
+        }
+      );
+    } else {
+      this.tutorsList = [];
+    }
+
     const selectedBatchInfo = this.batch_Data.find(
-      (batch) => batch.Batch_ID.toString() == selectedBatchId
+      (batch) => batch.Batch_ID.toString() == batchId
     );
 
     if (selectedBatchInfo) {
@@ -2915,6 +2963,8 @@ doc.text(
       student_e.District = student_e.Address;
     }
 
+    student_e.Mock_Test_Subscribed = !!student_e.Mock_Test_Subscribed;
+
     this.student_Form.patchValue(student_e);
     this.View_courses(student_e.Student_ID, false);
 
@@ -3129,6 +3179,22 @@ doc.text(
             Price: result[0] ? result[0].Price : 0,
             Payment_Method: 'admin',
           });
+
+          // Fetch tutors for the loaded course and batch
+          if (result[0] && result[0].Course_ID && result[0].Batch_ID) {
+            this.course_Service_.Get_Teachers_By_Course_And_Batch(result[0].Course_ID, result[0].Batch_ID).subscribe(
+              (res: any) => {
+                this.tutorsList = res || [];
+              },
+              (err) => {
+                console.error('Failed to load tutors', err);
+                this.tutorsList = [];
+              }
+            );
+          } else {
+            this.tutorsList = [];
+          }
+
            this.isLoading = false;
         } else {
           this.student_Course.patchValue({

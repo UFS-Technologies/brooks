@@ -134,7 +134,7 @@ export class ExpensesComponent implements OnInit {
       Entry_Date: new Date(),
       Amount: this.amount,
       Description: this.description,
-      Account_id: this.selectedAccount.Account_id || 0,
+      Account_Id: this.selectedAccount.Account_id || 0,
       Account_Name: this.selectedAccount.Account_Name || '',
     };
 

@@ -155,75 +155,7 @@ router.post('/Save_student/', async (req, res, next) => {
         
         const rows = await student.Save_student(req.body);
         console.log('rrows[0 ', rows[0]['existingUser']==0);
-        if(rows[0]['existingUser']==0){
-            if(req.body['Email']!='' && req.body['Email']) {
-                try {
-                    const response = await axios({
-                        method: 'post',
-                        url: 'https://api.brevo.com/v3/smtp/email',
-                        headers: {
-                            'accept': 'application/json',
-                            'api-key': process.env.BREVO_API_KEY,
-                            'content-type': 'application/json'
-                        },
-                        data: {
-                            sender: {
-                                name: 'IGM Academy',
-                                email: 'info@IGMacademy.in'
-                            },
-                            to: [{
-                                email: req.body['Email']
-                            }],
-                            subject: 'Welcome to Track Box - Student Account Created Successfully',
-                            htmlContent: `
-                                <html>
-                                    <body style="font-family: Arial, sans-serif; color: #333;">
-                                        <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                                            <h2 style="text-align: center; color: #4CAF50;">Welcome to Track Box!</h2>
-                                            <p>Dear ${req.body['First_Name']} ${req.body['Last_Name']},</p>
-                                            <p>Welcome to IGM Academy! Your student account has been successfully created.</p>
-                                            
-                                            <h3>Account Details:</h3>
-                                            <ul>
-                                                <li><strong>Username/Email:</strong> ${req.body['Email']}</li>
-                                            </ul>
-                                            
-                                            <h3>Next Steps:</h3>
-                                            <p>Download the Track Box Student App:</p>
-                                            <ul>
-                                                <li><a href="[Play Store Link]" style="color: #4CAF50; text-decoration: none;">Android: Play Store</a></li>
-                                            </ul>
-                                            
-                                            <h3>Login Instructions:</h3>
-                                            <ul>
-                                                <li>Open the app</li>
-                                                <li>Enter your email and enter OTP</li>
-                                            </ul>
-                                            
-                                            <h3>Important Notes:</h3>
-                                            <p>Please enable notifications to stay updated with your classes.</p>
-                                            
-                                            <h3>For any assistance, please contact us:</h3>
-                                            <ul>
-                                                <li>Email: <a href="mailto:info@IGMacademy.in" style="color: #4CAF50; text-decoration: none;">info@IGMacademy.in</a></li>
-                                            </ul>
-                                            
-                                            <p style="font-size: 0.9em; color: #888;">Note: This is an automated email. Please do not reply.</p>
-                                            
-                                            <p style="text-align: center; font-weight: bold;">Best regards,</p>
-                                            <p style="text-align: center;">Team IGM Academy</p>
-                                        </div>
-                                    </body>
-                                </html>
-                            `
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error sending welcome email:', error);
-                    // Continue with the response even if email fails
-                }
-            }
-        }
+        // Email notification has been removed from here as it was unnecessary
         res.json(rows);
     }
     catch (e) {
@@ -262,59 +194,30 @@ router.post('/enroleCourse/', async (req, res, next) => {
         res.json(rows);
         console.log('rows: ', rows);
 
-        let transporter = nodemailer.createTransport({
-            host: "smtp-relay.brevo.com",
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: "7a9d83001@smtp-brevo.com", // generated brevo user
-                pass: "2bNEKDBCd7JytLIH", // generated brevo password
-            },
-            tls: {
-                rejectUnauthorized: true
-            }
-        });
-
         const recepients = ["work@ufstechnologies.com", "cristine@ufstechnologies.com" ]
         
-        const msg = {
-            from: "info@IGMacademy.in",
-            to: recepients,
-            subject: 'New Student Enrolled',
-            html: `
-            
-            <br/>Hello, <br/>
+        const enrollmentHtml = `
+            <p>Hello,</p>
             <p>A new student has enrolled. Below are the details:</p>
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <tr>
-            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Student Name</th>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${rows[0].student_Name_}</td>
-            </tr>
-            <tr>
-            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Course Name</th>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${rows[0].course_Name_}</td>
-            </tr>
-      
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Student Name</th>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${rows[0].student_Name_}</td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Course Name</th>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${rows[0].course_Name_}</td>
+                </tr>
             </table>
-            <br/>`,
+        `;
 
-
-        };
-
-        const sendMailPromise = () => {
-            return new Promise((resolve, reject) => {
-                transporter.sendMail(msg, function (err, info) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(info);
-                    }
-                });
-            });
-        };
-
-
-        await sendMailPromise();
+        for (const recipient of recepients) {
+            try {
+                await emailHelper.sendEmail(recipient, 'New Student Enrolled', enrollmentHtml);
+            } catch (err) {
+                console.error(`Error sending enrollment notification to ${recipient}:`, err);
+            }
+        }
     }
     catch (e) {
         console.log('e: ', e);
@@ -468,7 +371,7 @@ router.get('/Search_student_lead/', async (req, res, next) => {
     try {
         console.log("req.query",req.query);
         
-        const rows = await student.Search_student_lead(req.query.student_Name,req.query.page,req.query.pageSize,req.query.courseId,req.query.batchId,req.query.enrollment_status,req.query.activeStatus,req.query.branchId,req.query.assignedStaffId,req.userId,req.userTypeId);
+        const rows = await student.Search_student_lead(req.query.student_Name,req.query.page,req.query.pageSize,req.query.courseId,req.query.batchId,req.query.enrollment_status,req.query.activeStatus,req.query.branchId,req.query.assignedStaffId,req.query.enquirySourceId,req.userId,req.userTypeId);
         res.json(rows);
     }
     catch (e) {
@@ -1007,6 +910,16 @@ router.get('/Get_Status_Report/', async (req, res, next) => {
     }
     catch (e) {
         res.status(500).json({ success: false, message: 'Failed to get status report', error: e.message });
+    }
+});
+
+router.get('/Get_Lead_Dashboard_Summary/', async (req, res, next) => {
+    try {
+        const { fromDate, toDate, staffId } = req.query;
+        const result = await student.Get_Lead_Dashboard_Summary(fromDate, toDate, staffId);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get lead dashboard summary', error: e.message });
     }
 });
 

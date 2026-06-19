@@ -2,19 +2,35 @@ const axios = require('axios');
 
 const sendEmail = async (to, subject, html, fromEmail = null, fromName = null) => {
     try {
-        const apiKey = (process.env.BREVO_API_KEY || '').trim().replace(/^['"]|['"]$/g, '');
+        const apiKey = (process.env.BREVO_API_KEY || '').trim().replace(/^['\"]|['\"]$/g, '');
         
-        console.log('Brevo API sendEmail request:', { 
-            to, 
-            subject, 
-            fromEmail,
-            apiKeyLength: apiKey.length,
-            apiKeyStart: apiKey.substring(0, 5)
-        });
-
         if (!to) {
             throw new Error('Recipient email (to) is missing');
         }
+
+        if (!apiKey) {
+            throw new Error('BREVO_API_KEY is missing in environment variables');
+        }
+
+        // Always use the verified sender from .env — ignore fromEmail passed by frontend for the 'sender' field.
+        // The frontend sends the logged-in admin's email (e.g. admin_user@G.COM) as the sender,
+        // which is NOT verified in Brevo. Brevo silently drops such emails even when returning 201.
+        const senderEmail = (process.env.BREVO_SENDER_EMAIL || '').trim().replace(/^['\"]|['\"]$/g, '');
+        const senderName = (process.env.BREVO_SENDER_NAME || 'Trackbox').trim().replace(/^['\"]|['\"]$/g, '');
+        
+        let finalSenderEmail = senderEmail;
+        if (!finalSenderEmail) {
+            finalSenderEmail = 'info@trackbox.in';
+            console.warn('WARNING: BREVO_SENDER_EMAIL is not set in environment. Falling back to:', finalSenderEmail);
+        }
+
+        console.log('Brevo API sendEmail request preparation:', { 
+            to, 
+            subject, 
+            verifiedSender: finalSenderEmail,
+            originalFrom: fromEmail,
+            usingFallback: !senderEmail
+        });
 
         const wrappedHtml = `
             <!DOCTYPE html>
@@ -25,13 +41,28 @@ const sendEmail = async (to, subject, html, fromEmail = null, fromName = null) =
             </html>
         `;
 
-        // Try to determine the best sender
-        let senderEmail = fromEmail || (process.env.BREVO_SENDER_EMAIL || '').trim().replace(/^['"]|['"]$/g, '');
-        if (!senderEmail || senderEmail === 'your_sender_email@example.com') {
-            senderEmail = 'info@trackbox.in'; // Default to rebranded email
-        }
+        console.log(`>>> Sending email TO: [${to}] | FROM: [${finalSenderEmail}] | SUBJECT: [${subject}]`);
 
-        const senderName = fromName || (process.env.BREVO_SENDER_NAME || 'Trackbox').trim().replace(/^['"]|['"]$/g, '');
+        const emailData = {
+            sender: {
+                name: senderName,
+                email: finalSenderEmail
+            },
+            to: [{
+                email: to
+            }],
+            subject: subject,
+            htmlContent: wrappedHtml
+        };
+
+        // If a fromEmail was provided (e.g. the admin's email), set it as the reply-to address
+        // so that student replies go to the person who actually sent the email.
+        if (fromEmail && fromEmail !== finalSenderEmail) {
+            emailData.replyTo = {
+                email: fromEmail,
+                name: fromName || fromEmail
+            };
+        }
 
         const response = await axios({
             method: 'post',
@@ -41,20 +72,10 @@ const sendEmail = async (to, subject, html, fromEmail = null, fromName = null) =
                 'api-key': apiKey,
                 'content-type': 'application/json'
             },
-            data: {
-                sender: {
-                    name: senderName,
-                    email: senderEmail
-                },
-                to: [{
-                    email: to
-                }],
-                subject: subject,
-                htmlContent: wrappedHtml
-            }
+            data: emailData
         });
         
-        console.log('Brevo API response success:', response.data);
+        console.log('Brevo API response success - status:', response.status, '| data:', JSON.stringify(response.data));
         return response.data;
     } catch (error) {
         let errorMessage = error.message;

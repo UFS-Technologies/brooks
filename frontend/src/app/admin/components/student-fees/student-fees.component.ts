@@ -54,6 +54,7 @@ interface InstallmentEntry {
   Cgst: number;
   Sgst: number;
   Fine_Amount: number;
+  Fee_Type_Name?: string;
 }
 
 @Component({
@@ -90,6 +91,7 @@ export class StudentFeesComponent {
   }
 
   feeTypes = ['OneTime', 'TwoTime', 'ThreeTime', 'FourTime'];
+  availableFeeTypes = ['Tuition Fee', 'Exam Fee', 'Registration Fee', 'Other Fee'];
   feesForm!: FormGroup;
   feesList: any[] = [];
   allAccounts: any = [];
@@ -306,7 +308,8 @@ export class StudentFeesComponent {
         Sgst: sgst,
         Payment_Date: feeData.Payment_Date,
         Fine_Amount: this.calculateFine(feeData),
-        Course_Name: feeData.Course_Name || feeData.course_Name || feeData.course_Name_ || ''
+        Course_Name: feeData.Course_Name || feeData.course_Name || feeData.course_Name_ || '',
+        Fee_Type_Name: feeData.Fee_Type_Name || ''
       };
       this.feesService.Update_FeesByReceipt_ID(updatedFee).subscribe(
         (res) => {
@@ -571,7 +574,8 @@ export class StudentFeesComponent {
           Gst: gst,
           Cgst: cgst,
           Sgst: sgst,
-          Fine_Amount: this.calculateFine(this.feesList[0])
+          Fine_Amount: this.calculateFine(this.feesList[0]),
+          Fee_Type_Name: this.feesList[0].Fee_Type_Name || ''
         };
         // ✅ This is an update
         this.feesService
@@ -661,7 +665,8 @@ export class StudentFeesComponent {
             Gst: gst,
             Cgst: cgst,
             Sgst: sgst,
-            Fine_Amount: this.calculateFine(this.feesList[0])
+            Fine_Amount: this.calculateFine(this.feesList[0]),
+            Fee_Type_Name: this.feesList[0].Fee_Type_Name || ''
           })
         );
 

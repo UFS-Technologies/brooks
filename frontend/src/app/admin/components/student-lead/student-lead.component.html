@@ -61,6 +61,21 @@
     </div>
 
 
+    <!-- Enquiry Source Filter -->
+    <div class="flex-1">
+      <div class="relative">
+        <select id="enquiry-source-filter" [(ngModel)]="selectedEnquirySourceFilter" (change)="onSearchChange()"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-700 appearance-none cursor-pointer">
+          <option [ngValue]="null">All Enquiry Sources</option>
+          <ng-container *ngFor="let source of enquirySources">
+            <option [ngValue]="source.Enquiry_Source_Id">
+              {{ source.Enquiry_Source_Name }}
+            </option>
+          </ng-container>
+        </select>
+      </div>
+    </div>
+
     <!-- Add Student Button -->
     <div *ngIf="isSave" class="action-group">
       <button (click)="Create_New()" class="btn-blue-modern">
@@ -79,9 +94,10 @@
           <th class="font-semibold tracking-wider text-left">Actions</th>
           <th class="font-semibold tracking-wider text-left">Name</th>
           <th class="font-semibold tracking-wider text-left">Contact</th>
-          <th class="font-semibold tracking-wider text-left">Follow-up Date</th>
+          <th class="font-semibold tracking-wider text-left">Enquiry Source</th>
+          <th class="font-semibold tracking-wider text-left">Follow-up</th>
           <th class="font-semibold tracking-wider text-left">Status</th>
-          <th class="font-semibold tracking-wider text-left">Assigned To Staff</th>
+          <th class="font-semibold tracking-wider text-left">To Staff</th>
           <th class="font-semibold tracking-wider text-left">Remark</th>
         </tr>
       </thead>
@@ -97,6 +113,7 @@
           </td>
           <td class="whitespace-nowrap font-medium">{{ item.First_Name }}</td>
           <td class="whitespace-nowrap">{{ item.Country_Code }} {{ item.Phone_Number }}</td>
+          <td class="whitespace-nowrap">{{ item['Enquiry_Source_Name'] || '-' }}</td>
           <td class="whitespace-nowrap">
             {{ item['Follow_Up_Date'] ? (item['Follow_Up_Date'] | date: 'dd-MM-yyyy') : (item['Next_Follow_Up_Date'] ? (item['Next_Follow_Up_Date'] | date: 'dd-MM-yyyy') : '-') }}
           </td>

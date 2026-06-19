@@ -74,8 +74,13 @@ router.post('/Send_Email_With_Template', async (req, res) => {
 
         res.json({ success: true, message: 'Email sent successfully' });
     } catch (e) {
-        console.error('Error sending template email:', e);
-        res.status(500).json({ success: false, message: 'Failed to send email', error: e.message });
+        console.error('Error sending template email:', e.message);
+        let detailedError = e.message;
+        if (e.responseData) {
+            console.error('Brevo API Error Data:', e.responseData);
+            detailedError = typeof e.responseData === 'string' ? e.responseData : JSON.stringify(e.responseData);
+        }
+        res.status(500).json({ success: false, message: 'Failed to send email', error: detailedError });
     }
 });
 

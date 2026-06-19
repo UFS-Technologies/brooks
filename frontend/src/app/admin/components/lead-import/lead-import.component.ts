@@ -46,6 +46,7 @@ interface ImportData {
 export class LeadImportComponent implements OnInit {
   private studentService = inject(student_Service);
   private fb = inject(FormBuilder);
+
   private dialog = inject(MatDialog);
 
   importForm: FormGroup;
@@ -53,6 +54,7 @@ export class LeadImportComponent implements OnInit {
   departmentData: any[] = [];
   staffData: any[] = [];
   followUpStatusData: any[] = [];
+  enquirySources: any[] = [];
   importedLeads: ImportData[] = [];
   file: File | null = null;
   isLoading: boolean = false;
@@ -69,6 +71,7 @@ export class LeadImportComponent implements OnInit {
       AssignToStaff: [null, Validators.required],
       NextFollowUpDate: [this.getCurrentDate(), Validators.required],
       FollowUpStatus: [null, Validators.required],
+      EnquirySource: [null, Validators.required],
       Remarks: ['']
     });
   }
@@ -100,6 +103,10 @@ export class LeadImportComponent implements OnInit {
       this.followUpStatusData = rows;
       const initialStatus = this.followUpStatusData.find(s => s.Status_Name?.toLowerCase() === 'pending');
       if (initialStatus) this.importForm.patchValue({ FollowUpStatus: initialStatus });
+    });
+
+    this.studentService.Get_All_Enquiry().subscribe((res: any) => {
+      this.enquirySources = Array.isArray(res[0]) ? res[0] : (Array.isArray(res) ? res : []);
     });
   }
 
@@ -289,6 +296,7 @@ export class LeadImportComponent implements OnInit {
         Follow_Up_Status_Name: formValues.FollowUpStatus?.Status_Name,
         Next_Follow_Up_Date: formValues.NextFollowUpDate,
         Remark: lead.Remarks || formValues.Remarks,
+        Enquiry_Source_Id: formValues.EnquirySource?.Enquiry_Source_Id || formValues.EnquirySource?.Enquiry_Source_ID,
         Created_By: currentUserId,
         Followup_Status: true
       };
@@ -319,7 +327,9 @@ export class LeadImportComponent implements OnInit {
              (o1.Department_Id === o2.Department_Id) ||
              (o1.User_ID === o2.User_ID) ||
              (o1.Status_ID === o2.Status_ID) ||
-             (o1.Status_Id === o2.Status_Id);
+             (o1.Status_Id === o2.Status_Id) ||
+             (o1.Enquiry_Source_Id === o2.Enquiry_Source_Id) ||
+             (o1.Enquiry_Source_ID === o2.Enquiry_Source_ID);
     }
     return o1 === o2;
   }

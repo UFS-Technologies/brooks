@@ -1,0 +1,12 @@
+Checking Brevo API for Account Info...
+API Key (first 10): xkeysib-12...
+Configured Sender: trainer1@aives.au
+
+--- Account Info ---
+Account Name: Aives immigration LLP
+Account Email: trainer1@aives.au
+
+--- Verified Senders ---
+- [ACTIVE] Aives immigration LLP (trainer1@aives.au)
+
+Result: SUCCESS

@@ -313,6 +313,25 @@ router.post('/Unlock_Exam', async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to get Teachers', error: e.message });
     }
 });
+
+router.get('/Get_Teachers_By_Course_And_Batch', async (req, res, next) => {
+    try {
+        const { Course_Id, Batch_Id } = req.query;
+        const db = require('../config/dbconnection');
+        const query = `
+            SELECT u.User_ID as Teacher_ID, CONCAT(u.First_Name, ' ', u.Last_Name) as Teacher_Name, tts.Slot_Id
+            FROM course_teacher ct
+            JOIN users u ON ct.Teacher_ID = u.User_ID
+            LEFT JOIN teacher_time_slot tts ON tts.CourseTeacher_ID = ct.CourseTeacher_ID AND tts.Delete_Status = 0 AND (tts.batch_id = ? OR tts.batch_id IS NULL)
+            WHERE ct.Course_ID = ? AND ct.Delete_Status = 0
+            GROUP BY u.User_ID, tts.Slot_Id
+        `;
+        const [rows] = await db.promise().query(query, [Batch_Id, Course_Id]);
+        res.json(rows);
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to get Teachers by batch', error: e.message });
+    }
+});
  router.post('/Delete_Course_Content/:content_Id?', async (req, res, next) => {
     try {
         const rows = await course.Delete_Course_Content(req.params.content_Id);

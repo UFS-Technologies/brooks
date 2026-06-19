@@ -1,0 +1,175 @@
+<div class="min-h-screen bg-slate-50/50 pb-20 font-sans antialiased">
+  <!-- Top Navigation & Header Area -->
+  <!-- <header class="sticky top-0 z-40 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between"> -->
+        <!-- <h1 class="text-xl font-bold tracking-tight text-slate-900">Dashboard</h1> -->
+        
+        <!-- Attendance Quick Action -->
+        <!-- <button 
+          (click)="onAttendanceClick()"
+          class="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md active:scale-95"
+        >
+          <span class="material-symbols-outlined text-[20px]">fingerprint</span>
+          <span class="flex flex-col items-start leading-none">
+            <span class="text-[10px] opacity-80 uppercase tracking-tighter">Quick Action</span>
+            <span>Attendance</span>
+          </span>
+        </button> -->
+      <!-- </div>
+    </div>
+  </header> -->
+
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    
+    <!-- Pills Tab Bar -->
+    <!-- <div class="mb-6 overflow-x-auto pb-2 scrollbar-none">
+      <div class="flex gap-2 min-w-max border-b border-slate-200/60 pb-3">
+        <button 
+          *ngFor="let tab of ['Dashboard', 'Leads', 'Work', 'Amc', 'Payment', 'Tasks', 'Summary']"
+          (click)="onTabClick(tab)"
+          [class]="tab === activeTab 
+            ? 'rounded-full bg-indigo-600 px-5 py-2 text-sm font-bold text-white shadow-sm shadow-indigo-100 transition-all duration-200' 
+            : 'rounded-full bg-slate-100 px-5 py-2 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-200 hover:text-slate-900'"
+        >
+          {{ tab }}
+        </button>
+      </div>
+    </div> -->
+
+    <!-- Filters Panel -->
+    <section class="mb-8 space-y-3">
+      <!-- Date Bar -->
+      <div class="relative flex items-center group">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-indigo-500">
+          <span class="material-symbols-outlined text-lg">calendar_month</span>
+        </div>
+        <select 
+          class="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3.5 pl-12 pr-10 text-sm font-semibold text-slate-700 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          [(ngModel)]="dateRangePreset"
+          (change)="onDatePresetChange()"
+        >
+          <option value="all">All Dates</option>
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="thisWeek">This Week</option>
+          <option value="thisMonth">This Month</option>
+          <option value="custom">Custom Range...</option>
+        </select>
+        <!-- <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div> -->
+      </div>
+
+      <!-- Staff Bar -->
+      <div class="relative flex items-center">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-indigo-500">
+          <span class="material-symbols-outlined text-lg">person</span>
+        </div>
+        <select 
+          [(ngModel)]="selectedStaff" 
+          (change)="onFilterChange()"
+          class="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3.5 pl-12 pr-10 text-sm font-semibold text-slate-700 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+        >
+          <option [value]="null">All Staff</option>
+          <option *ngFor="let staff of staffList" [value]="staff.User_ID">{{ staff.First_Name }} {{ staff.Last_Name }}</option>
+        </select>
+        <!-- <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div> -->
+      </div>
+
+      <!-- Custom Date Inputs (only if "custom" is selected) -->
+      <div *ngIf="dateRangePreset === 'custom'" class="flex gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <input type="date" [(ngModel)]="fromDate" (change)="onFilterChange()" class="flex-1 rounded-xl border border-slate-200 p-2.5 text-xs font-semibold" />
+        <input type="date" [(ngModel)]="toDate" (change)="onFilterChange()" class="flex-1 rounded-xl border border-slate-200 p-2.5 text-xs font-semibold" />
+      </div>
+    </section>
+
+    <!-- Cards Grid -->
+    <div *ngIf="isLoading" class="flex flex-col items-center justify-center py-20 gap-4">
+      <div class="h-10 w-10 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+      <p class="text-sm font-medium text-slate-500">Loading your summary metrics...</p>
+    </div>
+
+    <div *ngIf="!isLoading" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      
+      <!-- Dynamic Status Cards -->
+      <ng-container *ngFor="let status of statusSummary">
+        <article 
+          (click)="onCardClick(status.Status_Name)"
+          [style.background-color]="status.Status_Color + '15'"
+          [style.border-color]="status.Status_Color + '30'"
+          class="group relative overflow-hidden rounded-2xl border p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:scale-[1.02] cursor-pointer"
+        >
+          <div class="flex items-start justify-between">
+            <div class="space-y-1">
+              <h2 class="text-sm font-bold uppercase tracking-wider" [style.color]="status.Status_Color">
+                {{ status.Status_Name }}
+              </h2>
+              <p class="text-4xl font-extrabold tracking-tight text-slate-800">{{ status.LeadCount }}</p>
+            </div>
+            <svg class="w-16 h-8 opacity-40 transition-transform duration-300 group-hover:scale-105" [style.color]="status.Status_Color" viewBox="0 0 100 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M0,15 C20,5 35,25 50,12 C65,5 80,22 100,10" />
+            </svg>
+          </div>
+          <div class="mt-6 flex items-center justify-between text-xs font-semibold" [style.color]="status.Status_Color">
+            <span>View Detailed Records</span>
+            <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/50 transition-transform duration-300 group-hover:translate-x-1">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </article>
+      </ng-container>
+
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Bar (CRM App style) -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-100 bg-white/95 backdrop-blur-md py-2 shadow-lg shadow-slate-200 md:hidden">
+    <div class="flex items-center justify-around">
+      <button 
+        (click)="onTabClick('Dashboard')"
+        class="flex flex-col items-center gap-0.5 text-xs font-semibold text-slate-400 hover:text-indigo-600 transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        Home
+      </button>
+
+      <button 
+        (click)="onTabClick('Leads')"
+        class="flex flex-col items-center gap-0.5 text-xs font-semibold text-slate-400 hover:text-indigo-600 transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        Leads
+      </button>
+
+      <button 
+        (click)="onTabClick('Summary')"
+        class="flex flex-col items-center gap-0.5 text-xs font-semibold text-indigo-600 transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Customers
+      </button>
+
+      <button 
+        (click)="onTabClick('Tasks')"
+        class="flex flex-col items-center gap-0.5 text-xs font-semibold text-slate-400 hover:text-indigo-600 transition-colors"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+        Tasks
+      </button>
+    </div>
+  </nav>
+</div>

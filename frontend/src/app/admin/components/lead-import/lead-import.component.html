@@ -51,6 +51,16 @@
             }
           </select>
         </div>
+
+        <div class="form-group">
+          <label>Enquiry Source</label>
+          <select formControlName="EnquirySource" [compareWith]="compareObjects" class="custom-select">
+            <option [ngValue]="null" disabled>Select Enquiry Source</option>
+            @for (source of enquirySources; track source) {
+              <option [ngValue]="source">{{ source.Enquiry_Source_Name }}</option>
+            }
+          </select>
+        </div>
       </div>
 
       <!-- Remarks Row -->

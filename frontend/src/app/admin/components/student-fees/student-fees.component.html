@@ -8,6 +8,17 @@
   <form #feesForm="ngForm">
     <div *ngFor="let fee of feesList; let i = index" class="fee-item">
 
+      <div class="space-y-2 mb-5">
+        <label class="block text-sm font-medium text-gray-700">Fee Type</label>
+        <select [(ngModel)]="fee.Fee_Type_Name" name="feeTypeName{{i}}"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option [ngValue]="undefined" disabled>Select Fee Type</option>
+          <option *ngFor="let type of availableFeeTypes" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+      </div>
+
       <div class="space-y-2">
         <label for="Branch" class="block text-sm font-medium text-gray-700">
           Tax Type

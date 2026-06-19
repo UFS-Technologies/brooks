@@ -6,6 +6,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `Search_student_lead`(
     IN filter_batch_id INT,
     IN enrollment_status VARCHAR(50),
     IN followUpStatus VARCHAR(100),
+    IN filter_branch_id INT,
+    IN filter_assigned_staff_id INT,
+    IN filter_enquiry_source_id INT,
     IN p_user_id INT,
     IN p_user_type_id INT
 )
@@ -16,12 +19,12 @@ BEGIN
     SET search_term = CONCAT('%', search_term, '%');
     SET offset_value = (page_number - 1) * page_size;
 
+    IF enrollment_status IS NULL THEN SET enrollment_status = 'all'; END IF;
+    IF followUpStatus IS NULL THEN SET followUpStatus = 'all'; END IF;
+
     SELECT 1 INTO v_is_special_admin 
     FROM users 
     WHERE User_ID = p_user_id AND Email = 'admin_user@G.COM' LIMIT 1;
-
-    IF enrollment_status IS NULL THEN SET enrollment_status = 'all'; END IF;
-    IF followUpStatus IS NULL THEN SET followUpStatus = 'all'; END IF;
 
     CREATE TEMPORARY TABLE IF NOT EXISTS allowed_staff (staff_id INT);
     TRUNCATE TABLE allowed_staff;
@@ -36,6 +39,7 @@ BEGIN
     )
     SELECT staff_id FROM staff_hierarchy;
 
+    DROP TEMPORARY TABLE IF EXISTS ranked_fu;
     CREATE TEMPORARY TABLE ranked_fu AS
     SELECT *
     FROM (
@@ -71,8 +75,14 @@ BEGIN
         AND (
             followUpStatus IS NULL
             OR followUpStatus = 'all'
-            OR fs.Status_Name = CONVERT(followUpStatus USING utf8mb4) COLLATE utf8mb4_unicode_ci
+            OR COALESCE(fs.Status_Name, s.Status_Name) = CONVERT(followUpStatus USING utf8mb4) COLLATE utf8mb4_unicode_ci
         )
+        AND (filter_branch_id IS NULL OR s.Branch_Id = filter_branch_id)
+        AND (
+            filter_assigned_staff_id IS NULL
+            OR COALESCE(rf.Assigned_Staff_ID, s.To_User_Id) = filter_assigned_staff_id
+        )
+        AND (filter_enquiry_source_id IS NULL OR s.Enquiry_Source_Id = filter_enquiry_source_id)
         AND (
             v_is_special_admin = 1 OR s.To_User_Id IN (SELECT staff_id FROM allowed_staff)
         );
@@ -90,10 +100,12 @@ BEGIN
         s.Branch_Name,
         s.Status_Name,
         s.To_User_Name,
+        MAX(COALESCE(rf.Assigned_Staff_ID, s.To_User_Id)) AS Assigned_Staff_ID,
+        MAX(COALESCE(NULLIF(rf.Assigned_Staff_Name, ''), NULLIF(s.To_User_Name, ''), '')) AS Assigned_Staff_Name,
         s.Qualification,
         MAX(rf.Next_Follow_Up_Date) AS Next_Follow_Up_Date,
         MAX(rf.Remark) AS Remark,
-        MAX(fs.Status_Name) AS Followup_Status,
+        COALESCE(MAX(fs.Status_Name), s.Status_Name) AS Followup_Status,
         s.isActive,
         s.Is_Registered,
         s.Roll_No,
@@ -135,8 +147,14 @@ BEGIN
         AND (
             followUpStatus IS NULL
             OR followUpStatus = 'all'
-            OR fs.Status_Name = CONVERT(followUpStatus USING utf8mb4) COLLATE utf8mb4_unicode_ci
+            OR COALESCE(fs.Status_Name, s.Status_Name) = CONVERT(followUpStatus USING utf8mb4) COLLATE utf8mb4_unicode_ci
         )
+        AND (filter_branch_id IS NULL OR s.Branch_Id = filter_branch_id)
+        AND (
+            filter_assigned_staff_id IS NULL
+            OR COALESCE(rf.Assigned_Staff_ID, s.To_User_Id) = filter_assigned_staff_id
+        )
+        AND (filter_enquiry_source_id IS NULL OR s.Enquiry_Source_Id = filter_enquiry_source_id)
         AND (
             v_is_special_admin = 1 OR s.To_User_Id IN (SELECT staff_id FROM allowed_staff)
         )

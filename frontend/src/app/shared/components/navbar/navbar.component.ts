@@ -90,10 +90,12 @@ export class NavbarComponent implements OnInit {
       'Campaign',
       'Enquiry Source',
       'Enquiry Summary',
+      'Lead Summary',
       'Expense Category',
       'Expense Type',
       'Course',
       'Student Reports',
+      'Mock Test Subscribed',
       'Exam Upload',
       'Studentfile upload',
       'Fees Total Outstanding',
@@ -110,7 +112,7 @@ export class NavbarComponent implements OnInit {
         let items = Array.isArray(res?.[0]) ? res[0] : [];
 
         // ✅ Remove unwanted menu
-        items = items.filter((item: any) => item?.Menu_Name !== 'Leave');
+        items = items.filter((item: any) => item?.Menu_Name !== 'Leave' && item?.Menu_Name !== 'Exam Upload');
 
         // ✅ Normalize menu names
         items = items.map((item: any) => ({
@@ -143,6 +145,32 @@ export class NavbarComponent implements OnInit {
             Menu_ID: 'fallback-status-report',
             Menu_Name: 'Status Report',
             Route: '/admin/Status_Report',
+          });
+        }
+
+        // ✅ 👉 Ensure Lead Summary is always present
+        const leadSummaryExists = items.some(
+          (item: any) => item.Menu_Name === 'Lead Summary'
+        );
+
+        if (!leadSummaryExists) {
+          items.push({
+            Menu_ID: 'fallback-lead-summary',
+            Menu_Name: 'Lead Summary',
+            Route: '/admin/Lead_Summary',
+          });
+        }
+
+        // ✅ 👉 Ensure Mock Test Subscribed is always present
+        const mockTestExists = items.some(
+          (item: any) => item.Menu_Name === 'Mock Test Subscribed'
+        );
+
+        if (!mockTestExists) {
+          items.push({
+            Menu_ID: 'fallback-mock-test',
+            Menu_Name: 'Mock Test Subscribed',
+            Route: '/admin/mock-test-subscribed',
           });
         }
 
@@ -183,6 +211,16 @@ export class NavbarComponent implements OnInit {
             Menu_ID: 'fallback-status-report',
             Menu_Name: 'Status Report',
             Route: '/admin/Status_Report',
+          },
+          {
+            Menu_ID: 'fallback-lead-summary',
+            Menu_Name: 'Lead Summary',
+            Route: '/admin/Lead_Summary',
+          },
+          {
+            Menu_ID: 'fallback-mock-test',
+            Menu_Name: 'Mock Test Subscribed',
+            Route: '/admin/mock-test-subscribed',
           },
         ];
       },
@@ -239,6 +277,7 @@ export class NavbarComponent implements OnInit {
   getImageSource(label: string, isActive: boolean): string {
     switch (label) {
       case 'Dashboard':
+      case 'Lead Summary':
         return isActive
           ? 'assets/images/navbar/dashboard-active.png'
           : 'assets/images/navbar/dashboard.png';

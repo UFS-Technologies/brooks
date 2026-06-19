@@ -127,7 +127,8 @@ Get_All_Enquiry(): Observable<any> {
     enrollmentStatus: string | 'all',
     activeStatus: string,
     branchId: number | null,
-    assignedStaffId: number | null = null
+    assignedStaffId: number | null = null,
+    enquirySourceId: number | null = null
   ): Observable<any> {
     let params = new HttpParams()
       .set('student_Name', student_Name)
@@ -146,6 +147,9 @@ Get_All_Enquiry(): Observable<any> {
     }
     if (assignedStaffId != null) {
       params = params.set('assignedStaffId', assignedStaffId.toString());
+    }
+    if (enquirySourceId != null) {
+      params = params.set('enquirySourceId', enquirySourceId.toString());
     }
     console.log('Search Params:', params.toString());
     
@@ -348,4 +352,26 @@ Delete_StudentDocument(student_Id) {
     if (toDate) params = params.set('toDate', toDate);
     return this.http.get(environment.BasePath + 'student/Get_Status_Report/', { params });
   }
+
+  Get_Lead_Dashboard_Summary(fromDate?: string, toDate?: string, staffId?: number): Observable<any> {
+    let params = new HttpParams();
+    if (fromDate) params = params.set('fromDate', fromDate);
+    if (toDate) params = params.set('toDate', toDate);
+    if (staffId) params = params.set('staffId', staffId.toString());
+    return this.http.get(environment.BasePath + 'student/Get_Lead_Dashboard_Summary/', { params });
+  }
+
+  // Mock Test Packages CRUD
+  Get_MockTestPackages(): Observable<any> {
+    return this.http.get(environment.BasePath + 'MockTestPackage/Get_MockTestPackages');
+  }
+
+  Save_MockTestPackage(data: any): Observable<any> {
+    return this.http.post(environment.BasePath + 'MockTestPackage/Save_MockTestPackage', data);
+  }
+
+  Delete_MockTestPackage(Package_ID: number): Observable<any> {
+    return this.http.post(environment.BasePath + 'MockTestPackage/Delete_MockTestPackage', { Package_ID });
+  }
 }
+

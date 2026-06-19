@@ -7,13 +7,10 @@ const sgMail = require("@sendgrid/mail");
 const { getJwtSecret } = require("../helpers/jwt-secret");
 const Student = require("../models/student");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
+const emailHelper = require("../helpers/email-helper");
 const { executeTransaction, getmultipleSP } = require("../helpers/sp-caller");
 const jwtSecret = getJwtSecret();
 
-const apiKey = process.env.BREVO_API_KEY;
-const senderEmail = process.env.BREVO_SENDER_EMAIL || "testprep@aives.au";
-const senderName = process.env.BREVO_SENDER_NAME || "Track Box";
 // for admin or teacher
 
 router.post("/Login_Check", async (req, res, next) => {
@@ -125,46 +122,16 @@ router.post("/Check_User_Exist", async (req, res, next) => {
                               </div>`;
         const textContent = `Hello, Your OTP for Track Box login is: ${otp}. This code will expire in 10 minutes.`;
 
-        // Prepare email payload
-        const emailPayload = {
-          sender: {
-            name: senderName,
-            email: senderEmail,
-          },
-          to: [
-            {
-              email: finalEmail,
-            },
-          ],
-          subject: "OTP for Track Box Login",
-          htmlContent: processedBody,
-          text: textContent,
-        };
-
-        // Send the email
-        const emailResponse = await axios.post(
-          "https://api.brevo.com/v3/smtp/email",
-          emailPayload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "api-key": apiKey,
-            },
-          }
-        );
+        // Send the email via helper
+        await emailHelper.sendEmail(finalEmail, "OTP for Track Box Login", processedBody);
 
         console.log(`Email sent successfully to (${finalEmail})!`);
-
-        console.log("Email sent successfully via API:", emailResponse.data);
         res.json({ ...rows, otp });
       } catch (error) {
-        console.error(
-          "Failed to send email via API:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Failed to send email via Helper:", error.message);
         return {
           success: false,
-          error: error.response ? error.response.data : error.message,
+          error: error.message,
         };
       }
     }
@@ -381,33 +348,9 @@ router.post("/Generate-forget-Password", async (req, res) => {
                           <p>Best regards,<br/>Track Box</p>
                       </div>`;
 
-    // Prepare email payload
-    const emailPayload = {
-      sender: {
-        name: `Track Box`,
-        email: senderEmail,
-      },
-      to: [
-        {
-          email: Email,
-        },
-      ],
-      subject: "Password Reset Request - Track Box",
-      htmlContent: processedBody,
-      text: textContent,
-    };
-
-    const emailResponse = await axios.post(
-      "https://api.brevo.com/v3/smtp/email",
-      emailPayload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": apiKey,
-        },
-      }
-    );
-    console.log("Email response: ", emailResponse.data);
+    // Send the email via helper
+    await emailHelper.sendEmail(Email, "Password Reset Request - Track Box", processedBody);
+    console.log("Password reset email sent successfully to:", Email);
 
     return res.status(200).json({
       User_ID: rows[0].User_ID,
@@ -517,45 +460,15 @@ router.post("/Save_user/", async (req, res, next) => {
                       </html>
                   `;
 
-      const emailPayload = {
-        sender: {
-          name: "IGM Academy",
-          email: "info@IGMacademy.in",
-        },
-        to: [
-          {
-            email: req.body["Email"],
-          },
-        ],
-        subject:
+      try {
+        await emailHelper.sendEmail(
+          req.body["Email"],
           "Welcome to Track Box - Teacher Account Created Successfully",
-        htmlContent: emailBody,
-      };
-
-      let attempts = 0;
-      let maxAttempts = 3;
-      let emailSent = false;
-
-      while (!emailSent && attempts < maxAttempts) {
-        try {
-          const emailResponse = await axios({
-            method: "post",
-            url: "https://api.brevo.com/v3/smtp/email",
-           headers: {
-              "Content-Type": "application/json",
-              "api-key": apiKey,
-            },
-            data: emailPayload,
-          });
-          console.log("Email sent successfully:", emailResponse.data);
-          emailSent = true;
-        } catch (error) {
-          attempts++;
-          console.log(`Attempt ${attempts} failed:`, error.message);
-          if (attempts >= maxAttempts) {
-            console.log("Email sending failed after maximum attempts.");
-          }
-        }
+          emailBody
+        );
+        console.log("Teacher welcome email sent successfully");
+      } catch (error) {
+        console.error("Error sending teacher welcome email:", error.message);
       }
     }
 

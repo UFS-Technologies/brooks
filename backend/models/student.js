@@ -185,8 +185,8 @@ var student = {
     student.Social_Provider,
     student.Social_ID,
     student.Delete_Status || 0,
-    student.Profile_Photo_Path,
     student.Profile_Photo_Name,
+    student.Profile_Photo_Path,
     student.Avatar,
     student.Country_Code,
     student.Country_Code_Name,
@@ -195,16 +195,16 @@ var student = {
     Branch_Id_,
     student.Follow_Up_Date || student.Next_Follow_Up_Date || null,
     student.Admission_Date || null,
-    toInt(student.Follow_Up_Status_ID),       // ✅
+    toInt(student.Follow_Up_Status_ID),       
     student.Follow_Up_Status_Name || "",
-    toInt(student.Assigned_Staff_ID),         // ✅
+    toInt(student.Assigned_Staff_ID),         
     student.Assigned_Staff_Name || "",
-    toInt(student.Created_By),                // ✅
+    toInt(student.Created_By),                
     student.Remark || "",
     student.Followup_Status || false,
-    toInt(student.Department_Id),             // ✅
+    toInt(student.Department_Id),             
     student.Department_Name || "",
-    toInt(student.Age),                       // ✅ your current fix
+    toInt(student.Age),                       
     student.Qualification || "",
     student.Qualification_Description || "",
     student.Alt_Phone_Number || "",
@@ -213,16 +213,18 @@ var student = {
     student.Guardian_Name || "",
     student.Guardian_Phone || "",
     student.Guardian_Alt_Phone || "",
-    toInt(student.Height_cm),                 // ✅
-    toInt(student.Weight_kg),                 // ✅
+    toInt(student.Height_cm),                 
+    toInt(student.Weight_kg),                 
     student.Active_Status,
-    toInt(student.Enquiry_Source_Id) ?? 0,    // ✅
+    toInt(student.Enquiry_Source_Id) ?? 0,    
+    student.isRegistering ? 1 : 0,
     toInt(student.Registered_By),
     student.Installments || null,
     student.Student_Fees_IDs || null,
-    student.isRegistering ? 1 : 0,
-    toInt(student.Registered_By),
+    student.Roll_No || null,
     student.Registered_On || null,
+    student.Mock_Test_Subscribed ? 1 : 0,
+    student.Mock_Test_Package || null
 ]);
   },
   Save_User_Permission: async function (payload) {
@@ -302,6 +304,7 @@ var student = {
     activeStatus,
     branchId,
     assignedStaffId,
+    enquirySourceId,
     p_user_id,
     p_user_type_id
   ) {
@@ -327,6 +330,7 @@ var student = {
       activeStatus,
       toIntOrNull(branchId),
       toIntOrNull(assignedStaffId),
+      toIntOrNull(enquirySourceId),
       toIntOrNull(p_user_id),
       toIntOrNull(p_user_type_id),
     ]);
@@ -757,6 +761,54 @@ enroleCourseFromAdmin: async function (course) {
     const params = fromDate && toDate ? [fromDate, toDate] : [];
     const [rows] = await db.promise().query(sql, params);
     return rows;
+  },
+  Get_Lead_Dashboard_Summary: async function (fromDate, toDate, staffId) {
+    let whereClause = "WHERE IFNULL(s.Delete_Status, 0) = 0 ";
+    const params = [];
+
+    if (fromDate && toDate) {
+      whereClause += " AND s.Entry_Date BETWEEN ? AND ? ";
+      params.push(fromDate, toDate);
+    }
+    if (staffId) {
+      whereClause += " AND s.To_User_Id = ? ";
+      params.push(staffId);
+    }
+
+    // 1. General Metrics Query
+    const metricsSql = `
+      SELECT 
+        SUM(CASE WHEN s.Follow_Up_Date < CURRENT_DATE() AND IFNULL(s.Status_Id, 0) NOT IN (17, 22) THEN 1 ELSE 0 END) as MissedLeads,
+        SUM(CASE WHEN s.Follow_Up_Date = CURRENT_DATE() OR s.Status_Id = 25 THEN 1 ELSE 0 END) as FollowupLeads,
+        SUM(CASE WHEN s.To_User_Id IS NOT NULL AND IFNULL(s.By_User_Id, 0) > 0 AND s.To_User_Id <> s.By_User_Id THEN 1 ELSE 0 END) as TransferredLeads,
+        COUNT(s.Student_ID) as TotalLeads,
+        SUM(CASE WHEN s.Follow_Up_Date > CURRENT_DATE() AND IFNULL(s.Status_Id, 0) NOT IN (17, 22) THEN 1 ELSE 0 END) as UpcomingFollowup
+      FROM student s
+      ${whereClause}
+    `;
+
+    // 2. Dynamic Status Counts Query
+    const statusSql = `
+      SELECT 
+        fs.Status_Id,
+        fs.Status_Name,
+        fs.Status_Color,
+        COUNT(s.Student_ID) as LeadCount
+      FROM followup_status fs
+      LEFT JOIN student s ON fs.Status_Id = s.Status_Id AND IFNULL(s.Delete_Status, 0) = 0
+      ${whereClause.replace('WHERE', 'AND').replace(/s\./g, 's.')}
+      WHERE IFNULL(fs.Delete_Status, 0) = 0
+      GROUP BY fs.Status_Id, fs.Status_Name, fs.Status_Color
+      ORDER BY fs.Display_Order;
+    `;
+
+    const [metricsRows] = await db.promise().query(metricsSql, params);
+    const [statusRows] = await db.promise().query(statusSql, params);
+
+    return {
+      metrics: metricsRows[0] || {},
+      statusCounts: statusRows || []
+    };
   },
 };
 module.exports = student;

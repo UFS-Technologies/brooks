@@ -200,7 +200,8 @@ console.log("params", params,this.currentPage,
   }
 
   toggleSelectAll(event: any) {
-    if (event.checked) {
+    const checked = event.checked ?? (event.target as HTMLInputElement)?.checked;
+    if (checked) {
       this.tableData.forEach(row => this.selectedStudents.add(row));
     } else {
       this.selectedStudents.clear();
@@ -208,7 +209,8 @@ console.log("params", params,this.currentPage,
   }
 
   toggleSelectStudent(row: any, event: any) {
-    if (event.checked) {
+    const checked = event.checked ?? (event.target as HTMLInputElement)?.checked;
+    if (checked) {
       this.selectedStudents.add(row);
     } else {
       this.selectedStudents.delete(row);
