@@ -52,6 +52,7 @@
           <!-- <th class=" text-center whitespace-nowrap">Actions</th> -->
           <th class="font-semibold tracking-wider text-left whitespace-nowrap">Name</th>
           <th class="font-semibold tracking-wider text-left whitespace-nowrap">Roll Number</th>
+          <th class="font-semibold tracking-wider text-left whitespace-nowrap">Course</th>
           <th class="font-semibold tracking-wider text-left whitespace-nowrap">Batch Name</th>
           <th class="font-semibold tracking-wider text-left whitespace-nowrap">Email</th>
           <th class="font-semibold tracking-wider text-left whitespace-nowrap">Contact</th>
@@ -79,6 +80,7 @@
           </td> -->
           <td class=" whitespace-nowrap">{{ item.First_Name }} {{ item.Last_Name }}</td>
           <td class=" whitespace-nowrap">{{ item['Roll_No'] || '-' }}</td>
+          <td class=" whitespace-nowrap">{{ item['Course_Name'] || '-' }}</td>
           <td class=" whitespace-nowrap">{{ item['Batch_Name'] || '-' }}</td>
           <td class=" whitespace-nowrap">{{ item.Email || '-' }}</td>
           <td class=" whitespace-nowrap">{{ item.Country_Code }} {{ item.Phone_Number }}</td>

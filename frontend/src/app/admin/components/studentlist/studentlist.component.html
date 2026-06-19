@@ -898,14 +898,12 @@
                     <!-- INSTALLMENT DETAILS LIST -->
                     @if (installments.length > 0) {
                     <div class="mt-6">
-                        <h3 class="text-md font-semibold text-gray-800 mb-2">Fee Breakdown:</h3>
+                        <h3 class="text-md font-semibold text-gray-800 mb-2">Fee Details:</h3>
                         <div class="overflow-x-auto" style="width: 310%;">
                             <table class="min-w-full bg-white border border-gray-200 rounded shadow text-sm">
                                 <thead class="bg-gray-100 text-left text-gray-700">
                                     <tr>
-                                        <th class="px-4 py-2 border-b">Fee ID</th>
                                         <th class="px-4 py-2 border-b">Amount</th>
-                                        <th class="px-4 py-2 border-b">Duration (Months)</th>
                                         <th class="px-4 py-2 border-b">Due Date</th>
 
                                     </tr>
@@ -913,7 +911,6 @@
                                 <tbody>
                                     <tr *ngFor="let inst of installments; let i = index; trackBy: trackByIndex"
                                         class="hover:bg-gray-50">
-                                        <td class="px-4 py-2 border-b">{{ i+1 }}</td>
                                         <!-- <td class="px-4 py-2 border-b">{{ inst.Amount }}</td> -->
                                         <!-- Editable Amount -->
                                         <td class="px-4 py-2 border-b">
@@ -922,7 +919,6 @@
                                                 (ngModelChange)="onAmountChange(i, $event)"
                                                 [ngModelOptions]="{ standalone: true }" />
                                         </td>
-                                        <td class="px-4 py-2 border-b">{{ inst.DurationInMonths}}</td>
                                         <td class="px-4 py-2 border-b">
                                             <input type="date" class="border px-2 py-1 rounded w-full"
                                                 [(ngModel)]="installments[i].DueDate" [min]="todayString"
@@ -957,39 +953,13 @@
                                 <span class="text-gray-600">Total Students Count:</span>
                                 <span class="font-medium">{{batchDetails.student_count}}</span>
                             </div>
-                            @if(batchDetails.time_slots && batchDetails.time_slots.length > 0){
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Group Class Time:</span>
-                                <span class="font-medium">
-                                    {{batchDetails.time_slots[0].start_time}} - {{batchDetails.time_slots[0].end_time}}
-                                </span>
-                            </div>
-                            }
+
                         </div>
                         }
                     </div>
                     }
 
-                    <!-- Selected Slot Details Card -->
-                    @if(student_Course.get('Slot_Id')?.value && student_Course.get('Slot_Id')?.value != '0'){
-                    <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">One-on-One Slot Details</h3>
-                        @if(slotDetails){
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Time:</span>
-                                <span class="font-medium">
-                                    {{slotDetails.start_time}} - {{slotDetails.end_time}}
-                                </span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Faculty:</span>
-                                <span class="font-medium">{{slotDetails.Teacher_Name}}</span>
-                            </div>
-                        </div>
-                        }
-                    </div>
-                    }
+
                 </div>
                 }
             </div>

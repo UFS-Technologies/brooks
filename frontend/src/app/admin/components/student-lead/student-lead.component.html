@@ -35,7 +35,7 @@
       <div class="relative">
         <select id="activeStatus" [(ngModel)]="followUpStatus" (change)="onSearchChange()" (ngModelChange)="Status_Change()" [compareWith]="compareStatus"
           class="w-full">
-          <option value="all">All Followup</option>
+          <option value="all">All Status</option>
           <ng-container *ngFor="let status of followUpStatusData">
             <option *ngIf="status.Status_Name !== 'Select Status'" [ngValue]="status">
               {{ status.Status_Name }}

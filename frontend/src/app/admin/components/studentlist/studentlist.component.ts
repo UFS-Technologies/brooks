@@ -1034,47 +1034,50 @@ doc.text(
 
     // this.feesForm.get('Fee_Amount')?.patchValue(+feeAmount, { emitEvent: true });
 
-    // if (discount == 0) {
-    //     // 👉 Restore original installment data
-    //     this.installments = this.originalInstallments;
-    //   } else {
-    //     // 👇 Rebalance the installments based on new fee amount
-    //     // this.rebalanceInstallmentsProportionally(feeAmount);
-    //   }
+    if (discount == 0) {
+        // 👉 Restore original installment data
+        if (this.originalInstallments && this.originalInstallments.length > 0) {
+            // copy to avoid reference issues
+            this.installments = JSON.parse(JSON.stringify(this.originalInstallments));
+        }
+    } else {
+        // 👇 Rebalance the installments based on new fee amount
+        this.rebalanceInstallmentsProportionally(feeAmount);
+    }
   }
 
-  // rebalanceInstallmentsProportionally(newFeeAmount: number): void {
-  //   const count = this.installments.length;
-  //   if (count === 0) return;
+  rebalanceInstallmentsProportionally(newFeeAmount: number): void {
+    const count = this.installments.length;
+    if (count === 0) return;
 
-  //   const rawAmount = newFeeAmount / count;
+    const rawAmount = newFeeAmount / count;
 
-  //   // Helper to round to nearest multiple of 100
-  //   const roundToNearest100 = (value: number): number => {
-  //     return Math.round(value / 100) * 100;
-  //   };
+    // Helper to round to nearest multiple of 100
+    const roundToNearest100 = (value: number): number => {
+      return Math.round(value / 100) * 100;
+    };
 
-  //   // Round each installment
-  //   const roundedInstallments = this.installments.map((inst, idx) => {
-  //     const rounded = roundToNearest100(rawAmount);
-  //     return { ...inst, Amount: rounded };
-  //   });
+    // Round each installment
+    const roundedInstallments = this.installments.map((inst, idx) => {
+      const rounded = roundToNearest100(rawAmount);
+      return { ...inst, Amount: rounded };
+    });
 
-  //   // Total after rounding
-  //   const totalRounded = roundedInstallments.reduce((sum, inst) => sum + inst.Amount, 0);
-  //   const diff = newFeeAmount - totalRounded;
+    // Total after rounding
+    const totalRounded = roundedInstallments.reduce((sum, inst) => sum + inst.Amount, 0);
+    const diff = newFeeAmount - totalRounded;
 
-  //   // Adjust the last installment to match the target total
-  //   if (diff !== 0) {
-  //     const last = roundedInstallments[count - 1];
-  //     roundedInstallments[count - 1] = {
-  //       ...last,
-  //       Amount: last.Amount + diff
-  //     };
-  //   }
+    // Adjust the last installment to match the target total
+    if (diff !== 0) {
+      const last = roundedInstallments[count - 1];
+      roundedInstallments[count - 1] = {
+        ...last,
+        Amount: last.Amount + diff
+      };
+    }
 
-  //   this.installments = roundedInstallments;
-  // }
+    this.installments = roundedInstallments;
+  }
 
   Get_All_Enquiry() {
     this.student_Service_.Get_All_Enquiry().subscribe(

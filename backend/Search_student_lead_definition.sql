@@ -117,6 +117,7 @@ BEGIN
         s.Guardian_Type,
         s.Guardian_Name,
         s.Address,
+        MAX(c.Course_Name) AS Course_Name,
         MAX(cb.Batch_Name) AS Batch_Name,
         CASE 
             WHEN EXISTS (
@@ -127,6 +128,7 @@ BEGIN
         END AS is_enrolled
     FROM student s
     LEFT JOIN student_course sc ON s.Student_ID = sc.Student_ID
+    LEFT JOIN course c ON sc.Course_ID = c.Course_ID
     LEFT JOIN course_batch cb ON sc.Batch_ID = cb.Batch_ID
     LEFT JOIN ranked_fu rf ON rf.Student_ID = s.Student_ID
     LEFT JOIN followup_status fs ON fs.Status_Id = rf.Follow_Up_Status_ID

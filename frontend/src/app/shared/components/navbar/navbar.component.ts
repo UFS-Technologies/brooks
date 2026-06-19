@@ -85,7 +85,7 @@ export class NavbarComponent implements OnInit {
       'Expenses',
       'Income',
       'Staff',
-      'Email',
+      'Email Template',
       'Mail Report',
       'Campaign',
       'Enquiry Source',
@@ -115,12 +115,12 @@ export class NavbarComponent implements OnInit {
         items = items.filter((item: any) => item?.Menu_Name !== 'Leave' && item?.Menu_Name !== 'Exam Upload');
 
         // ✅ Normalize menu names
-        items = items.map((item: any) => ({
-          ...item,
-          Menu_Name: item.Menu_Name?.trim() === 'Reports'
-            ? 'Account Reports'
-            : item.Menu_Name?.trim(),
-        }));
+        items = items.map((item: any) => {
+          let name = item.Menu_Name?.trim();
+          if (name === 'Reports') name = 'Account Reports';
+          if (name === 'Email') name = 'Email Template';
+          return { ...item, Menu_Name: name };
+        });
 
         // ✅ 👉 Ensure Mail Report is always present
         const mailReportExists = items.some(
@@ -293,7 +293,7 @@ export class NavbarComponent implements OnInit {
           ? 'assets/images/navbar/income-active.png'
           : 'assets/images/navbar/income.png';
 
-      case 'Email':
+      case 'Email Template':
         return isActive
           ? 'assets/images/navbar/ppt-active.png'
           : 'assets/images/navbar/ppt.svg';
